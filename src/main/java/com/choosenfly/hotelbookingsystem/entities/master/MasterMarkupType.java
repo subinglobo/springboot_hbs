@@ -1,0 +1,84 @@
+package com.choosenfly.hotelbookingsystem.entities.master;
+
+import com.choosenfly.hotelbookingsystem.entities.base.BaseEntity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "master_markup_type", schema = "public")
+public class MasterMarkupType extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
+
+    @Column(name = "is_deleted")
+    private Boolean isDeleted;
+
+    @Column(name = "is_type", length = 100)
+    private String isType;
+
+    @Column(name = "markup", length = 100)
+    private String markup;
+
+    @Column(name = "markup_type", length = 100)
+    private String markupType;
+
+    @Column(name = "name", length = 100)
+    private String name;
+
+    // Getters and Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Boolean getIsDeleted() {
+        return isDeleted;
+    }
+
+    public void setIsDeleted(Boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
+    public String getIsType() {
+        return isType;
+    }
+
+    public void setIsType(String isType) {
+        this.isType = isType;
+    }
+
+    public String getMarkup() {
+        return markup;
+    }
+
+    public void setMarkup(String markup) {
+        this.markup = markup;
+    }
+
+    public String getMarkupType() {
+        return markupType;
+    }
+
+    public void setMarkupType(String markupType) {
+        this.markupType = markupType;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+}
