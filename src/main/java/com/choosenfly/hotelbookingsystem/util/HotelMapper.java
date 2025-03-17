@@ -88,7 +88,7 @@ public class HotelMapper {
 			this.bankRepository = bankRepository;
 			this.roomCategoryRepository = roomCategoryRepository;
 			this.roomTypeRepository = roomTypeRepository;
-			this.roomAmenityRepository = roomAmenityRepository;
+			this.roomAmenityRepository = roomAmenityRepository; 
 
 		}
 
