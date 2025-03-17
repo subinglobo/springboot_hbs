@@ -92,7 +92,7 @@ public class HotelMapper {
  
 		}
 
-	
+	 
 	public Hotel mapToEntity(HotelDTO dto) {
 		Hotel hotel = new Hotel();
 		hotel.setHotelName(dto.getHotelName());
