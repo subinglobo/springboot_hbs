@@ -16,6 +16,7 @@ import com.choosenfly.hotelbookingsystem.entities.master.MasterState;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -101,22 +102,22 @@ public class Hotel extends BaseEntity{
 	@Column(name = "is_deleted", nullable = false)
 	private Boolean isDeleted = false;
 
-	@OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private List<HotelContactDetails> contactDetails;
 
-	@OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private List<HotelBankDetails> bankDetails;
 
-	@OneToOne(mappedBy = "hotel", cascade = CascadeType.ALL)
+	@OneToOne(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private HotelWeekDays weekDays;
 
-	@OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private List<HotelRoom> rooms;
 
-	@OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private List<HotelTermsAndConditions> termsAndConditions;
 
-	@OneToMany(mappedBy = "hotel", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@OneToMany(mappedBy = "hotel", cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<LinkedHotelAmenity> hotelAmenities;
 
 

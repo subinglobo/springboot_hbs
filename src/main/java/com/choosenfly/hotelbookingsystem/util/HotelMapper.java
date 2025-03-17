@@ -1,9 +1,10 @@
 package com.choosenfly.hotelbookingsystem.util;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired; 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.choosenfly.hotelbookingsystem.dto.HotelBankDetailsDTO;
@@ -20,6 +21,7 @@ import com.choosenfly.hotelbookingsystem.entities.hotel.HotelTermsAndConditions;
 import com.choosenfly.hotelbookingsystem.entities.hotel.HotelWeekDays;
 import com.choosenfly.hotelbookingsystem.entities.hotel.linked.LinkedHotelAmenity;
 import com.choosenfly.hotelbookingsystem.entities.hotel.linked.LinkedHotelRoomAmenity;
+import com.choosenfly.hotelbookingsystem.entities.master.MasterCurrency;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterHotelAmenities;
 import com.choosenfly.hotelbookingsystem.repository.HotelBankDetailsRepository;
 import com.choosenfly.hotelbookingsystem.repository.HotelContactDetailsRepository;
@@ -260,6 +262,231 @@ public class HotelMapper {
 		return hotel;
 	}
 
+	
+	public void mapDTOToExisitingEntity(Hotel hotel, HotelDTO dto)
+	{
+
+		hotel.setHotelName(dto.getHotelName());
+		hotel.setImage360(dto.getImage360());
+		hotel.setHotelDescription(dto.getHotelDescription());
+		hotel.setChildComAgeMin(dto.getChildComAgeMin());
+		hotel.setChildComAgeMax(dto.getChildComAgeMax());
+		hotel.setChildChargeableAgeMin(dto.getChildChargeableAgeMin());
+		hotel.setChildChargeableAgeMax(dto.getChildChargeableAgeMax());
+		hotel.setAddress(dto.getAddress());
+		hotel.setZipcode(dto.getZipcode());
+		hotel.setLatitude(dto.getLatitude());
+		hotel.setLongitude(dto.getLongitude());
+		hotel.setIsDeleted(dto.getIsDeleted() != null ? dto.getIsDeleted() : false);
+
+		// Map referenced entities
+		if (dto.getHotelCurrencyId() != null) {
+			
+			hotel.setHotelCurrency(currencyRepository.findById(dto.getHotelCurrencyId())
+					.orElseThrow(() -> new RuntimeException("Currency not found")));
+		}
+		if (dto.getHotelCategoryId() != null) {
+			hotel.setHotelCategory(categoryRepository.findById(dto.getHotelCategoryId())
+					.orElseThrow(() -> new RuntimeException("Category not found")));
+		}
+		if (dto.getHotelTypeId() != null) {
+			hotel.setHotelType(typeRepository.findById(dto.getHotelTypeId())
+					.orElseThrow(() -> new RuntimeException("Type not found")));
+		}
+		if (dto.getRegionId() != null) {
+			hotel.setRegion(regionRepository.findById(dto.getRegionId())
+					.orElseThrow(() -> new RuntimeException("Region not found")));
+		}
+		if (dto.getMarkupTypeId() != null) {
+			hotel.setMarkupType(markupTypeRepository.findById(dto.getMarkupTypeId())
+					.orElseThrow(() -> new RuntimeException("Markup type not found")));
+		}
+
+		if (dto.getCountryId() != null) {
+			hotel.setCountry(countryRepository.findById(dto.getCountryId())
+					.orElseThrow(() -> new RuntimeException("Country not found")));
+		}
+		if (dto.getStateId() != null) {
+			hotel.setState(stateRepository.findById(dto.getStateId())
+					.orElseThrow(() -> new RuntimeException("State not found")));
+		}
+		if (dto.getPlaceId() != null) {
+			hotel.setPlace(placeRepository.findById(dto.getPlaceId())
+					.orElseThrow(() -> new RuntimeException("Place not found")));
+		}
+		if (dto.getAmenityIds() != null) {
+			
+			
+			List<LinkedHotelAmenity> existingHotelAmenities = hotel.getHotelAmenities();
+			
+			existingHotelAmenities.clear();
+			
+			List<MasterHotelAmenities> amenities = amenitiesRepository.findAllById(dto.getAmenityIds());
+
+
+			
+			List<LinkedHotelAmenity> newHotelAmenities = amenities.stream().map(amenity -> {
+
+				LinkedHotelAmenity linkedAmenity = new LinkedHotelAmenity();
+				linkedAmenity.setHotel(hotel);
+				linkedAmenity.setAmenity(amenity);
+
+				return linkedAmenity;
+			}).collect(Collectors.toList());
+			
+			
+			existingHotelAmenities.addAll(newHotelAmenities);
+			
+			hotel.setHotelAmenities(existingHotelAmenities);
+
+		}
+
+		// Map nested collections
+		if (dto.getContactDetails() != null) {
+			
+			List<HotelContactDetails> existingContactDetails = hotel.getContactDetails();
+			
+			existingContactDetails.clear();
+			
+			
+			
+			List<HotelContactDetails> newContactDetails = dto.getContactDetails().stream().map(contactDTO -> {
+				HotelContactDetails contact = new HotelContactDetails();
+				contact.setHotel(hotel);
+				if (contactDTO.getContactTypeId() != null) {
+					contact.setContactType(contactTypeRepository.findById(contactDTO.getContactTypeId())
+							.orElseThrow(() -> new RuntimeException("Contact type not found")));
+				}
+				contact.setContactPerson(contactDTO.getContactPerson());
+				contact.setPersonalEmail(contactDTO.getPersonalEmail());
+				contact.setTeleNumber(contactDTO.getTeleNumber());
+				contact.setMobileNumber(contactDTO.getMobileNumber());
+				return contact;
+			}).collect(Collectors.toList());
+			
+			
+			
+			existingContactDetails.addAll(newContactDetails);
+			
+			hotel.setContactDetails(existingContactDetails);
+		}
+
+		if (dto.getBankDetails() != null) {
+			
+			
+			List<HotelBankDetails> existingBankDetails = hotel.getBankDetails();
+			
+			existingBankDetails.clear();
+			
+			
+			
+			List<HotelBankDetails> newBankDetails = dto.getBankDetails().stream().map(bankDTO -> {
+				HotelBankDetails bank = new HotelBankDetails();
+				bank.setHotel(hotel);
+				if (bankDTO.getBankId() != null) {
+					bank.setBank(bankRepository.findById(bankDTO.getBankId())
+							.orElseThrow(() -> new RuntimeException("Bank not found")));
+				}
+				bank.setAccountNo(bankDTO.getAccountNo());
+				bank.setIban(bankDTO.getIban());
+				bank.setSwiftCode(bankDTO.getSwiftCode());
+				bank.setBankAddress(bankDTO.getBankAddress());
+				bank.setTelephone(bankDTO.getTelephone());
+				bank.setFaxNumber(bankDTO.getFaxNumber());
+				bank.setContactPerson(bankDTO.getContactPerson());
+				return bank;
+			}).collect(Collectors.toList());
+			
+			existingBankDetails.addAll(newBankDetails);
+			
+			hotel.setBankDetails(existingBankDetails);
+		}
+
+		if (dto.getWeekDays() != null) {
+			
+			HotelWeekDays weekDays = hotel.getWeekDays();
+			
+			weekDays.setHotel(hotel);
+			weekDays.setWdSunday(dto.getWeekDays().getWdSunday() != null ? dto.getWeekDays().getWdSunday() : false);
+			weekDays.setWdMonday(dto.getWeekDays().getWdMonday() != null ? dto.getWeekDays().getWdMonday() : false);
+			weekDays.setWdTuesday(dto.getWeekDays().getWdTuesday() != null ? dto.getWeekDays().getWdTuesday() : false);
+			weekDays.setWdWednesday(
+					dto.getWeekDays().getWdWednesday() != null ? dto.getWeekDays().getWdWednesday() : false);
+			weekDays.setWdThursday(
+					dto.getWeekDays().getWdThursday() != null ? dto.getWeekDays().getWdThursday() : false);
+			weekDays.setWdFriday(dto.getWeekDays().getWdFriday() != null ? dto.getWeekDays().getWdFriday() : false);
+			weekDays.setWdSaturday(
+					dto.getWeekDays().getWdSaturday() != null ? dto.getWeekDays().getWdSaturday() : false);
+			weekDays.setWedSunday(dto.getWeekDays().getWedSunday() != null ? dto.getWeekDays().getWedSunday() : false);
+			weekDays.setWedMonday(dto.getWeekDays().getWedMonday() != null ? dto.getWeekDays().getWedMonday() : false);
+			weekDays.setWedTuesday(
+					dto.getWeekDays().getWedTuesday() != null ? dto.getWeekDays().getWedTuesday() : false);
+			weekDays.setWedWednesday(
+					dto.getWeekDays().getWedWednesday() != null ? dto.getWeekDays().getWedWednesday() : false);
+			weekDays.setWedThursday(
+					dto.getWeekDays().getWedThursday() != null ? dto.getWeekDays().getWedThursday() : false);
+			weekDays.setWedFriday(dto.getWeekDays().getWedFriday() != null ? dto.getWeekDays().getWedFriday() : false);
+			weekDays.setWedSaturday(
+					dto.getWeekDays().getWedSaturday() != null ? dto.getWeekDays().getWedSaturday() : false);
+			hotel.setWeekDays(weekDays);
+		}
+
+		if (dto.getRooms() != null) {
+			
+			List<HotelRoom> existingRooms = hotel.getRooms();
+			
+			existingRooms.clear();
+			
+			
+			
+			List<HotelRoom> newRooms = dto.getRooms().stream().map(roomDTO -> {
+				HotelRoom room = new HotelRoom();
+				room.setHotel(hotel);
+				if (roomDTO.getRoomCategoryId() != null) {
+					room.setRoomCategory(roomCategoryRepository.findById(roomDTO.getRoomCategoryId())
+							.orElseThrow(() -> new RuntimeException("Room category not found")));
+				}
+				room.setRoomName(roomDTO.getRoomName());
+				if (roomDTO.getRoomTypeId() != null) {
+					room.setRoomType(roomTypeRepository.findById(roomDTO.getRoomTypeId())
+							.orElseThrow(() -> new RuntimeException("Room type not found")));
+				}
+				room.setIsDeleted(roomDTO.getIsDeleted() != null ? roomDTO.getIsDeleted() : false);
+				if (roomDTO.getAmenityIds() != null) {
+					List<LinkedHotelRoomAmenity> amenities = roomAmenityRepository.findAllById(roomDTO.getAmenityIds())
+							.stream().peek(amenity -> amenity.setHotelRoom(room)).collect(Collectors.toList());
+					room.setAmenities(amenities);
+				}
+				return room;
+			}).collect(Collectors.toList());
+			
+			existingRooms.addAll(newRooms);
+			
+			hotel.setRooms(existingRooms);
+		}
+
+		if (dto.getTermsAndConditions() != null) {
+			
+			
+			List<HotelTermsAndConditions> existingTermsAndConditions = hotel.getTermsAndConditions();
+			
+			existingTermsAndConditions.clear();
+			
+			List<HotelTermsAndConditions> newTermsAndConditions = dto.getTermsAndConditions().stream().map(tcDTO -> {
+				HotelTermsAndConditions tc = new HotelTermsAndConditions();
+				tc.setHotel(hotel);
+				tc.setDescription(tcDTO.getDescription());
+				return tc;
+			}).collect(Collectors.toList());
+			
+			
+			existingTermsAndConditions.addAll(newTermsAndConditions);
+					
+			hotel.setTermsAndConditions(existingTermsAndConditions);
+		}
+
+
+	}
 	public HotelDTO mapToDTO(Hotel hotel) {
 
 		HotelDTO dto = new HotelDTO();
