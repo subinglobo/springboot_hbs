@@ -89,7 +89,7 @@ public class HotelMapper {
 			this.roomCategoryRepository = roomCategoryRepository;
 			this.roomTypeRepository = roomTypeRepository;
 			this.roomAmenityRepository = roomAmenityRepository; 
-
+ 
 		}
 
 	
