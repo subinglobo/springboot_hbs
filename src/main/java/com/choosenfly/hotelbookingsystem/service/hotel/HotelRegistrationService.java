@@ -17,7 +17,7 @@ import com.choosenfly.hotelbookingsystem.repository.HotelRepository;
 import com.choosenfly.hotelbookingsystem.util.HotelMapper;
 
 @Service
-public class HotelRegistrationService {
+public class HotelRegistrationService implements HotelRegistrationServiceInterface{
 
 	private final HotelRepository hotelRepository;
 

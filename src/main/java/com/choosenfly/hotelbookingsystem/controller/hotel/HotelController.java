@@ -19,20 +19,27 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.choosenfly.hotelbookingsystem.dto.HotelContactDetailsDTO;
 import com.choosenfly.hotelbookingsystem.dto.HotelDTO;
+import com.choosenfly.hotelbookingsystem.dto.HotelMailCentreDTO;
+import com.choosenfly.hotelbookingsystem.service.hotel.HotelMailtypeServiceInterface;
 import com.choosenfly.hotelbookingsystem.service.hotel.HotelRegistrationService;
+import com.choosenfly.hotelbookingsystem.service.hotel.HotelRegistrationServiceInterface;
 
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/hotels")
-public class HotelRegistrationController {
+public class HotelController {
 
-	private final HotelRegistrationService hotelService;
+	private final HotelRegistrationServiceInterface hotelService;
+
+	private final HotelMailtypeServiceInterface hotelMailService;
 
 	@Autowired
-	public HotelRegistrationController(HotelRegistrationService hotelService) {
+	public HotelController(HotelRegistrationService hotelService, HotelMailtypeServiceInterface hotelMailService) {
 		this.hotelService = hotelService;
+		this.hotelMailService = hotelMailService;
 	}
 
 	@PostMapping
@@ -97,6 +104,23 @@ public class HotelRegistrationController {
 		ResponseEntity<String> deleteHotel = hotelService.deleteHotel(id);
 
 		return deleteHotel;
+
+	}
+
+	@PostMapping("/addMailCentre/{id}")
+	public ResponseEntity<String> updateMailCentre(@PathVariable("id") Long id,
+			@RequestBody HotelMailCentreDTO mailCentreDTO) {
+		
+		String addMailCentre = hotelMailService.addMailCentre(id, mailCentreDTO);
+
+		return new ResponseEntity<>(addMailCentre, HttpStatus.OK);
+	}
+
+	@GetMapping("/getMailCentre/{id}")
+	public List<HotelContactDetailsDTO> getMailCentre(@PathVariable("id") Long id) {
+		List<HotelContactDetailsDTO> mailCentre = hotelMailService.getMailCentre(id);
+
+		return mailCentre;
 
 	}
 

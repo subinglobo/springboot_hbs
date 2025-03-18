@@ -1,5 +1,7 @@
 package com.choosenfly.hotelbookingsystem.dto;
 
+import java.util.List;
+
 public class HotelContactDetailsDTO {
 	private Long id;
 	private Long hotelId; // Reference to Hotel
@@ -8,8 +10,19 @@ public class HotelContactDetailsDTO {
 	private String personalEmail;
 	private String teleNumber;
 	private String mobileNumber;
+	private List<Long> mailTyIds;
 
+	
+	
 	// Getters and setters
+	public List<Long> getMailTyIds() {
+		return mailTyIds;
+	}
+
+	public void setMailTyIds(List<Long> mailTyIds) {
+		this.mailTyIds = mailTyIds;
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -70,6 +83,8 @@ public class HotelContactDetailsDTO {
 	public String toString() {
 		return "HotelContactDetailsDTO [id=" + id + ", hotelId=" + hotelId + ", contactTypeId=" + contactTypeId
 				+ ", contactPerson=" + contactPerson + ", personalEmail=" + personalEmail + ", teleNumber=" + teleNumber
-				+ ", mobileNumber=" + mobileNumber + "]";
+				+ ", mobileNumber=" + mobileNumber + ", mailTyIds=" + mailTyIds + "]";
 	}
+
+	
 }

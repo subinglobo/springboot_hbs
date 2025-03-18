@@ -1,15 +1,21 @@
 package com.choosenfly.hotelbookingsystem.entities.hotel;
 
+import java.util.List;
+
 import com.choosenfly.hotelbookingsystem.entities.base.BaseEntity;
+import com.choosenfly.hotelbookingsystem.entities.hotel.linked.LinkedHotelContactDetailsMailType;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterContactType;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -38,6 +44,19 @@ public class HotelContactDetails extends BaseEntity {
 
     @Column(name = "mobile_number")
     private String mobileNumber;
+    
+    @OneToMany(mappedBy = "hotelContactDetails", cascade = CascadeType.ALL ,orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<LinkedHotelContactDetailsMailType> mailType;
+    
+    
+
+	public List<LinkedHotelContactDetailsMailType> getMailType() {
+		return mailType;
+	}
+
+	public void setMailType(List<LinkedHotelContactDetailsMailType> mailType) {
+		this.mailType = mailType;
+	}
 
 	public Long getId() {
 		return id;
@@ -99,11 +118,13 @@ public class HotelContactDetails extends BaseEntity {
 
 	@Override
 	public String toString() {
-		return "HotelContactDetails [id=" + id + ", contactPerson=" + contactPerson + ", personalEmail=" + personalEmail
-				+ ", teleNumber=" + teleNumber + ", mobileNumber=" + mobileNumber + "]";
+		return "HotelContactDetails [id=" + id + ", hotel=" + hotel + ", contactType=" + contactType
+				+ ", contactPerson=" + contactPerson + ", personalEmail=" + personalEmail + ", teleNumber=" + teleNumber
+				+ ", mobileNumber=" + mobileNumber + "]";
 	}
 
 	
+
 	
 
 
