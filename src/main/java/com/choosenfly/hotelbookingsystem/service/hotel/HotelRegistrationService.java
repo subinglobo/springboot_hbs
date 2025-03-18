@@ -17,14 +17,14 @@ import com.choosenfly.hotelbookingsystem.repository.HotelRepository;
 import com.choosenfly.hotelbookingsystem.util.HotelMapper;
 
 @Service
-public class HotelService {
+public class HotelRegistrationService {
 
 	private final HotelRepository hotelRepository;
 
 	private final HotelMapper hotelMapper;
 
 	@Autowired
-	public HotelService(HotelRepository hotelRepository, HotelMapper hotelMapper) {
+	public HotelRegistrationService(HotelRepository hotelRepository, HotelMapper hotelMapper) {
 		this.hotelRepository = hotelRepository;
 		this.hotelMapper = hotelMapper;
 	}
@@ -48,9 +48,6 @@ public class HotelService {
 		return hotelMapper.mapToDTO(hotel);
 	}
 
-	
-	
-	
 	// Marks this method as read-only, optimizing the transaction for queries (no
 	// writes)
 	@Transactional(readOnly = true)
@@ -80,55 +77,50 @@ public class HotelService {
 	}
 
 	@Transactional
-	public HotelDTO updateHotel(HotelDTO hotelDTO,Long id) {
-		
+	public HotelDTO updateHotel(HotelDTO hotelDTO, Long id) {
+
 		// Fetch existing hotel entity
-	    Hotel existingHotel = hotelRepository.findById(id)
-	            .orElseThrow(() -> new RuntimeException("Hotel not found with id: " + id));
+		Hotel existingHotel = hotelRepository.findById(id)
+				.orElseThrow(() -> new RuntimeException("Hotel not found with id: " + id));
 
-	  
-	    hotelMapper.mapDTOToExisitingEntity(existingHotel, hotelDTO);
-	    
-	    // Save updated hotel entity
-	    Hotel updatedHotel = hotelRepository.save(existingHotel);
+		hotelMapper.mapDTOToExisitingEntity(existingHotel, hotelDTO);
 
-	    // Convert entity to DTO and return
-	    return hotelMapper.mapToDTO(updatedHotel);
-    }
-	
+		// Save updated hotel entity
+		Hotel updatedHotel = hotelRepository.save(existingHotel);
+
+		// Convert entity to DTO and return
+		return hotelMapper.mapToDTO(updatedHotel);
+	}
 
 	@Transactional
-    public ResponseEntity<String> deleteHotel(Long id) {
-        try {
-            // Fetch existing hotel entity
-            Hotel existingHotel = hotelRepository.findById(id)
-                    .orElseThrow(() -> new HotelNotFoundException("Hotel not found with id: " + id));
+	public ResponseEntity<String> deleteHotel(Long id) {
+		try {
+			// Fetch existing hotel entity
+			Hotel existingHotel = hotelRepository.findById(id)
+					.orElseThrow(() -> new HotelNotFoundException("Hotel not found with id: " + id));
 
-            // Delete the hotel
-            hotelRepository.delete(existingHotel);
+			// Delete the hotel
+			hotelRepository.delete(existingHotel);
 
-         
-           
+			// Return success response
+			return ResponseEntity.ok("Hotel with id " + id + " deleted successfully");
 
-            // Return success response
-            return ResponseEntity.ok("Hotel with id " + id + " deleted successfully");
+		} catch (HotelNotFoundException e) {
+			// Log the not found error
 
-        } catch (HotelNotFoundException e) {
-            // Log the not found error
-        
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 
-        } catch (DataIntegrityViolationException e) {
-            // Handle case where deletion violates database constraints (e.g., foreign key)
-          
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body("Cannot delete hotel with id " + id + " due to existing dependencies");
+		} catch (DataIntegrityViolationException e) {
+			// Handle case where deletion violates database constraints (e.g., foreign key)
 
-        } catch (Exception e) {
-            // Catch any other unexpected errors
-           
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred while deleting hotel with id " + id + ": " + e.getMessage());
-        }
-    }
+			return ResponseEntity.status(HttpStatus.CONFLICT)
+					.body("Cannot delete hotel with id " + id + " due to existing dependencies");
+
+		} catch (Exception e) {
+			// Catch any other unexpected errors
+
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("An error occurred while deleting hotel with id " + id + ": " + e.getMessage());
+		}
+	}
 }

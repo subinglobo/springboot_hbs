@@ -1,7 +1,6 @@
 package com.choosenfly.hotelbookingsystem.util;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,6 @@ import com.choosenfly.hotelbookingsystem.entities.hotel.HotelTermsAndConditions;
 import com.choosenfly.hotelbookingsystem.entities.hotel.HotelWeekDays;
 import com.choosenfly.hotelbookingsystem.entities.hotel.linked.LinkedHotelAmenity;
 import com.choosenfly.hotelbookingsystem.entities.hotel.linked.LinkedHotelRoomAmenity;
-import com.choosenfly.hotelbookingsystem.entities.master.MasterCurrency;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterHotelAmenities;
 import com.choosenfly.hotelbookingsystem.repository.HotelBankDetailsRepository;
 import com.choosenfly.hotelbookingsystem.repository.HotelContactDetailsRepository;

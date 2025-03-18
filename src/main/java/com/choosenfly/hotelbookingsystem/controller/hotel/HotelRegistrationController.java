@@ -20,18 +20,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.choosenfly.hotelbookingsystem.dto.HotelDTO;
-import com.choosenfly.hotelbookingsystem.service.hotel.HotelService;
+import com.choosenfly.hotelbookingsystem.service.hotel.HotelRegistrationService;
 
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/hotels")
-public class HotelController {
+public class HotelRegistrationController {
 
-	private final HotelService hotelService;
+	private final HotelRegistrationService hotelService;
 
 	@Autowired
-	public HotelController(HotelService hotelService) {
+	public HotelRegistrationController(HotelRegistrationService hotelService) {
 		this.hotelService = hotelService;
 	}
 
