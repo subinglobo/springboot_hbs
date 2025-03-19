@@ -77,11 +77,11 @@ public class LinkedHotelContactDetailsMailType {
 
 	@Override
 	public String toString() {
-		return "LinkedHotelContactDetailsMailType [hotelContactDetailsId=" + hotelContactDetailsId
-				+ ", hotelContactDetails=" + hotelContactDetails + ", masterMailType=" + masterMailType + "]";
+		return "LinkedHotelContactDetailsMailType [hotelContactDetailsId=" + hotelContactDetailsId + "]";
 	}
 
 
+	
 	
 	
 	

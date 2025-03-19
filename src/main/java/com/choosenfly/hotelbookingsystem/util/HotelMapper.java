@@ -6,12 +6,12 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.choosenfly.hotelbookingsystem.dto.HotelBankDetailsDTO;
-import com.choosenfly.hotelbookingsystem.dto.HotelContactDetailsDTO;
-import com.choosenfly.hotelbookingsystem.dto.HotelDTO;
-import com.choosenfly.hotelbookingsystem.dto.HotelRoomDTO;
-import com.choosenfly.hotelbookingsystem.dto.HotelTermsAndConditionsDTO;
-import com.choosenfly.hotelbookingsystem.dto.HotelWeekDaysDTO;
+import com.choosenfly.hotelbookingsystem.dto.hotel.HotelBankDetailsDTO;
+import com.choosenfly.hotelbookingsystem.dto.hotel.HotelContactDetailsDTO;
+import com.choosenfly.hotelbookingsystem.dto.hotel.HotelDTO;
+import com.choosenfly.hotelbookingsystem.dto.hotel.HotelRoomDTO;
+import com.choosenfly.hotelbookingsystem.dto.hotel.HotelTermsAndConditionsDTO;
+import com.choosenfly.hotelbookingsystem.dto.hotel.HotelWeekDaysDTO;
 import com.choosenfly.hotelbookingsystem.entities.hotel.Hotel;
 import com.choosenfly.hotelbookingsystem.entities.hotel.HotelBankDetails;
 import com.choosenfly.hotelbookingsystem.entities.hotel.HotelContactDetails;
@@ -21,26 +21,27 @@ import com.choosenfly.hotelbookingsystem.entities.hotel.HotelWeekDays;
 import com.choosenfly.hotelbookingsystem.entities.hotel.linked.LinkedHotelAmenity;
 import com.choosenfly.hotelbookingsystem.entities.hotel.linked.LinkedHotelRoomAmenity;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterHotelAmenities;
-import com.choosenfly.hotelbookingsystem.repository.HotelBankDetailsRepository;
-import com.choosenfly.hotelbookingsystem.repository.HotelContactDetailsRepository;
-import com.choosenfly.hotelbookingsystem.repository.HotelRepository;
-import com.choosenfly.hotelbookingsystem.repository.HotelRoomRepository;
-import com.choosenfly.hotelbookingsystem.repository.HotelTermsAndConditionsRepository;
-import com.choosenfly.hotelbookingsystem.repository.HotelWeekDaysRepository;
-import com.choosenfly.hotelbookingsystem.repository.LinkedHotelRoomAmenityRepository;
-import com.choosenfly.hotelbookingsystem.repository.MasterBankRepository;
-import com.choosenfly.hotelbookingsystem.repository.MasterContactTypeRepository;
-import com.choosenfly.hotelbookingsystem.repository.MasterCountryRepository;
-import com.choosenfly.hotelbookingsystem.repository.MasterCurrencyRepository;
-import com.choosenfly.hotelbookingsystem.repository.MasterHotelAmenitiesRepository;
-import com.choosenfly.hotelbookingsystem.repository.MasterHotelCategoryRepository;
-import com.choosenfly.hotelbookingsystem.repository.MasterHotelTypeRepository;
-import com.choosenfly.hotelbookingsystem.repository.MasterMarkupTypeRepository;
-import com.choosenfly.hotelbookingsystem.repository.MasterPlaceRepository;
-import com.choosenfly.hotelbookingsystem.repository.MasterRegionRepository;
-import com.choosenfly.hotelbookingsystem.repository.MasterRoomCategoryRepository;
-import com.choosenfly.hotelbookingsystem.repository.MasterRoomTypeRepository;
-import com.choosenfly.hotelbookingsystem.repository.MasterStateRepository;
+import com.choosenfly.hotelbookingsystem.exceptions.EntityNotFoundException;
+import com.choosenfly.hotelbookingsystem.repository.hotel.HotelBankDetailsRepository;
+import com.choosenfly.hotelbookingsystem.repository.hotel.HotelContactDetailsRepository;
+import com.choosenfly.hotelbookingsystem.repository.hotel.HotelRepository;
+import com.choosenfly.hotelbookingsystem.repository.hotel.HotelRoomRepository;
+import com.choosenfly.hotelbookingsystem.repository.hotel.HotelTermsAndConditionsRepository;
+import com.choosenfly.hotelbookingsystem.repository.hotel.HotelWeekDaysRepository;
+import com.choosenfly.hotelbookingsystem.repository.linked.LinkedHotelRoomAmenityRepository;
+import com.choosenfly.hotelbookingsystem.repository.master.MasterBankRepository;
+import com.choosenfly.hotelbookingsystem.repository.master.MasterContactTypeRepository;
+import com.choosenfly.hotelbookingsystem.repository.master.MasterCountryRepository;
+import com.choosenfly.hotelbookingsystem.repository.master.MasterCurrencyRepository;
+import com.choosenfly.hotelbookingsystem.repository.master.MasterHotelAmenitiesRepository;
+import com.choosenfly.hotelbookingsystem.repository.master.MasterHotelCategoryRepository;
+import com.choosenfly.hotelbookingsystem.repository.master.MasterHotelTypeRepository;
+import com.choosenfly.hotelbookingsystem.repository.master.MasterMarkupTypeRepository;
+import com.choosenfly.hotelbookingsystem.repository.master.MasterPlaceRepository;
+import com.choosenfly.hotelbookingsystem.repository.master.MasterRegionRepository;
+import com.choosenfly.hotelbookingsystem.repository.master.MasterRoomCategoryRepository;
+import com.choosenfly.hotelbookingsystem.repository.master.MasterRoomTypeRepository;
+import com.choosenfly.hotelbookingsystem.repository.master.MasterStateRepository;
 
 @Component
 public class HotelMapper {
@@ -111,36 +112,36 @@ public class HotelMapper {
 		// Map referenced entities
 		if (dto.getHotelCurrencyId() != null) {
 			hotel.setHotelCurrency(currencyRepository.findById(dto.getHotelCurrencyId())
-					.orElseThrow(() -> new RuntimeException("Currency not found")));
+					.orElseThrow(() -> new EntityNotFoundException("Currency not found with id "+dto.getHotelCurrencyId())));
 		}
 		if (dto.getHotelCategoryId() != null) {
 			hotel.setHotelCategory(categoryRepository.findById(dto.getHotelCategoryId())
-					.orElseThrow(() -> new RuntimeException("Category not found")));
+					.orElseThrow(() -> new EntityNotFoundException("Category not found with id "+dto.getHotelCategoryId())));
 		}
 		if (dto.getHotelTypeId() != null) {
 			hotel.setHotelType(typeRepository.findById(dto.getHotelTypeId())
-					.orElseThrow(() -> new RuntimeException("Type not found")));
+					.orElseThrow(() -> new EntityNotFoundException("Hotel Type not found with id "+dto.getHotelTypeId())));
 		}
 		if (dto.getRegionId() != null) {
 			hotel.setRegion(regionRepository.findById(dto.getRegionId())
-					.orElseThrow(() -> new RuntimeException("Region not found")));
+					.orElseThrow(() -> new EntityNotFoundException("Region not found with id "+dto.getRegionId())));
 		}
 		if (dto.getMarkupTypeId() != null) {
 			hotel.setMarkupType(markupTypeRepository.findById(dto.getMarkupTypeId())
-					.orElseThrow(() -> new RuntimeException("Markup type not found")));
+					.orElseThrow(() -> new EntityNotFoundException("Markup type not found with id "+dto.getMarkupTypeId())));
 		}
 
 		if (dto.getCountryId() != null) {
 			hotel.setCountry(countryRepository.findById(dto.getCountryId())
-					.orElseThrow(() -> new RuntimeException("Country not found")));
+					.orElseThrow(() -> new EntityNotFoundException("Country not found with id "+dto.getCountryId())));
 		}
 		if (dto.getStateId() != null) {
 			hotel.setState(stateRepository.findById(dto.getStateId())
-					.orElseThrow(() -> new RuntimeException("State not found")));
+					.orElseThrow(() -> new EntityNotFoundException("State not found with id "+dto.getStateId())));
 		}
 		if (dto.getPlaceId() != null) {
 			hotel.setPlace(placeRepository.findById(dto.getPlaceId())
-					.orElseThrow(() -> new RuntimeException("Place not found")));
+					.orElseThrow(() -> new EntityNotFoundException("Place not found with id "+dto.getPlaceId())));
 		}
 		if (dto.getAmenityIds() != null) {
 			List<MasterHotelAmenities> amenities = amenitiesRepository.findAllById(dto.getAmenityIds());
@@ -165,7 +166,7 @@ public class HotelMapper {
 				contact.setHotel(hotel);
 				if (contactDTO.getContactTypeId() != null) {
 					contact.setContactType(contactTypeRepository.findById(contactDTO.getContactTypeId())
-							.orElseThrow(() -> new RuntimeException("Contact type not found")));
+							.orElseThrow(() -> new EntityNotFoundException("Contact type not found with id "+contactDTO.getContactTypeId())));
 				}
 				contact.setContactPerson(contactDTO.getContactPerson());
 				contact.setPersonalEmail(contactDTO.getPersonalEmail());
@@ -182,7 +183,7 @@ public class HotelMapper {
 				bank.setHotel(hotel);
 				if (bankDTO.getBankId() != null) {
 					bank.setBank(bankRepository.findById(bankDTO.getBankId())
-							.orElseThrow(() -> new RuntimeException("Bank not found")));
+							.orElseThrow(() -> new EntityNotFoundException("Bank not found with id "+bankDTO.getBankId())));
 				}
 				bank.setAccountNo(bankDTO.getAccountNo());
 				bank.setIban(bankDTO.getIban());
@@ -229,12 +230,12 @@ public class HotelMapper {
 				room.setHotel(hotel);
 				if (roomDTO.getRoomCategoryId() != null) {
 					room.setRoomCategory(roomCategoryRepository.findById(roomDTO.getRoomCategoryId())
-							.orElseThrow(() -> new RuntimeException("Room category not found")));
+							.orElseThrow(() -> new EntityNotFoundException("Room category not found with id "+roomDTO.getRoomCategoryId())));
 				}
 				room.setRoomName(roomDTO.getRoomName());
 				if (roomDTO.getRoomTypeId() != null) {
 					room.setRoomType(roomTypeRepository.findById(roomDTO.getRoomTypeId())
-							.orElseThrow(() -> new RuntimeException("Room type not found")));
+							.orElseThrow(() -> new EntityNotFoundException("Room type not found with id "+roomDTO.getRoomTypeId())));
 				}
 				room.setIsDeleted(roomDTO.getIsDeleted() != null ? roomDTO.getIsDeleted() : false);
 				if (roomDTO.getAmenityIds() != null) {
@@ -281,36 +282,36 @@ public class HotelMapper {
 		if (dto.getHotelCurrencyId() != null) {
 			
 			hotel.setHotelCurrency(currencyRepository.findById(dto.getHotelCurrencyId())
-					.orElseThrow(() -> new RuntimeException("Currency not found")));
+					.orElseThrow(() -> new EntityNotFoundException("Currency not found with id "+dto.getHotelCurrencyId())));
 		}
 		if (dto.getHotelCategoryId() != null) {
 			hotel.setHotelCategory(categoryRepository.findById(dto.getHotelCategoryId())
-					.orElseThrow(() -> new RuntimeException("Category not found")));
+					.orElseThrow(() -> new EntityNotFoundException("Category not found with id "+dto.getHotelCategoryId())));
 		}
 		if (dto.getHotelTypeId() != null) {
 			hotel.setHotelType(typeRepository.findById(dto.getHotelTypeId())
-					.orElseThrow(() -> new RuntimeException("Type not found")));
+					.orElseThrow(() -> new EntityNotFoundException("Hotel Type not found with id "+dto.getHotelTypeId())));
 		}
 		if (dto.getRegionId() != null) {
 			hotel.setRegion(regionRepository.findById(dto.getRegionId())
-					.orElseThrow(() -> new RuntimeException("Region not found")));
+					.orElseThrow(() -> new EntityNotFoundException("Region not found with id "+dto.getRegionId())));
 		}
 		if (dto.getMarkupTypeId() != null) {
 			hotel.setMarkupType(markupTypeRepository.findById(dto.getMarkupTypeId())
-					.orElseThrow(() -> new RuntimeException("Markup type not found")));
+					.orElseThrow(() -> new EntityNotFoundException("Markup type not found with id "+dto.getMarkupTypeId())));
 		}
 
 		if (dto.getCountryId() != null) {
 			hotel.setCountry(countryRepository.findById(dto.getCountryId())
-					.orElseThrow(() -> new RuntimeException("Country not found")));
+					.orElseThrow(() -> new EntityNotFoundException("Country not found with id "+dto.getCountryId())));
 		}
 		if (dto.getStateId() != null) {
 			hotel.setState(stateRepository.findById(dto.getStateId())
-					.orElseThrow(() -> new RuntimeException("State not found")));
+					.orElseThrow(() -> new EntityNotFoundException("State not found with id "+dto.getStateId())));
 		}
 		if (dto.getPlaceId() != null) {
 			hotel.setPlace(placeRepository.findById(dto.getPlaceId())
-					.orElseThrow(() -> new RuntimeException("Place not found")));
+					.orElseThrow(() -> new EntityNotFoundException("Place not found with id "+dto.getPlaceId())));
 		}
 		if (dto.getAmenityIds() != null) {
 			
@@ -353,7 +354,7 @@ public class HotelMapper {
 				contact.setHotel(hotel);
 				if (contactDTO.getContactTypeId() != null) {
 					contact.setContactType(contactTypeRepository.findById(contactDTO.getContactTypeId())
-							.orElseThrow(() -> new RuntimeException("Contact type not found")));
+							.orElseThrow(() -> new EntityNotFoundException("Contact type not found with id "+contactDTO.getContactTypeId())));
 				}
 				contact.setContactPerson(contactDTO.getContactPerson());
 				contact.setPersonalEmail(contactDTO.getPersonalEmail());
@@ -383,7 +384,7 @@ public class HotelMapper {
 				bank.setHotel(hotel);
 				if (bankDTO.getBankId() != null) {
 					bank.setBank(bankRepository.findById(bankDTO.getBankId())
-							.orElseThrow(() -> new RuntimeException("Bank not found")));
+							.orElseThrow(() -> new EntityNotFoundException("Bank not found with id "+bankDTO.getBankId())));
 				}
 				bank.setAccountNo(bankDTO.getAccountNo());
 				bank.setIban(bankDTO.getIban());
@@ -442,12 +443,12 @@ public class HotelMapper {
 				room.setHotel(hotel);
 				if (roomDTO.getRoomCategoryId() != null) {
 					room.setRoomCategory(roomCategoryRepository.findById(roomDTO.getRoomCategoryId())
-							.orElseThrow(() -> new RuntimeException("Room category not found")));
+							.orElseThrow(() -> new EntityNotFoundException("Room category not found with id "+roomDTO.getRoomCategoryId())));
 				}
 				room.setRoomName(roomDTO.getRoomName());
 				if (roomDTO.getRoomTypeId() != null) {
 					room.setRoomType(roomTypeRepository.findById(roomDTO.getRoomTypeId())
-							.orElseThrow(() -> new RuntimeException("Room type not found")));
+							.orElseThrow(() -> new EntityNotFoundException("Room type not found with id "+roomDTO.getRoomTypeId())));
 				}
 				room.setIsDeleted(roomDTO.getIsDeleted() != null ? roomDTO.getIsDeleted() : false);
 				if (roomDTO.getAmenityIds() != null) {

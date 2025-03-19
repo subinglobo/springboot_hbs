@@ -10,10 +10,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import com.choosenfly.hotelbookingsystem.dto.HotelDTO;
+import com.choosenfly.hotelbookingsystem.dto.hotel.HotelDTO;
 import com.choosenfly.hotelbookingsystem.entities.hotel.Hotel;
 import com.choosenfly.hotelbookingsystem.exceptions.HotelNotFoundException;
-import com.choosenfly.hotelbookingsystem.repository.HotelRepository;
+import com.choosenfly.hotelbookingsystem.repository.hotel.HotelRepository;
 import com.choosenfly.hotelbookingsystem.util.HotelMapper;
 
 @Service
@@ -43,7 +43,7 @@ public class HotelRegistrationService implements HotelRegistrationServiceInterfa
 	public HotelDTO getHotelById(Long id) {
 
 		Hotel hotel = hotelRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Hotel not found with id: " + id));
+				.orElseThrow(() -> new HotelNotFoundException("Hotel not found with id: " + id));
 
 		return hotelMapper.mapToDTO(hotel);
 	}
@@ -81,7 +81,7 @@ public class HotelRegistrationService implements HotelRegistrationServiceInterfa
 
 		// Fetch existing hotel entity
 		Hotel existingHotel = hotelRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Hotel not found with id: " + id));
+				.orElseThrow(() -> new HotelNotFoundException("Hotel not found with id: " + id));
 
 		hotelMapper.mapDTOToExisitingEntity(existingHotel, hotelDTO);
 

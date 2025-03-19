@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.choosenfly.hotelbookingsystem.dto.HotelContactDetailsDTO;
-import com.choosenfly.hotelbookingsystem.dto.HotelDTO;
-import com.choosenfly.hotelbookingsystem.dto.HotelMailCentreDTO;
+import com.choosenfly.hotelbookingsystem.dto.hotel.HotelContactDetailsDTO;
+import com.choosenfly.hotelbookingsystem.dto.hotel.HotelDTO;
+import com.choosenfly.hotelbookingsystem.dto.hotel.HotelMailCentreDTO;
 import com.choosenfly.hotelbookingsystem.service.hotel.HotelMailtypeServiceInterface;
 import com.choosenfly.hotelbookingsystem.service.hotel.HotelRegistrationService;
 import com.choosenfly.hotelbookingsystem.service.hotel.HotelRegistrationServiceInterface;

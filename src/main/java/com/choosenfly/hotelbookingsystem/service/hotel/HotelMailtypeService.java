@@ -8,16 +8,16 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.choosenfly.hotelbookingsystem.dto.HotelContactDetailsDTO;
-import com.choosenfly.hotelbookingsystem.dto.HotelMailCentreDTO;
+import com.choosenfly.hotelbookingsystem.dto.hotel.HotelContactDetailsDTO;
+import com.choosenfly.hotelbookingsystem.dto.hotel.HotelMailCentreDTO;
 import com.choosenfly.hotelbookingsystem.entities.hotel.Hotel;
 import com.choosenfly.hotelbookingsystem.entities.hotel.HotelContactDetails;
 import com.choosenfly.hotelbookingsystem.entities.hotel.linked.LinkedHotelContactDetailsMailType;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterMailType;
 import com.choosenfly.hotelbookingsystem.exceptions.HotelNotFoundException;
-import com.choosenfly.hotelbookingsystem.repository.HotelContactDetailsRepository;
-import com.choosenfly.hotelbookingsystem.repository.HotelMailCentreRepository;
-import com.choosenfly.hotelbookingsystem.repository.HotelRepository;
+import com.choosenfly.hotelbookingsystem.repository.hotel.HotelContactDetailsRepository;
+import com.choosenfly.hotelbookingsystem.repository.hotel.HotelMailCentreRepository;
+import com.choosenfly.hotelbookingsystem.repository.hotel.HotelRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;

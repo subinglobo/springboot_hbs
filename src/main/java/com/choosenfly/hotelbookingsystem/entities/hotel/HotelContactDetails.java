@@ -118,11 +118,14 @@ public class HotelContactDetails extends BaseEntity {
 
 	@Override
 	public String toString() {
-		return "HotelContactDetails [id=" + id + ", hotel=" + hotel + ", contactType=" + contactType
-				+ ", contactPerson=" + contactPerson + ", personalEmail=" + personalEmail + ", teleNumber=" + teleNumber
-				+ ", mobileNumber=" + mobileNumber + "]";
+		return "HotelContactDetails [id=" + id + ", hotel=" + hotel + ", contactPerson=" + contactPerson
+				+ ", personalEmail=" + personalEmail + ", teleNumber=" + teleNumber + ", mobileNumber=" + mobileNumber
+				+ "]";
 	}
 
+	
+	
+	
 	
 
 	

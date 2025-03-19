@@ -2,8 +2,8 @@ package com.choosenfly.hotelbookingsystem.service.hotel;
 
 import java.util.List;
 
-import com.choosenfly.hotelbookingsystem.dto.HotelContactDetailsDTO;
-import com.choosenfly.hotelbookingsystem.dto.HotelMailCentreDTO;
+import com.choosenfly.hotelbookingsystem.dto.hotel.HotelContactDetailsDTO;
+import com.choosenfly.hotelbookingsystem.dto.hotel.HotelMailCentreDTO;
 
 public interface HotelMailtypeServiceInterface {
 
