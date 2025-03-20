@@ -22,9 +22,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.choosenfly.hotelbookingsystem.dto.hotel.HotelContactDetailsDTO;
 import com.choosenfly.hotelbookingsystem.dto.hotel.HotelDTO;
 import com.choosenfly.hotelbookingsystem.dto.hotel.HotelMailCentreDTO;
+import com.choosenfly.hotelbookingsystem.dto.occupancy.HotelOccupancyDTO;
+import com.choosenfly.hotelbookingsystem.dto.occupancy.HotelOccupancyResponseDTO;
+import com.choosenfly.hotelbookingsystem.dto.occupancy.ListOccupanyDTO;
 import com.choosenfly.hotelbookingsystem.service.hotel.HotelMailtypeServiceInterface;
 import com.choosenfly.hotelbookingsystem.service.hotel.HotelRegistrationService;
 import com.choosenfly.hotelbookingsystem.service.hotel.HotelRegistrationServiceInterface;
+import com.choosenfly.hotelbookingsystem.service.occupancy.OccupancyServiceInterface;
 
 import jakarta.validation.Valid;
 
@@ -35,11 +39,14 @@ public class HotelController {
 	private final HotelRegistrationServiceInterface hotelService;
 
 	private final HotelMailtypeServiceInterface hotelMailService;
+	
+	private final OccupancyServiceInterface occupancyService;
 
 	@Autowired
-	public HotelController(HotelRegistrationService hotelService, HotelMailtypeServiceInterface hotelMailService) {
+	public HotelController(HotelRegistrationService hotelService, HotelMailtypeServiceInterface hotelMailService,OccupancyServiceInterface occupancyService) {
 		this.hotelService = hotelService;
 		this.hotelMailService = hotelMailService;
+		this.occupancyService = occupancyService;
 	}
 
 	@PostMapping
@@ -110,7 +117,7 @@ public class HotelController {
 	@PostMapping("/addMailCentre/{id}")
 	public ResponseEntity<String> updateMailCentre(@PathVariable("id") Long id,
 			@RequestBody HotelMailCentreDTO mailCentreDTO) {
-		
+
 		String addMailCentre = hotelMailService.addMailCentre(id, mailCentreDTO);
 
 		return new ResponseEntity<>(addMailCentre, HttpStatus.OK);
@@ -122,6 +129,39 @@ public class HotelController {
 
 		return mailCentre;
 
+	}
+
+	@PostMapping("/{hotelId}/occupancies")
+	public ResponseEntity<String> addOccupancyToHotel(@PathVariable Long hotelId,
+			@RequestBody HotelOccupancyDTO request) {
+
+		request.setHotelId(hotelId);
+		
+		occupancyService.addOccupancy(request);
+		
+		return new ResponseEntity<>("Occupancy Added for Hotel with id "+hotelId,HttpStatus.CREATED);
+	}
+	
+	
+	
+	@GetMapping("/{hotelId}/occupancies")
+	public ResponseEntity<List<ListOccupanyDTO>> getOccupancyDetailsOfHotel(@PathVariable Long hotelId) {
+
+		
+		List<ListOccupanyDTO> listOccupancies =   occupancyService.getHotelOccupancies(hotelId);
+		
+		return new ResponseEntity<>(listOccupancies,HttpStatus.OK);
+	}
+
+	
+	@GetMapping("/{hotelId}/occupancies/{occupanyId}")
+	public ResponseEntity<HotelOccupancyResponseDTO> getOccupancyDetailsOfHotel(@PathVariable Long hotelId,@PathVariable Long occupancyId) {
+
+		
+		HotelOccupancyResponseDTO occupancy =   occupancyService.getHotelOccupancy(hotelId,occupancyId);
+		
+				return new ResponseEntity<>(occupancy,HttpStatus.OK);
+		
 	}
 
 }

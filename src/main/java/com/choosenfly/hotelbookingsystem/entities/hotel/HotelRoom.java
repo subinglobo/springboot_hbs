@@ -6,6 +6,8 @@ import com.choosenfly.hotelbookingsystem.entities.base.BaseEntity;
 import com.choosenfly.hotelbookingsystem.entities.hotel.linked.LinkedHotelRoomAmenity;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterRoomCategory;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterRoomType;
+import com.choosenfly.hotelbookingsystem.entities.occupancy.HotelOccupancy;
+import com.choosenfly.hotelbookingsystem.entities.occupancy.RoomOccupancy;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -22,31 +24,38 @@ import jakarta.persistence.Table;
 @Table(name = "hotel_room")
 public class HotelRoom extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", nullable = false)
+	private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "hotel_id", nullable = false)
-    private Hotel hotel;
+	@ManyToOne
+	@JoinColumn(name = "hotel_id", nullable = false)
+	private Hotel hotel;
 
-    @ManyToOne
-    @JoinColumn(name = "room_category_id", nullable = false)
-    private MasterRoomCategory roomCategory;
+	@ManyToOne
+	@JoinColumn(name = "room_category_id", nullable = false)
+	private MasterRoomCategory roomCategory;
 
-    @Column(name = "room_name", length = 100)
-    private String roomName;
+	@Column(name = "room_name", length = 100)
+	private String roomName;
 
-    @OneToMany(mappedBy = "hotelRoom", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<LinkedHotelRoomAmenity> amenities;
+	@OneToMany(mappedBy = "hotelRoom", cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = true)
+	private List<LinkedHotelRoomAmenity> amenities;
 
-    @ManyToOne
-    @JoinColumn(name = "room_type_id", nullable = false)
-    private MasterRoomType roomType;
+	@OneToMany(mappedBy = "hotelRoom", cascade = { CascadeType.ALL }, orphanRemoval = true)
+	private List<RoomOccupancy> roomOccupancies;
 
-    @Column(name = "is_deleted")
-    private Boolean isDeleted;
+	@ManyToOne
+	@JoinColumn(name = "room_type_id", nullable = false)
+	private MasterRoomType roomType;
+
+	@ManyToOne
+	@JoinColumn(name = "occupancy_id")
+	private HotelOccupancy hotelOccupancy;
+
+	@Column(name = "is_deleted")
+	private Boolean isDeleted;
 
 	public Long getId() {
 		return id;
@@ -80,7 +89,13 @@ public class HotelRoom extends BaseEntity {
 		this.roomName = roomName;
 	}
 
-	
+	public HotelOccupancy getHotelOccupancy() {
+		return hotelOccupancy;
+	}
+
+	public void setHotelOccupancy(HotelOccupancy hotelOccupancy) {
+		this.hotelOccupancy = hotelOccupancy;
+	}
 
 	public List<LinkedHotelRoomAmenity> getAmenities() {
 		return amenities;
@@ -106,15 +121,19 @@ public class HotelRoom extends BaseEntity {
 		this.isDeleted = isDeleted;
 	}
 
+	public List<RoomOccupancy> getRoomOccupancies() {
+		return roomOccupancies;
+	}
+
+	public void setRoomOccupancies(List<RoomOccupancy> roomOccupancies) {
+		this.roomOccupancies = roomOccupancies;
+	}
+
 	@Override
 	public String toString() {
 		return "HotelRoom [id=" + id + ", hotel=" + hotel + ", roomCategory=" + roomCategory + ", roomName=" + roomName
-				+ ", amenities=" + amenities + ", roomType=" + roomType + ", isDeleted=" + isDeleted + "]";
+				+ ", amenities=" + amenities + ", roomType=" + roomType + ", hotelOccupancy=" + hotelOccupancy
+				+ ", isDeleted=" + isDeleted + "]";
 	}
 
-    // Getters and Setters
-	
-	
-    
-    
 }
