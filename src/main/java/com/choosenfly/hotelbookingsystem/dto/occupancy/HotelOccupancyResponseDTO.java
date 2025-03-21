@@ -2,8 +2,10 @@ package com.choosenfly.hotelbookingsystem.dto.occupancy;
 
 import java.util.List;
 
-import com.choosenfly.hotelbookingsystem.dto.hotel.RoomOccupancyDTO;
+import com.choosenfly.hotelbookingsystem.dto.hotel.HotelRoomDTO;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class HotelOccupancyResponseDTO {
 
 	
@@ -13,7 +15,7 @@ public class HotelOccupancyResponseDTO {
 	
 	private List<OccupancyValidityDTO> validityList;
 	
-	private List<RoomOccupancyDTO> rooms;
+	private List<HotelRoomDTO> rooms;
 
 	public Long getMarketTypeId() {
 		return marketTypeId;
@@ -39,11 +41,11 @@ public class HotelOccupancyResponseDTO {
 		this.validityList = validityList;
 	}
 
-	public List<RoomOccupancyDTO> getRooms() {
+	public List<HotelRoomDTO> getRooms() {
 		return rooms;
 	}
 
-	public void setRooms(List<RoomOccupancyDTO> rooms) {
+	public void setRooms(List<HotelRoomDTO> rooms) {
 		this.rooms = rooms;
 	}
 
@@ -52,6 +54,8 @@ public class HotelOccupancyResponseDTO {
 		return "HotelOccupancyResponseDTO [marketTypeId=" + marketTypeId + ", marketName=" + marketName
 				+ ", validityList=" + validityList + ", rooms=" + rooms + "]";
 	}
+
+	
 	
 	
 }

@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -23,6 +24,7 @@ import com.choosenfly.hotelbookingsystem.dto.hotel.HotelContactDetailsDTO;
 import com.choosenfly.hotelbookingsystem.dto.hotel.HotelDTO;
 import com.choosenfly.hotelbookingsystem.dto.hotel.HotelMailCentreDTO;
 import com.choosenfly.hotelbookingsystem.dto.occupancy.HotelOccupancyDTO;
+import com.choosenfly.hotelbookingsystem.dto.occupancy.HotelOccupancyPatchDTO;
 import com.choosenfly.hotelbookingsystem.dto.occupancy.HotelOccupancyResponseDTO;
 import com.choosenfly.hotelbookingsystem.dto.occupancy.ListOccupanyDTO;
 import com.choosenfly.hotelbookingsystem.service.hotel.HotelMailtypeServiceInterface;
@@ -155,13 +157,25 @@ public class HotelController {
 
 	
 	@GetMapping("/{hotelId}/occupancies/{occupanyId}")
-	public ResponseEntity<HotelOccupancyResponseDTO> getOccupancyDetailsOfHotel(@PathVariable Long hotelId,@PathVariable Long occupancyId) {
+	public ResponseEntity<HotelOccupancyResponseDTO> getOccupancyDetailsOfHotel(@PathVariable("hotelId") Long hotelId,@PathVariable("occupanyId") Long occupancyId) {
 
 		
 		HotelOccupancyResponseDTO occupancy =   occupancyService.getHotelOccupancy(hotelId,occupancyId);
 		
-				return new ResponseEntity<>(occupancy,HttpStatus.OK);
+		return new ResponseEntity<>(occupancy,HttpStatus.OK);
 		
 	}
+	
+	@PatchMapping("/{hotelId}/occupancies/{occupancyId}/status")
+    public ResponseEntity<ListOccupanyDTO> updateOccupancyStatus(
+            @PathVariable("occupancyId") Long occupancyId,
+            @RequestBody HotelOccupancyPatchDTO patchDTO) {
+        
+        // Update the isLive status and get the updated entity as a DTO
+		ListOccupanyDTO updatedOccupancy = occupancyService.updateOccupancyStatus(occupancyId, patchDTO);
+        
+        // Return the updated DTO with a 200 OK response
+        return ResponseEntity.ok(updatedOccupancy);
+    }
 
 }

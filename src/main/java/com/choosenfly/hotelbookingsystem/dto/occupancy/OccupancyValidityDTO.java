@@ -2,6 +2,9 @@ package com.choosenfly.hotelbookingsystem.dto.occupancy;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class OccupancyValidityDTO {
 	private Long id;
 	private Long hotelOccupancyId;
