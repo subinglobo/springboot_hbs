@@ -12,6 +12,7 @@ import com.choosenfly.hotelbookingsystem.entities.master.MasterMarkupType;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterPlace;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterRegion;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterState;
+import com.choosenfly.hotelbookingsystem.entities.minimumlength.MinimumLength;
 import com.choosenfly.hotelbookingsystem.entities.occupancy.HotelOccupancy;
 
 import jakarta.persistence.CascadeType;
@@ -125,8 +126,18 @@ public class Hotel extends BaseEntity{
 	@OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private List<HotelOccupancy> hotelOccupancies;
 	
+	@OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	private List<MinimumLength> minimumLengths;
 	
 	
+	public List<MinimumLength> getMinimumLengths() {
+		return minimumLengths;
+	}
+
+	public void setMinimumLengths(List<MinimumLength> minimumLengths) {
+		this.minimumLengths = minimumLengths;
+	}
+
 	public List<HotelOccupancy> getHotelOccupancies() {
 		return hotelOccupancies;
 	}

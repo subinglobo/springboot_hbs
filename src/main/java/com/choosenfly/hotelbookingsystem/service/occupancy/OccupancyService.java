@@ -10,15 +10,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.choosenfly.hotelbookingsystem.dto.hotel.HotelRoomDTO;
-import com.choosenfly.hotelbookingsystem.dto.hotel.RoomOccupancyDTO;
+import com.choosenfly.hotelbookingsystem.dto.minimumlength.MinimumLengthDTO;
+import com.choosenfly.hotelbookingsystem.dto.minimumlength.MinimumLengthResponseDTO;
+import com.choosenfly.hotelbookingsystem.dto.minimumlength.MinimumLengthStayDTO;
+import com.choosenfly.hotelbookingsystem.dto.minimumlength.MinimumLengthValidityDTO;
 import com.choosenfly.hotelbookingsystem.dto.occupancy.HotelOccupancyDTO;
 import com.choosenfly.hotelbookingsystem.dto.occupancy.HotelOccupancyPatchDTO;
 import com.choosenfly.hotelbookingsystem.dto.occupancy.HotelOccupancyResponseDTO;
 import com.choosenfly.hotelbookingsystem.dto.occupancy.ListOccupanyDTO;
 import com.choosenfly.hotelbookingsystem.dto.occupancy.OccupancyValidityDTO;
+import com.choosenfly.hotelbookingsystem.dto.occupancy.RoomOccupancyDTO;
 import com.choosenfly.hotelbookingsystem.entities.hotel.Hotel;
 import com.choosenfly.hotelbookingsystem.entities.hotel.HotelRoom;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterMarketType;
+import com.choosenfly.hotelbookingsystem.entities.minimumlength.MinimumLength;
+import com.choosenfly.hotelbookingsystem.entities.minimumlength.MinimumLengthStay;
+import com.choosenfly.hotelbookingsystem.entities.minimumlength.MinimumLengthValidity;
 import com.choosenfly.hotelbookingsystem.entities.occupancy.HotelOccupancy;
 import com.choosenfly.hotelbookingsystem.entities.occupancy.OccupancyValidity;
 import com.choosenfly.hotelbookingsystem.entities.occupancy.RoomOccupancy;
@@ -28,6 +35,7 @@ import com.choosenfly.hotelbookingsystem.repository.hotel.HotelRepository;
 import com.choosenfly.hotelbookingsystem.repository.hotel.HotelRoomRepository;
 import com.choosenfly.hotelbookingsystem.repository.master.MasterMarketTypeRepository;
 import com.choosenfly.hotelbookingsystem.repository.master.MasterOccupancyType;
+import com.choosenfly.hotelbookingsystem.repository.minimumlength.MinimumLengthRepository;
 import com.choosenfly.hotelbookingsystem.repository.occupancy.OccupancyRepository;
 import com.choosenfly.hotelbookingsystem.repository.occupancy.OccupancyTypeRepository;
 
@@ -46,15 +54,18 @@ public class OccupancyService implements OccupancyServiceInterface {
 
 	private final MasterMarketTypeRepository masterMarketTypeRepository;
 
+	private final MinimumLengthRepository minimumLengthRepository;
+
 	@Autowired
 	public OccupancyService(OccupancyRepository occupancyRepository, HotelRepository hotelRepository,
 			HotelRoomRepository hotelRoomRepository, OccupancyTypeRepository occupancyTypeRepository,
-			MasterMarketTypeRepository masterMarketTypeRepository) {
+			MasterMarketTypeRepository masterMarketTypeRepository, MinimumLengthRepository minimumLengthRepository) {
 		this.occupancyRepository = occupancyRepository;
 		this.hotelRepository = hotelRepository;
 		this.hotelRoomRepository = hotelRoomRepository;
 		this.occupancyTypeRepository = occupancyTypeRepository;
 		this.masterMarketTypeRepository = masterMarketTypeRepository;
+		this.minimumLengthRepository = minimumLengthRepository;
 	}
 
 	@Override
@@ -76,7 +87,8 @@ public class OccupancyService implements OccupancyServiceInterface {
 		hotelOccupancy.setMarketType(marketType);
 
 		// Save HotelOccupancy first to make it persistent
-		HotelOccupancy persistedhotelOccupancy = occupancyRepository.save(hotelOccupancy);
+
+		HotelOccupancy persistedOccupancyEntity = occupancyRepository.save(hotelOccupancy);
 
 		// Fetch all required hotel rooms in a batch to optimize performance
 		List<Long> roomIds = request.getHotelRooms().stream().map(HotelRoomDTO::getId).toList();
@@ -87,7 +99,7 @@ public class OccupancyService implements OccupancyServiceInterface {
 		Map<Long, HotelRoom> roomMap = rooms.stream().collect(Collectors.toMap(HotelRoom::getId, r -> r));
 
 		// Process each hotel room received in the request
-		List<HotelRoom> hotelRooms = request.getHotelRooms().stream().map(hotelRoomDTO -> {
+		request.getHotelRooms().stream().map(hotelRoomDTO -> {
 			// Fetch the hotel room from the map
 			HotelRoom room = roomMap.get(hotelRoomDTO.getId());
 			if (room == null) {
@@ -115,7 +127,7 @@ public class OccupancyService implements OccupancyServiceInterface {
 						roomOccupancy.setExtraAdult(occupancyDTO.getExtraAdult());
 						roomOccupancy.setExtraChild(occupancyDTO.getExtraChild());
 						roomOccupancy.setHotelRoom(room);
-
+						roomOccupancy.setHotelOccupancy(persistedOccupancyEntity);
 						// Fetch the occupancy type from the map
 						MasterOccupancyType occupancyType = occupancyTypeMap.get(occupancyDTO.getOccupancyTypeId());
 						if (occupancyType == null) {
@@ -132,35 +144,32 @@ public class OccupancyService implements OccupancyServiceInterface {
 			// Add the new occupancies to the room and update its occupancies list
 			existingRoomOccupancies.addAll(newRoomOccupancies);
 			room.setRoomOccupancies(existingRoomOccupancies);
-			room.setHotelOccupancy(persistedhotelOccupancy); // Now safe because hotelOccupancy is persisted
 			return room;
 		}).collect(Collectors.toList());
 
 		// Set the hotel rooms list in the hotel occupancy entity
-		persistedhotelOccupancy.setHotelRoom(hotelRooms);
 
 		// Process the validity periods from the request
 		List<OccupancyValidity> occupancyValidityList = Optional.ofNullable(request.getValidityPeriods())
 				.orElse(Collections.emptyList()).stream().map(validity -> {
 					OccupancyValidity occupancyValidity = new OccupancyValidity();
-					occupancyValidity.setHotelOccupancy(persistedhotelOccupancy); // Now safe because hotelOccupancy is
-																					// persisted
+					occupancyValidity.setHotelOccupancy(hotelOccupancy); // Now safe because hotelOccupancy is
+																			// persisted
 					occupancyValidity.setValidityFrom(validity.getValidityFrom());
 					occupancyValidity.setValidityTo(validity.getValidityTo());
 					return occupancyValidity;
 				}).collect(Collectors.toList());
 
 		// Set the validity periods in the hotel occupancy entity
-		persistedhotelOccupancy.setValidityPeriods(occupancyValidityList);
+		hotelOccupancy.setValidityPeriods(occupancyValidityList);
 
 		// Save the updated hotel occupancy entity with all associations
-		return occupancyRepository.save(persistedhotelOccupancy);
+		return occupancyRepository.save(persistedOccupancyEntity);
 	}
 
 	@Override
 	@Transactional
 	public List<ListOccupanyDTO> getHotelOccupancies(Long hotelId) {
-		// TODO Auto-generated method stub
 
 		Hotel hotel = hotelRepository.findById(hotelId)
 				.orElseThrow(() -> new HotelNotFoundException("Hotel Not Found with Id " + hotelId));
@@ -170,9 +179,8 @@ public class OccupancyService implements OccupancyServiceInterface {
 			ListOccupanyDTO occup = new ListOccupanyDTO();
 			occup.setHotelName(hotel.getHotelName());
 			occup.setIsLive(occupancy.isLive());
-			occup.setMarketTypeName(Optional.ofNullable(occupancy.getMarketType())
-					.map(MasterMarketType::getName)
-					.orElse("-"));
+			occup.setMarketTypeName(
+					Optional.ofNullable(occupancy.getMarketType()).map(MasterMarketType::getName).orElse("-"));
 			occup.setOccupancyId(occupancy.getId());
 
 			return occup;
@@ -207,45 +215,32 @@ public class OccupancyService implements OccupancyServiceInterface {
 
 		// Safely set marketName and marketTypeId
 		hotelOccupancyResponseDTO.setMarketName(
-				Optional.ofNullable(hotelOccupancy.getMarketType()).map(MasterMarketType::getName).orElse("-") 
-		);
+				Optional.ofNullable(hotelOccupancy.getMarketType()).map(MasterMarketType::getName).orElse("-"));
 		hotelOccupancyResponseDTO.setMarketTypeId(Optional.ofNullable(hotelOccupancy.getMarketType())
 				.map(MasterMarketType::getMarketTypeId).orElse(null));
 
 		// Safely handle hotelRoom list
-		List<HotelRoom> hotelRoom = Optional.ofNullable(hotelOccupancy.getHotelRoom()).orElse(Collections.emptyList());
+		List<RoomOccupancy> roomOccupancyList = Optional.ofNullable(hotelOccupancy.getRoomOccupancy())
+				.orElse(Collections.emptyList());
 
-		List<HotelRoomDTO> hotelRoomDTOList = hotelRoom.stream().map(room -> {
-			HotelRoomDTO hotelRoomDTO = new HotelRoomDTO();
-			hotelRoomDTO.setRoomName(Optional.ofNullable(room.getRoomName()).orElse("-") // or "Unknown Room" if
-																							// preferred
-			);
-			hotelRoomDTO.setId(Optional.ofNullable(room.getId()).orElse(null));
+		List<RoomOccupancyDTO> roomOccupancyDTOList = roomOccupancyList.stream().map(roomOccupancy -> {
 
-			// Safely handle roomOccupancies list
-			List<RoomOccupancy> roomOccupancies = Optional.ofNullable(room.getRoomOccupancies())
-					.orElse(Collections.emptyList());
+			RoomOccupancyDTO roomOccupancyDTO = new RoomOccupancyDTO();
+			roomOccupancyDTO.setExtraAdult(roomOccupancy.getExtraAdult());
+			roomOccupancyDTO.setExtraChild(roomOccupancy.getExtraChild());
+			roomOccupancyDTO.setId(roomOccupancy.getId());
+			roomOccupancyDTO.setOccupancyTypeId(roomOccupancy.getOccupancyType().getOccupancyTypeId());
+			roomOccupancyDTO.setOccupancyTypeName(roomOccupancy.getOccupancyType().getName());
+			roomOccupancyDTO.setRoomId(roomOccupancy.getHotelRoom().getId());
+			roomOccupancyDTO.setRoomName(roomOccupancy.getHotelRoom().getRoomName());
+			roomOccupancyDTO.setTotalAdult(roomOccupancy.getTotalAdult());
+			roomOccupancyDTO.setTotalChild(roomOccupancy.getTotalChild());
 
-			List<RoomOccupancyDTO> roomOccupancyDTOs = roomOccupancies.stream().map(roomOccupancy -> {
-				RoomOccupancyDTO roomOccupancyDTO = new RoomOccupancyDTO();
-				roomOccupancyDTO.setExtraAdult(Optional.ofNullable(roomOccupancy.getExtraAdult()).orElse(0));
-				roomOccupancyDTO.setExtraChild(Optional.ofNullable(roomOccupancy.getExtraChild()).orElse(0));
-				roomOccupancyDTO.setId(Optional.ofNullable(roomOccupancy.getId()).orElse(null));
-				roomOccupancyDTO.setOccupancyTypeId(Optional.ofNullable(roomOccupancy.getOccupancyType())
-						.map(MasterOccupancyType::getOccupancyTypeId).orElse(null));
-				roomOccupancyDTO.setOccupancyTypeName(Optional.ofNullable(roomOccupancy.getOccupancyType())
-						.map(MasterOccupancyType::getName).orElse(null) // or "Unknown Type" if preferred
-				);
-				roomOccupancyDTO.setTotalAdult(Optional.ofNullable(roomOccupancy.getTotalAdult()).orElse(0));
-				roomOccupancyDTO.setTotalChild(Optional.ofNullable(roomOccupancy.getTotalChild()).orElse(0));
-				return roomOccupancyDTO;
-			}).collect(Collectors.toList());
+			return roomOccupancyDTO;
 
-			hotelRoomDTO.setRoomOccupancies(roomOccupancyDTOs);
-			return hotelRoomDTO;
 		}).collect(Collectors.toList());
 
-		hotelOccupancyResponseDTO.setRooms(hotelRoomDTOList);
+		hotelOccupancyResponseDTO.setRooms(roomOccupancyDTOList);
 
 		// Safely handle validityPeriods list
 		List<OccupancyValidity> validityPeriods = Optional.ofNullable(hotelOccupancy.getValidityPeriods())
@@ -287,6 +282,135 @@ public class OccupancyService implements OccupancyServiceInterface {
 		occup.setOccupancyId(updatedOccupancy.getId());
 
 		return occup;
+	}
+
+	@Override
+	@Transactional
+	public void addMinimumLength(MinimumLengthDTO request) {
+		// TODO Auto-generated method stub
+
+		Hotel hotel = hotelRepository.findById(request.getHotelId())
+				.orElseThrow(() -> new HotelNotFoundException("Hotel Not Found with id : " + request.getHotelId()));
+
+		MinimumLength minimumLength = new MinimumLength();
+
+		minimumLength.setHotel(hotel);
+		minimumLength.setStatus(false);
+		minimumLength.setIsDeleted(false);
+
+		List<MinimumLengthStayDTO> hotelRoomDTOs = Optional.ofNullable(request.getHotelRooms())
+				.orElse(Collections.emptyList());
+
+		List<MinimumLengthStay> minimumLengthStayList = hotelRoomDTOs.stream().map(minimumLengthStayDTO -> {
+
+			MinimumLengthStay minimumLengthStay = new MinimumLengthStay();
+
+			HotelRoom hotelRoom = hotelRoomRepository.findById(minimumLengthStayDTO.getRoomId()).orElseThrow(
+					() -> new EntityNotFoundException("Room Not Found with id " + minimumLengthStayDTO.getRoomId()));
+			minimumLengthStay.setRoom(hotelRoom);
+			minimumLengthStay.setMinimumLength(minimumLength);
+			minimumLengthStay.setMinimumDays(minimumLengthStayDTO.getMinimumLength());
+
+			return minimumLengthStay;
+		}).collect(Collectors.toList());
+
+		minimumLength.setMinmumLengthStay(minimumLengthStayList);
+
+		MasterMarketType marketType = masterMarketTypeRepository.findById(request.getMarketTypeId()).orElseThrow(
+				() -> new EntityNotFoundException("Market type Not Found with id : " + request.getMarketTypeId()));
+		minimumLength.setMarketType(marketType);
+
+		List<MinimumLengthValidityDTO> minimumLengthValidityDTOs = Optional.ofNullable(request.getValidityPeriods())
+				.orElse(Collections.emptyList());
+
+		List<MinimumLengthValidity> minimumLengthValidityList = minimumLengthValidityDTOs.stream().map(validity -> {
+
+			MinimumLengthValidity minimumLengthValidity = new MinimumLengthValidity();
+			minimumLengthValidity.setMinimumLength(minimumLength);
+			minimumLengthValidity.setValidityFrom(validity.getValidityFrom());
+			minimumLengthValidity.setValidityTo(validity.getValidityTo());
+
+			return minimumLengthValidity;
+		}).collect(Collectors.toList());
+
+		minimumLength.setValidityPeriods(minimumLengthValidityList);
+
+		minimumLengthRepository.save(minimumLength);
+
+	}
+
+	@Override
+	@Transactional
+	public List<MinimumLengthResponseDTO> getMinimumLengthOfAHottel(Long hotelId) {
+		// TODO Auto-generated method stub
+
+		Hotel hotel = hotelRepository.findById(hotelId)
+				.orElseThrow(() -> new HotelNotFoundException("Hotel not Found with id : " + hotelId));
+
+		List<MinimumLength> minimumLengthList = Optional.ofNullable(hotel.getMinimumLengths())
+				.orElse(Collections.emptyList());
+
+		return minimumLengthList.stream().map(minimumLength -> {
+
+			MinimumLengthResponseDTO minimumLengthResponseDTO = new MinimumLengthResponseDTO();
+			minimumLengthResponseDTO.setHotelId(hotelId);
+			minimumLengthResponseDTO.setHotelName(hotel.getHotelName());
+			minimumLengthResponseDTO.setMarketId(minimumLength.getMarketType().getMarketTypeId());
+			minimumLengthResponseDTO.setMarketName(minimumLength.getMarketType().getName());
+			minimumLengthResponseDTO.setMinimumLengthId(minimumLength.getId());
+			minimumLengthResponseDTO.setStatus(minimumLength.getStatus());
+			return minimumLengthResponseDTO;
+
+		}).collect(Collectors.toList());
+
+	}
+
+	@Override
+	@Transactional
+	public MinimumLengthDTO getAMinimumLengthOfHotel(Long hotelId, Long minimumLengthId) {
+		// TODO Auto-generated method stub
+
+		MinimumLength minimumLength = minimumLengthRepository.findById(minimumLengthId).orElseThrow(
+				() -> new EntityNotFoundException(" Minimum Length not found with id : " + minimumLengthId));
+
+		MinimumLengthDTO minimumLengthDTO = new MinimumLengthDTO();
+		minimumLengthDTO.setHotelId(hotelId);
+		minimumLengthDTO.setDeleted(minimumLength.getIsDeleted());
+
+		List<MinimumLengthStay> minmumLengthStay = minimumLength.getMinmumLengthStay();
+
+		List<MinimumLengthStayDTO> minimumLengthStayDTOList = minmumLengthStay.stream().map(minmumLength -> {
+
+			MinimumLengthStayDTO minimumLengthStayDTO = new MinimumLengthStayDTO();
+			minimumLengthStayDTO.setMinimumLength(minmumLength.getMinimumDays());
+			minimumLengthStayDTO.setRoomId(minmumLength.getRoom().getId());
+			minimumLengthStayDTO.setId(minmumLength.getId());
+			return minimumLengthStayDTO;
+		}).collect(Collectors.toList());
+
+		minimumLengthDTO.setHotelRooms(minimumLengthStayDTOList);
+		minimumLengthDTO.setId(minimumLength.getId());
+		minimumLengthDTO.setLive(minimumLength.getStatus());
+		minimumLengthDTO.setMarketTypeId(minimumLength.getMarketType().getMarketTypeId());
+		minimumLengthDTO.setValidity(false);
+
+		List<MinimumLengthValidity> validityPeriods = minimumLength.getValidityPeriods();
+
+		List<MinimumLengthValidityDTO> minimumLengthValidityDTOList = validityPeriods.stream().map(validity -> {
+
+			MinimumLengthValidityDTO minimumLengthValidityDTO = new MinimumLengthValidityDTO();
+			minimumLengthValidityDTO.setId(validity.getId());
+			minimumLengthValidityDTO.setMinimumLengthId(validity.getMinimumLength().getId());
+			minimumLengthValidityDTO.setValidityFrom(validity.getValidityFrom());
+			minimumLengthValidityDTO.setValidityTo(validity.getValidityTo());
+
+			return minimumLengthValidityDTO;
+		}).collect(Collectors.toList());
+
+		minimumLengthDTO.setValidityPeriods(minimumLengthValidityDTOList);
+
+		return minimumLengthDTO;
+
 	}
 
 }

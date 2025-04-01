@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.choosenfly.hotelbookingsystem.dto.hotel.HotelContactDetailsDTO;
 import com.choosenfly.hotelbookingsystem.dto.hotel.HotelDTO;
 import com.choosenfly.hotelbookingsystem.dto.hotel.HotelMailCentreDTO;
+import com.choosenfly.hotelbookingsystem.dto.minimumlength.MinimumLengthDTO;
+import com.choosenfly.hotelbookingsystem.dto.minimumlength.MinimumLengthResponseDTO;
 import com.choosenfly.hotelbookingsystem.dto.occupancy.HotelOccupancyDTO;
 import com.choosenfly.hotelbookingsystem.dto.occupancy.HotelOccupancyPatchDTO;
 import com.choosenfly.hotelbookingsystem.dto.occupancy.HotelOccupancyResponseDTO;
@@ -178,4 +180,34 @@ public class HotelController {
         return ResponseEntity.ok(updatedOccupancy);
     }
 
+	
+	@PostMapping("/{hotelId}/minimumlengths")
+	public ResponseEntity<String> addMinimumLengthToHotel(@PathVariable Long hotelId,
+			@RequestBody MinimumLengthDTO request) {
+
+		request.setHotelId(hotelId);
+		
+		occupancyService.addMinimumLength(request);
+		
+		return new ResponseEntity<>("Minimum Length Added for Hotel with id "+hotelId,HttpStatus.CREATED);
+	}
+	
+	
+	@GetMapping("/{hotelId}/minimumlengths")
+	public ResponseEntity<List<MinimumLengthResponseDTO>> getMinimumLengthsOfHotel(@PathVariable Long hotelId) {
+
+		
+		List<MinimumLengthResponseDTO> minimumLengthsOfAHotel = occupancyService.getMinimumLengthOfAHottel(hotelId);
+		
+		return new ResponseEntity<>(minimumLengthsOfAHotel,HttpStatus.OK);
+	}
+	
+	@GetMapping("/{hotelId}/minimumlengths/{minimumLengthId}")
+	public ResponseEntity<MinimumLengthDTO> getAMinimumLengthOfHotel(@PathVariable("hotelId") Long hotelId,@PathVariable("minimumLengthId") Long minimumLengthId) {
+
+		
+		MinimumLengthDTO minimumLengthOfAHotel = occupancyService.getAMinimumLengthOfHotel(hotelId,minimumLengthId);
+		
+		return new ResponseEntity<>(minimumLengthOfAHotel,HttpStatus.OK);
+	}
 }

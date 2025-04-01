@@ -6,7 +6,7 @@ import com.choosenfly.hotelbookingsystem.entities.base.BaseEntity;
 import com.choosenfly.hotelbookingsystem.entities.hotel.linked.LinkedHotelRoomAmenity;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterRoomCategory;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterRoomType;
-import com.choosenfly.hotelbookingsystem.entities.occupancy.HotelOccupancy;
+import com.choosenfly.hotelbookingsystem.entities.minimumlength.MinimumLengthStay;
 import com.choosenfly.hotelbookingsystem.entities.occupancy.RoomOccupancy;
 
 import jakarta.persistence.CascadeType;
@@ -45,14 +45,13 @@ public class HotelRoom extends BaseEntity {
 
 	@OneToMany(mappedBy = "hotelRoom", cascade = { CascadeType.ALL }, orphanRemoval = true)
 	private List<RoomOccupancy> roomOccupancies;
+	
+	@OneToMany(mappedBy = "room", cascade = { CascadeType.ALL }, orphanRemoval = true)
+	private List<MinimumLengthStay> minimumLengthStay;
 
 	@ManyToOne
 	@JoinColumn(name = "room_type_id", nullable = false)
 	private MasterRoomType roomType;
-
-	@ManyToOne
-	@JoinColumn(name = "occupancy_id")
-	private HotelOccupancy hotelOccupancy;
 
 	@Column(name = "is_deleted")
 	private Boolean isDeleted;
@@ -89,20 +88,20 @@ public class HotelRoom extends BaseEntity {
 		this.roomName = roomName;
 	}
 
-	public HotelOccupancy getHotelOccupancy() {
-		return hotelOccupancy;
-	}
-
-	public void setHotelOccupancy(HotelOccupancy hotelOccupancy) {
-		this.hotelOccupancy = hotelOccupancy;
-	}
-
 	public List<LinkedHotelRoomAmenity> getAmenities() {
 		return amenities;
 	}
 
 	public void setAmenities(List<LinkedHotelRoomAmenity> amenities) {
 		this.amenities = amenities;
+	}
+
+	public List<RoomOccupancy> getRoomOccupancies() {
+		return roomOccupancies;
+	}
+
+	public void setRoomOccupancies(List<RoomOccupancy> roomOccupancies) {
+		this.roomOccupancies = roomOccupancies;
 	}
 
 	public MasterRoomType getRoomType() {
@@ -121,19 +120,15 @@ public class HotelRoom extends BaseEntity {
 		this.isDeleted = isDeleted;
 	}
 
-	public List<RoomOccupancy> getRoomOccupancies() {
-		return roomOccupancies;
-	}
-
-	public void setRoomOccupancies(List<RoomOccupancy> roomOccupancies) {
-		this.roomOccupancies = roomOccupancies;
-	}
-
 	@Override
 	public String toString() {
 		return "HotelRoom [id=" + id + ", hotel=" + hotel + ", roomCategory=" + roomCategory + ", roomName=" + roomName
-				+ ", amenities=" + amenities + ", roomType=" + roomType + ", hotelOccupancy=" + hotelOccupancy
+				+ ", amenities=" + amenities + ", roomOccupancies=" + roomOccupancies + ", roomType=" + roomType
 				+ ", isDeleted=" + isDeleted + "]";
 	}
+	
+	
 
+	
+	
 }

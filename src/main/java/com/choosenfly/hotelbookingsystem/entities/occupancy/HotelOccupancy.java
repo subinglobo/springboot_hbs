@@ -40,7 +40,7 @@ public class HotelOccupancy extends BaseEntity {
     private List<OccupancyValidity> validityPeriods;
 
     @OneToMany(mappedBy = "hotelOccupancy", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<HotelRoom> HotelRoom;
+    private List<RoomOccupancy> roomOccupancy;
 
 
     @Column(name = "is_deleted")
@@ -84,13 +84,7 @@ public class HotelOccupancy extends BaseEntity {
 		this.validityPeriods = validityPeriods;
 	}
 
-	public List<HotelRoom> getHotelRoom() {
-		return HotelRoom;
-	}
-
-	public void setHotelRoom(List<HotelRoom> hotelRoom) {
-		HotelRoom = hotelRoom;
-	}
+	
 
 	public boolean isDeleted() {
 		return deleted;
@@ -114,6 +108,14 @@ public class HotelOccupancy extends BaseEntity {
 
 	public void setValidity(boolean validity) {
 		this.validity = validity;
+	}
+	
+	public List<RoomOccupancy> getRoomOccupancy() {
+		return roomOccupancy;
+	}
+
+	public void setRoomOccupancy(List<RoomOccupancy> roomOccupancy) {
+		this.roomOccupancy = roomOccupancy;
 	}
 
 	@Override

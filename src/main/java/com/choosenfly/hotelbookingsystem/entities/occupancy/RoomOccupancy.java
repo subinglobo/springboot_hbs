@@ -29,6 +29,10 @@ public class RoomOccupancy {
 	@JoinColumn(name = "occupancy_type_id", nullable = false)
 	private MasterOccupancyType occupancyType; // Now referencing the master table
 
+	@ManyToOne
+	@JoinColumn(name = "hotel_occupancy_id", nullable = false)
+	private HotelOccupancy hotelOccupancy;
+	
 	@Column(name = "total_adult")
 	private Integer totalAdult;
 
@@ -40,6 +44,16 @@ public class RoomOccupancy {
 
 	@Column(name = "extra_child")
 	private Integer extraChild;
+
+	
+	
+	public HotelOccupancy getHotelOccupancy() {
+		return hotelOccupancy;
+	}
+
+	public void setHotelOccupancy(HotelOccupancy hotelOccupancy) {
+		this.hotelOccupancy = hotelOccupancy;
+	}
 
 	public Long getId() {
 		return id;

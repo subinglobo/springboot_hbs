@@ -15,7 +15,7 @@ public class HotelOccupancyResponseDTO {
 	
 	private List<OccupancyValidityDTO> validityList;
 	
-	private List<HotelRoomDTO> rooms;
+	private List<RoomOccupancyDTO> rooms;
 
 	public Long getMarketTypeId() {
 		return marketTypeId;
@@ -41,11 +41,13 @@ public class HotelOccupancyResponseDTO {
 		this.validityList = validityList;
 	}
 
-	public List<HotelRoomDTO> getRooms() {
+	
+
+	public List<RoomOccupancyDTO> getRooms() {
 		return rooms;
 	}
 
-	public void setRooms(List<HotelRoomDTO> rooms) {
+	public void setRooms(List<RoomOccupancyDTO> rooms) {
 		this.rooms = rooms;
 	}
 
