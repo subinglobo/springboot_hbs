@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.choosenfly.hotelbookingsystem.dto.email.EmailDTO;
 import com.choosenfly.hotelbookingsystem.dto.user.UserDTO;
 import com.choosenfly.hotelbookingsystem.entities.hotel.Hotel;
 import com.choosenfly.hotelbookingsystem.entities.hotel.HotelContactDetails;
@@ -17,7 +18,7 @@ import com.choosenfly.hotelbookingsystem.exceptions.HotelNotFoundException;
 import com.choosenfly.hotelbookingsystem.exceptions.InvalidUserTypeException;
 import com.choosenfly.hotelbookingsystem.repository.hotel.HotelRepository;
 import com.choosenfly.hotelbookingsystem.repository.user.UserRepository;
-import com.choosenfly.hotelbookingsystem.service.email.EmailServiceInterface;
+import com.choosenfly.hotelbookingsystem.util.rabbitmq.EmailProducer;
 
 import jakarta.transaction.Transactional;
 
@@ -30,15 +31,15 @@ public class UserAccountService implements UserAccountServiceInterface {
 
 	private final BCryptPasswordEncoder passwordEncoder;
 	
-	private final EmailServiceInterface emailService;
+	private final EmailProducer emailProducer;
 
 	@Autowired
 	public UserAccountService(UserRepository userRepository, HotelRepository hotelRepository,
-			BCryptPasswordEncoder passwordEncoder,EmailServiceInterface emailService) {
+			BCryptPasswordEncoder passwordEncoder,EmailProducer emailProducer) {
 		this.userRepository = userRepository;
 		this.hotelRepository = hotelRepository;
 		this.passwordEncoder = passwordEncoder;
-		this.emailService = emailService;
+		this.emailProducer = emailProducer;
 	}
 
 	@Override
@@ -69,9 +70,13 @@ public class UserAccountService implements UserAccountServiceInterface {
 	
 		
 		
+		EmailDTO emailDTO = new EmailDTO();
 		
+		emailDTO.setToEmail(user.getUserMailIds());
+		emailDTO.setUsername(user.getUserName());
+		emailDTO.setPassword(user.getPassword());
 		
-		emailService.sendLoginCredentials(user.getUserMailIds(), user.getUserName(), user.getPassword());
+		emailProducer.sendMessage(emailDTO);
 		
 		return user;
 	}

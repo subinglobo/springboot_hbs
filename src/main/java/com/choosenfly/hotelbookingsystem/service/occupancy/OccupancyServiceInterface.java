@@ -26,4 +26,6 @@ public interface OccupancyServiceInterface{
 
 	MinimumLengthDTO getAMinimumLengthOfHotel(Long hotelId, Long minimumLengthId);
 
+	void editHotelOccupancy(Long hotelId, Long occupancyId, HotelOccupancyDTO request);
+
 }

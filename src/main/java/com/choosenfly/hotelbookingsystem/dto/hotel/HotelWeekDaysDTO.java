@@ -2,7 +2,6 @@ package com.choosenfly.hotelbookingsystem.dto.hotel;
 
 public class HotelWeekDaysDTO {
 	private Long id;
-	private Long hotelId; // Reference to Hotel
 	private Boolean wdSunday;
 	private Boolean wdMonday;
 	private Boolean wdTuesday;
@@ -28,13 +27,7 @@ public class HotelWeekDaysDTO {
 		this.id = id;
 	}
 
-	public Long getHotelId() {
-		return hotelId;
-	}
 
-	public void setHotelId(Long hotelId) {
-		this.hotelId = hotelId;
-	}
 
 	public Boolean getWdSunday() {
 		return wdSunday;
@@ -150,10 +143,12 @@ public class HotelWeekDaysDTO {
 
 	@Override
 	public String toString() {
-		return "HotelWeekDaysDTO [id=" + id + ", hotelId=" + hotelId + ", wdSunday=" + wdSunday + ", wdMonday="
-				+ wdMonday + ", wdTuesday=" + wdTuesday + ", wdWednesday=" + wdWednesday + ", wdThursday=" + wdThursday
-				+ ", wdFriday=" + wdFriday + ", wdSaturday=" + wdSaturday + ", wedSunday=" + wedSunday + ", wedMonday="
-				+ wedMonday + ", wedTuesday=" + wedTuesday + ", wedWednesday=" + wedWednesday + ", wedThursday="
-				+ wedThursday + ", wedFriday=" + wedFriday + ", wedSaturday=" + wedSaturday + "]";
+		return "HotelWeekDaysDTO [id=" + id + ", wdSunday=" + wdSunday + ", wdMonday=" + wdMonday + ", wdTuesday="
+				+ wdTuesday + ", wdWednesday=" + wdWednesday + ", wdThursday=" + wdThursday + ", wdFriday=" + wdFriday
+				+ ", wdSaturday=" + wdSaturday + ", wedSunday=" + wedSunday + ", wedMonday=" + wedMonday
+				+ ", wedTuesday=" + wedTuesday + ", wedWednesday=" + wedWednesday + ", wedThursday=" + wedThursday
+				+ ", wedFriday=" + wedFriday + ", wedSaturday=" + wedSaturday + "]";
 	}
+
+
 }

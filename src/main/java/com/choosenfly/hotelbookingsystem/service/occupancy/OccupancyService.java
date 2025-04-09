@@ -171,7 +171,7 @@ public class OccupancyService implements OccupancyServiceInterface {
 	@Transactional
 	public List<ListOccupanyDTO> getHotelOccupancies(Long hotelId) {
 
-		Hotel hotel = hotelRepository.findById(hotelId)
+		Hotel hotel = hotelRepository.findHotelWithOccupanciesByHotelId(hotelId)
 				.orElseThrow(() -> new HotelNotFoundException("Hotel Not Found with Id " + hotelId));
 
 		List<ListOccupanyDTO> listOccupancies = hotel.getHotelOccupancies().stream().map(occupancy -> {
@@ -410,6 +410,86 @@ public class OccupancyService implements OccupancyServiceInterface {
 		minimumLengthDTO.setValidityPeriods(minimumLengthValidityDTOList);
 
 		return minimumLengthDTO;
+
+	}
+
+	@Override
+	@Transactional
+	public void editHotelOccupancy(Long hotelId, Long occupancyId, HotelOccupancyDTO request) {
+		// TODO Auto-generated method stub
+
+		HotelOccupancy occupancy = occupancyRepository.findById(occupancyId)
+				.orElseThrow(() -> new EntityNotFoundException("Occupancy Not Found with id : " + occupancyId));
+
+		occupancy.setId(occupancyId);
+		occupancy.setDeleted(false);
+		occupancy.setHotel(occupancy.getHotel());
+		occupancy.setLive(false);
+
+		MasterMarketType marketType = masterMarketTypeRepository.findById(request.getMarketTypeId()).orElseThrow(
+				() -> new EntityNotFoundException("Market Not Found With Id " + request.getMarketTypeId()));
+
+		occupancy.setMarketType(marketType);
+
+		List<OccupancyValidity> validityPeriods = occupancy.getValidityPeriods();
+
+		validityPeriods.clear();
+
+		List<OccupancyValidity> validities = request.getValidityPeriods().stream().map(validityPeriod -> {
+
+			occupancy.getValidityPeriods();
+			OccupancyValidity validity = new OccupancyValidity();
+			validity.setHotelOccupancy(occupancy);
+			validity.setId(validityPeriod.getHotelOccupancyId());
+			validity.setValidityFrom(validityPeriod.getValidityFrom());
+			validity.setValidityTo(validityPeriod.getValidityTo());
+
+			return validity;
+		}).collect(Collectors.toList());
+
+		validityPeriods.addAll(validities);
+
+		occupancy.setValidityPeriods(validityPeriods);
+
+		request.getHotelRooms().stream()
+				.forEach(a -> a.getRoomOccupancies().stream().forEach(b -> b.setRoomId(a.getRoomTypeId())));
+
+		System.out.println(request);
+
+		List<RoomOccupancy> roomOccupancies = occupancy.getRoomOccupancy();
+
+		roomOccupancies.clear();
+
+		List<RoomOccupancy> roomOccupancyList = request.getHotelRooms().stream().map(a -> a.getRoomOccupancies())
+				.flatMap(List::stream).map(dto -> {
+
+					RoomOccupancy roomOccupancy = new RoomOccupancy();
+					roomOccupancy.setExtraAdult(dto.getExtraAdult());
+					roomOccupancy.setExtraChild(dto.getExtraChild());
+					roomOccupancy.setHotelOccupancy(occupancy);
+					HotelRoom room = hotelRoomRepository.findById(dto.getRoomId()).orElseThrow(
+							() -> new EntityNotFoundException("Room not found with id : " + dto.getRoomId()));
+
+					roomOccupancy.setHotelRoom(room);
+
+					MasterOccupancyType occupancyType = occupancyTypeRepository.findById(dto.getOccupancyTypeId())
+							.orElseThrow(() -> new EntityNotFoundException(
+									"Occupancy Type not found with " + dto.getOccupancyTypeId()));
+
+					roomOccupancy.setOccupancyType(occupancyType);
+					roomOccupancy.setTotalAdult(dto.getTotalAdult());
+					roomOccupancy.setTotalChild(dto.getTotalChild());
+
+					return roomOccupancy;
+
+				}).collect(Collectors.toList());
+
+		roomOccupancies.addAll(roomOccupancyList);
+
+		occupancy.setRoomOccupancy(roomOccupancies);
+		occupancy.setValidity(true);
+
+		occupancyRepository.save(occupancy);
 
 	}
 

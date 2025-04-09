@@ -2,6 +2,7 @@ package com.choosenfly.hotelbookingsystem.entities.hotel;
 
 import java.util.List;
 
+import com.choosenfly.hotelbookingsystem.entities.availability.HotelAvailability;
 import com.choosenfly.hotelbookingsystem.entities.base.BaseEntity;
 import com.choosenfly.hotelbookingsystem.entities.hotel.linked.LinkedHotelRoomAmenity;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterRoomCategory;
@@ -45,6 +46,10 @@ public class HotelRoom extends BaseEntity {
 
 	@OneToMany(mappedBy = "hotelRoom", cascade = { CascadeType.ALL }, orphanRemoval = true)
 	private List<RoomOccupancy> roomOccupancies;
+	
+	
+	@OneToMany(mappedBy = "hotelRoom", cascade = { CascadeType.ALL }, orphanRemoval = true)
+	private List<HotelAvailability> availabilities;
 	
 	@OneToMany(mappedBy = "room", cascade = { CascadeType.ALL }, orphanRemoval = true)
 	private List<MinimumLengthStay> minimumLengthStay;
@@ -118,6 +123,23 @@ public class HotelRoom extends BaseEntity {
 
 	public void setIsDeleted(Boolean isDeleted) {
 		this.isDeleted = isDeleted;
+	}
+	
+
+	public List<HotelAvailability> getAvailabilities() {
+		return availabilities;
+	}
+
+	public void setAvailabilities(List<HotelAvailability> availabilities) {
+		this.availabilities = availabilities;
+	}
+
+	public List<MinimumLengthStay> getMinimumLengthStay() {
+		return minimumLengthStay;
+	}
+
+	public void setMinimumLengthStay(List<MinimumLengthStay> minimumLengthStay) {
+		this.minimumLengthStay = minimumLengthStay;
 	}
 
 	@Override

@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.choosenfly.hotelbookingsystem.dto.availability.HotelAvailabilityDTO;
+import com.choosenfly.hotelbookingsystem.dto.availability.HotelListAvailabilityDTO;
 import com.choosenfly.hotelbookingsystem.dto.hotel.HotelContactDetailsDTO;
 import com.choosenfly.hotelbookingsystem.dto.hotel.HotelDTO;
 import com.choosenfly.hotelbookingsystem.dto.hotel.HotelMailCentreDTO;
@@ -29,6 +31,7 @@ import com.choosenfly.hotelbookingsystem.dto.occupancy.HotelOccupancyDTO;
 import com.choosenfly.hotelbookingsystem.dto.occupancy.HotelOccupancyPatchDTO;
 import com.choosenfly.hotelbookingsystem.dto.occupancy.HotelOccupancyResponseDTO;
 import com.choosenfly.hotelbookingsystem.dto.occupancy.ListOccupanyDTO;
+import com.choosenfly.hotelbookingsystem.service.availability.AvailabilityServiceInterface;
 import com.choosenfly.hotelbookingsystem.service.hotel.HotelMailtypeServiceInterface;
 import com.choosenfly.hotelbookingsystem.service.hotel.HotelRegistrationService;
 import com.choosenfly.hotelbookingsystem.service.hotel.HotelRegistrationServiceInterface;
@@ -45,12 +48,15 @@ public class HotelController {
 	private final HotelMailtypeServiceInterface hotelMailService;
 	
 	private final OccupancyServiceInterface occupancyService;
+	
+	private final AvailabilityServiceInterface availabilityService;
 
 	@Autowired
-	public HotelController(HotelRegistrationService hotelService, HotelMailtypeServiceInterface hotelMailService,OccupancyServiceInterface occupancyService) {
+	public HotelController(HotelRegistrationService hotelService, HotelMailtypeServiceInterface hotelMailService,OccupancyServiceInterface occupancyService,AvailabilityServiceInterface availabilityService) {
 		this.hotelService = hotelService;
 		this.hotelMailService = hotelMailService;
 		this.occupancyService = occupancyService;
+		this.availabilityService = availabilityService;
 	}
 
 	@PostMapping
@@ -168,6 +174,16 @@ public class HotelController {
 		
 	}
 	
+	@PutMapping("/{hotelId}/occupancies/{occupanyId}")
+	public ResponseEntity<Void> editOccupancyDetailsOfHotel(@PathVariable("hotelId") Long hotelId,@PathVariable("occupanyId") Long occupancyId,@RequestBody HotelOccupancyDTO request) {
+
+		
+		 occupancyService.editHotelOccupancy(hotelId,occupancyId,request);
+		
+		 return ResponseEntity.noContent().build();
+		
+	}
+	
 	@PatchMapping("/{hotelId}/occupancies/{occupancyId}/status")
     public ResponseEntity<ListOccupanyDTO> updateOccupancyStatus(
             @PathVariable("occupancyId") Long occupancyId,
@@ -209,5 +225,54 @@ public class HotelController {
 		MinimumLengthDTO minimumLengthOfAHotel = occupancyService.getAMinimumLengthOfHotel(hotelId,minimumLengthId);
 		
 		return new ResponseEntity<>(minimumLengthOfAHotel,HttpStatus.OK);
+	}
+	
+	
+	
+	@PostMapping("/{hotelId}/availabilities")
+	public ResponseEntity<HotelAvailabilityDTO> addAvailabilityToHotel(@PathVariable Long hotelId,
+			@RequestBody HotelAvailabilityDTO request) {
+
+		request.setHotelId(hotelId);
+		
+		HotelAvailabilityDTO addAvailability = availabilityService.addAvailability(request);
+		
+		return new ResponseEntity<>(addAvailability,HttpStatus.CREATED);
+	}
+	
+	@GetMapping("/{hotelId}/availabilities")
+	public ResponseEntity<List<HotelListAvailabilityDTO>> getAvailabilitiesOfAHotel(@PathVariable Long hotelId) {
+
+		
+		List<HotelListAvailabilityDTO> availabilities = availabilityService.getAvailabilities(hotelId);
+		
+		return new ResponseEntity<>(availabilities,HttpStatus.OK);
+		
+	}
+	
+	
+	@PutMapping("/{hotelId}/availabilities/{availabilityId}")
+	public ResponseEntity<HotelAvailabilityDTO> editAvailabilitiesOfAHotel(@PathVariable("hotelId") Long hotelId,@RequestBody HotelAvailabilityDTO request) {
+
+		
+		HotelAvailabilityDTO updatedAvailability = 	availabilityService.editAvailability(hotelId,request);
+		
+		
+		return new ResponseEntity<>(updatedAvailability,HttpStatus.OK);
+		
+	}
+	
+	
+	@DeleteMapping("/{hotelId}/availabilities/{availabilityId}")
+	public ResponseEntity<Void> deleteAvailabilitiesOfAHotel(@PathVariable("hotelId") Long hotelId, @PathVariable("availabilityId") Long availabilityId) {
+
+		
+		
+		
+	   availabilityService.deleteAvailability(hotelId,availabilityId);
+		
+		
+		return ResponseEntity.noContent().build();
+		
 	}
 }

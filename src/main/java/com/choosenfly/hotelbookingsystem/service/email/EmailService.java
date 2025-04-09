@@ -23,6 +23,7 @@ public class EmailService implements EmailServiceInterface {
 		String subject = "Your Login Credentials";
 		String body = getEmailTemplate(username, password);
 
+		
 		try {
 			MimeMessage message = mailSender.createMimeMessage();
 			MimeMessageHelper helper = new MimeMessageHelper(message, true);

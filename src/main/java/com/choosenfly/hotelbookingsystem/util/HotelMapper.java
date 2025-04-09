@@ -199,7 +199,6 @@ public class HotelMapper {
 
 		if (dto.getWeekDays() != null) {
 			HotelWeekDays weekDays = new HotelWeekDays();
-			weekDays.setHotel(hotel);
 			weekDays.setWdSunday(dto.getWeekDays().getWdSunday() != null ? dto.getWeekDays().getWdSunday() : false);
 			weekDays.setWdMonday(dto.getWeekDays().getWdMonday() != null ? dto.getWeekDays().getWdMonday() : false);
 			weekDays.setWdTuesday(dto.getWeekDays().getWdTuesday() != null ? dto.getWeekDays().getWdTuesday() : false);
@@ -405,7 +404,6 @@ public class HotelMapper {
 			
 			HotelWeekDays weekDays = hotel.getWeekDays();
 			
-			weekDays.setHotel(hotel);
 			weekDays.setWdSunday(dto.getWeekDays().getWdSunday() != null ? dto.getWeekDays().getWdSunday() : false);
 			weekDays.setWdMonday(dto.getWeekDays().getWdMonday() != null ? dto.getWeekDays().getWdMonday() : false);
 			weekDays.setWdTuesday(dto.getWeekDays().getWdTuesday() != null ? dto.getWeekDays().getWdTuesday() : false);
@@ -552,7 +550,6 @@ public class HotelMapper {
 		if (hotel.getWeekDays() != null) {
 			HotelWeekDaysDTO weekDaysDTO = new HotelWeekDaysDTO();
 			weekDaysDTO.setId(hotel.getWeekDays().getId());
-			weekDaysDTO.setHotelId(hotel.getWeekDays().getHotel().getHotelId());
 			weekDaysDTO.setWdSunday(hotel.getWeekDays().getWdSunday());
 			weekDaysDTO.setWdMonday(hotel.getWeekDays().getWdMonday());
 			weekDaysDTO.setWdTuesday(hotel.getWeekDays().getWdTuesday());

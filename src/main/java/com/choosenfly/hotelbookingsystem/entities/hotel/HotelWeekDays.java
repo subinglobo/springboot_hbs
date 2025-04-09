@@ -11,10 +11,6 @@ public class HotelWeekDays extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "hotel_id", nullable = false, unique = true)
-    private Hotel hotel;
-
     @Column(name = "wd_sunday", nullable = false)
     private Boolean wdSunday = false;
 
@@ -67,13 +63,6 @@ public class HotelWeekDays extends BaseEntity {
 		this.id = id;
 	}
 
-	public Hotel getHotel() {
-		return hotel;
-	}
-
-	public void setHotel(Hotel hotel) {
-		this.hotel = hotel;
-	}
 
 	public Boolean getWdSunday() {
 		return wdSunday;
@@ -189,12 +178,14 @@ public class HotelWeekDays extends BaseEntity {
 
 	@Override
 	public String toString() {
-		return "HotelWeekDays [id=" + id + ", hotel=" + hotel + ", wdSunday=" + wdSunday + ", wdMonday=" + wdMonday
-				+ ", wdTuesday=" + wdTuesday + ", wdWednesday=" + wdWednesday + ", wdThursday=" + wdThursday
-				+ ", wdFriday=" + wdFriday + ", wdSaturday=" + wdSaturday + ", wedSunday=" + wedSunday + ", wedMonday="
-				+ wedMonday + ", wedTuesday=" + wedTuesday + ", wedWednesday=" + wedWednesday + ", wedThursday="
-				+ wedThursday + ", wedFriday=" + wedFriday + ", wedSaturday=" + wedSaturday + "]";
+		return "HotelWeekDays [id=" + id + ", wdSunday=" + wdSunday + ", wdMonday=" + wdMonday + ", wdTuesday="
+				+ wdTuesday + ", wdWednesday=" + wdWednesday + ", wdThursday=" + wdThursday + ", wdFriday=" + wdFriday
+				+ ", wdSaturday=" + wdSaturday + ", wedSunday=" + wedSunday + ", wedMonday=" + wedMonday
+				+ ", wedTuesday=" + wedTuesday + ", wedWednesday=" + wedWednesday + ", wedThursday=" + wedThursday
+				+ ", wedFriday=" + wedFriday + ", wedSaturday=" + wedSaturday + "]";
 	}
+
+	
 
  
 	

@@ -2,7 +2,6 @@ package com.choosenfly.hotelbookingsystem.dto.occupancy;
 
 import java.util.List;
 
-import com.choosenfly.hotelbookingsystem.dto.hotel.HotelRoomDTO;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

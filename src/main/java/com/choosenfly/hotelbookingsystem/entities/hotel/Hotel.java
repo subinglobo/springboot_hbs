@@ -2,6 +2,7 @@ package com.choosenfly.hotelbookingsystem.entities.hotel;
 
 import java.util.List;
 
+import com.choosenfly.hotelbookingsystem.entities.availability.HotelAvailability;
 import com.choosenfly.hotelbookingsystem.entities.base.BaseEntity;
 import com.choosenfly.hotelbookingsystem.entities.hotel.linked.LinkedHotelAmenity;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterCountry;
@@ -15,6 +16,7 @@ import com.choosenfly.hotelbookingsystem.entities.master.MasterState;
 import com.choosenfly.hotelbookingsystem.entities.minimumlength.MinimumLength;
 import com.choosenfly.hotelbookingsystem.entities.occupancy.HotelOccupancy;
 
+import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -110,7 +112,8 @@ public class Hotel extends BaseEntity{
 	@OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private List<HotelBankDetails> bankDetails;
 
-	@OneToOne(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name = "hotel_week_days_id")
 	private HotelWeekDays weekDays;
 
 	@OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
@@ -130,6 +133,20 @@ public class Hotel extends BaseEntity{
 	private List<MinimumLength> minimumLengths;
 	
 	
+	@OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	private List<HotelAvailability> hotelAvailabilities;
+	
+	
+	
+	
+	public List<HotelAvailability> getHotelAvailabilities() {
+		return hotelAvailabilities;
+	}
+
+	public void setHotelAvailabilities(List<HotelAvailability> hotelAvailabilities) {
+		this.hotelAvailabilities = hotelAvailabilities;
+	}
+
 	public List<MinimumLength> getMinimumLengths() {
 		return minimumLengths;
 	}
@@ -365,13 +382,15 @@ public class Hotel extends BaseEntity{
 	@Override
 	public String toString() {
 		return "Hotel [hotelId=" + hotelId + ", hotelName=" + hotelName + ", hotelCurrency=" + hotelCurrency
-				+ ", hotelCategory=" + hotelCategory + ", image360=" + image360 + ", hotelDescription="
-				+ hotelDescription + ", childComAgeMin=" + childComAgeMin + ", childComAgeMax=" + childComAgeMax
+				+ ", hotelType=" + hotelType + ", image360=" + image360 + ", hotelDescription=" + hotelDescription
+				+ ", childComAgeMin=" + childComAgeMin + ", childComAgeMax=" + childComAgeMax
 				+ ", childChargeableAgeMin=" + childChargeableAgeMin + ", childChargeableAgeMax="
 				+ childChargeableAgeMax + ", address=" + address + ", zipcode=" + zipcode + ", latitude=" + latitude
 				+ ", longitude=" + longitude + ", isDeleted=" + isDeleted + "]";
 	}
 
+
+	
 	
 	
 	

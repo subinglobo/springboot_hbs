@@ -1,8 +1,13 @@
 package com.choosenfly.hotelbookingsystem.repository.hotel;
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.choosenfly.hotelbookingsystem.entities.hotel.Hotel;
@@ -11,4 +16,22 @@ import com.choosenfly.hotelbookingsystem.entities.hotel.Hotel;
 public interface HotelRepository extends JpaRepository<Hotel, Long> {
 	
 	Page<Hotel> findByHotelNameContainingIgnoreCase(String hotelName, Pageable pageable);
+	
+	@EntityGraph(attributePaths = {
+	        "hotelAvailabilities",
+	        "hotelAvailabilities.hotelRoom",
+	        "hotelAvailabilities.marketType",
+	        "hotelAvailabilities.hotelRoom.roomCategory",
+	    })
+	 @Query("SELECT h FROM Hotel h WHERE h.hotelId = :hotelId")
+    Hotel findHotelWithAvailabilitiesByHotelId(@Param("hotelId") Long hotelId);
+	
+	
+	@EntityGraph(attributePaths = {
+	        "hotelOccupancies",
+	        "hotelOccupancies.marketType"
+	    })
+	 @Query("SELECT h FROM Hotel h WHERE h.hotelId = :hotelId")
+    Optional<Hotel> findHotelWithOccupanciesByHotelId(@Param("hotelId") Long hotelId);
+	
 }

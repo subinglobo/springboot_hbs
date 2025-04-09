@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.choosenfly.hotelbookingsystem.entities.base.BaseEntity;
 import com.choosenfly.hotelbookingsystem.entities.hotel.Hotel;
-import com.choosenfly.hotelbookingsystem.entities.hotel.HotelRoom;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterMarketType;
 
 import jakarta.persistence.CascadeType;
