@@ -11,20 +11,18 @@ public class EmailProducer {
 
 	@Value("${rabbitmq.exchange}")
 	private String exchange;
-	
+
 	@Value("${rabbitmq.routingkey}")
 	private String routingKey;
-	
+
 	private final RabbitTemplate rabbitTemplate;
-	
-	public EmailProducer(RabbitTemplate rabbitTemplate)
-	{
-		this.rabbitTemplate =rabbitTemplate;
+
+	public EmailProducer(RabbitTemplate rabbitTemplate) {
+		this.rabbitTemplate = rabbitTemplate;
 	}
-	
-	public void sendMessage(EmailDTO emailDTO)
-	{
+
+	public void sendMessage(EmailDTO emailDTO) {
 		rabbitTemplate.convertAndSend(exchange, routingKey, emailDTO);
 	}
-	
+
 }
