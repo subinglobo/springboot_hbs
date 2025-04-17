@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.choosenfly.hotelbookingsystem.entities.availability.HotelAvailability;
 import com.choosenfly.hotelbookingsystem.entities.base.BaseEntity;
+import com.choosenfly.hotelbookingsystem.entities.blockcheckincheckout.BlockCheckInAndCheckOut;
 import com.choosenfly.hotelbookingsystem.entities.hotel.linked.LinkedHotelAmenity;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterCountry;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterCurrency;
@@ -16,7 +17,6 @@ import com.choosenfly.hotelbookingsystem.entities.master.MasterState;
 import com.choosenfly.hotelbookingsystem.entities.minimumlength.MinimumLength;
 import com.choosenfly.hotelbookingsystem.entities.occupancy.HotelOccupancy;
 
-import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -137,8 +137,20 @@ public class Hotel extends BaseEntity{
 	private List<HotelAvailability> hotelAvailabilities;
 	
 	
+	@OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	private List<BlockCheckInAndCheckOut> hotelBlockedDates;
 	
 	
+	
+	
+	public List<BlockCheckInAndCheckOut> getHotelBlockedDates() {
+		return hotelBlockedDates;
+	}
+
+	public void setHotelBlockedDates(List<BlockCheckInAndCheckOut> hotelBlockedDates) {
+		this.hotelBlockedDates = hotelBlockedDates;
+	}
+
 	public List<HotelAvailability> getHotelAvailabilities() {
 		return hotelAvailabilities;
 	}

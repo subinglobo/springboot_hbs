@@ -28,10 +28,18 @@ public interface HotelRepository extends JpaRepository<Hotel, Long> {
 	
 	
 	@EntityGraph(attributePaths = {
+	        "hotelBlockedDates",
+	        "hotelBlockedDates.marketType"
+	    })
+	 @Query("SELECT h FROM Hotel h WHERE h.hotelId = :hotelId")
+    Optional<Hotel> findHotelWithOccupanciesByHotelId(@Param("hotelId") Long hotelId);
+	
+	
+	@EntityGraph(attributePaths = {
 	        "hotelOccupancies",
 	        "hotelOccupancies.marketType"
 	    })
 	 @Query("SELECT h FROM Hotel h WHERE h.hotelId = :hotelId")
-    Optional<Hotel> findHotelWithOccupanciesByHotelId(@Param("hotelId") Long hotelId);
+    Optional<Hotel> findHotelWithBlockedDatesByHotelId(@Param("hotelId") Long hotelId);
 	
 }

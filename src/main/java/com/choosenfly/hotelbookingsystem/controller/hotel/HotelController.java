@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.choosenfly.hotelbookingsystem.dto.availability.HotelAvailabilityDTO;
 import com.choosenfly.hotelbookingsystem.dto.availability.HotelListAvailabilityDTO;
+import com.choosenfly.hotelbookingsystem.dto.blockCheckinCheckout.BlockCheckInAndCheckOutDTO;
 import com.choosenfly.hotelbookingsystem.dto.hotel.HotelContactDetailsDTO;
 import com.choosenfly.hotelbookingsystem.dto.hotel.HotelDTO;
 import com.choosenfly.hotelbookingsystem.dto.hotel.HotelMailCentreDTO;
@@ -32,6 +33,7 @@ import com.choosenfly.hotelbookingsystem.dto.occupancy.HotelOccupancyPatchDTO;
 import com.choosenfly.hotelbookingsystem.dto.occupancy.HotelOccupancyResponseDTO;
 import com.choosenfly.hotelbookingsystem.dto.occupancy.ListOccupanyDTO;
 import com.choosenfly.hotelbookingsystem.service.availability.AvailabilityServiceInterface;
+import com.choosenfly.hotelbookingsystem.service.blockcheckincheckout.BlockCheckInCheckOutServiceInterface;
 import com.choosenfly.hotelbookingsystem.service.hotel.HotelMailtypeServiceInterface;
 import com.choosenfly.hotelbookingsystem.service.hotel.HotelRegistrationService;
 import com.choosenfly.hotelbookingsystem.service.hotel.HotelRegistrationServiceInterface;
@@ -50,13 +52,16 @@ public class HotelController {
 	private final OccupancyServiceInterface occupancyService;
 	
 	private final AvailabilityServiceInterface availabilityService;
+	
+	private final BlockCheckInCheckOutServiceInterface blockCheckInCheckOutService;
 
 	@Autowired
-	public HotelController(HotelRegistrationService hotelService, HotelMailtypeServiceInterface hotelMailService,OccupancyServiceInterface occupancyService,AvailabilityServiceInterface availabilityService) {
+	public HotelController(HotelRegistrationService hotelService, HotelMailtypeServiceInterface hotelMailService,OccupancyServiceInterface occupancyService,AvailabilityServiceInterface availabilityService,BlockCheckInCheckOutServiceInterface blockCheckInCheckOutService) {
 		this.hotelService = hotelService;
 		this.hotelMailService = hotelMailService;
 		this.occupancyService = occupancyService;
 		this.availabilityService = availabilityService;
+		this.blockCheckInCheckOutService = blockCheckInCheckOutService;
 	}
 
 	@PostMapping
@@ -275,4 +280,75 @@ public class HotelController {
 		return ResponseEntity.noContent().build();
 		
 	}
+	
+	@GetMapping("/{hotelId}/availabilities/{availabilityId}")
+	public ResponseEntity<HotelAvailabilityDTO> getAvailabilityOfAHotel(@PathVariable("hotelId") Long hotelId, @PathVariable("availabilityId") Long availabilityId) {
+
+		
+		
+		
+		HotelAvailabilityDTO availabilityDTO =   availabilityService.getAvailabilityOfAHotel(hotelId,availabilityId);
+		
+		
+		 return new ResponseEntity<>(availabilityDTO,HttpStatus.OK);
+		
+	}
+	
+	@PostMapping("/{hotelId}/blockCheckInCheckout")
+	public ResponseEntity<BlockCheckInAndCheckOutDTO> addBlockDatestToHotel(@PathVariable Long hotelId,
+			@RequestBody BlockCheckInAndCheckOutDTO request) {
+
+		request.setHotelId(hotelId);
+		
+		BlockCheckInAndCheckOutDTO addedBlockedDates = blockCheckInCheckOutService.addBlockDatestToHotel(request);
+		
+		return new ResponseEntity<>(addedBlockedDates,HttpStatus.CREATED);
+	}
+	
+	@GetMapping("/{hotelId}/blockCheckInCheckout")
+	public ResponseEntity<List<BlockCheckInAndCheckOutDTO>> getBlockedDatesOfAHotel(@PathVariable Long hotelId) {
+
+	
+		
+		List<BlockCheckInAndCheckOutDTO> blockedDates = blockCheckInCheckOutService.getBlockedDatesOfAHotel(hotelId);
+		
+		return new ResponseEntity<>(blockedDates,HttpStatus.CREATED);
+	}
+	
+	@GetMapping("/{hotelId}/blockCheckInCheckout/{blockId}")
+	public ResponseEntity<BlockCheckInAndCheckOutDTO> getBlockDateOfAHotel(@PathVariable Long hotelId,
+			@PathVariable Long blockId) {
+
+
+		
+		BlockCheckInAndCheckOutDTO blockCheckinCheckout	 = blockCheckInCheckOutService.getBlockDatestToHotel(hotelId,blockId);
+		
+		return new ResponseEntity<>(blockCheckinCheckout,HttpStatus.OK);
+	}
+	
+	@PutMapping("/{hotelId}/blockCheckInCheckout/{blockId}")
+	public ResponseEntity<BlockCheckInAndCheckOutDTO> updateBlockDateOfAHotel(@PathVariable Long hotelId,@PathVariable Long blockId,
+			@RequestBody BlockCheckInAndCheckOutDTO request) {
+
+
+		
+		BlockCheckInAndCheckOutDTO blockCheckinCheckout	 = blockCheckInCheckOutService.updateBlockDatestToHotel(hotelId,request);
+		
+		return new ResponseEntity<>(blockCheckinCheckout,HttpStatus.OK);
+	}
+	
+	@DeleteMapping("/{hotelId}/blockCheckInCheckout/{blockId}")
+	public ResponseEntity<Void> deleteBlockDateOfAHotel(@PathVariable Long hotelId,@PathVariable Long blockId) {
+
+
+		
+		
+		blockCheckInCheckOutService.deleteBlockDateOfAHotel(hotelId,blockId);
+			
+			
+			return ResponseEntity.noContent().build();
+		
+		
+	}
+	
 }

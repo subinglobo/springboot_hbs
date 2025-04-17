@@ -1,4 +1,4 @@
-package com.choosenfly.hotelbookingsystem.entities.availability;
+package com.choosenfly.hotelbookingsystem.entities.blockcheckincheckout;
 
 import java.time.LocalDateTime;
 
@@ -14,17 +14,18 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="availability_validity")
-public class AvailabilityValidity extends BaseEntity {
+@Table(name = "block_checkin_checkout_validity")
+public class BlockCheckinCheckoutValidity extends BaseEntity{
 
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "validity_id")
 	private Long id;
 
 	@ManyToOne
-	@JoinColumn(name = "availability_id", nullable = false)
-	private HotelAvailability hotelAvailability;
+	@JoinColumn(name = "block_id", nullable = false)
+	private BlockCheckInAndCheckOut blockCheckinCheckout;
 
 	@Column(name = "validity_from", nullable = false)
 	private LocalDateTime validityFrom;
@@ -40,12 +41,12 @@ public class AvailabilityValidity extends BaseEntity {
 		this.id = id;
 	}
 
-	public HotelAvailability getHotelAvailability() {
-		return hotelAvailability;
+	public BlockCheckInAndCheckOut getBlockCheckinCheckout() {
+		return blockCheckinCheckout;
 	}
 
-	public void setHotelAvailability(HotelAvailability hotelAvailability) {
-		this.hotelAvailability = hotelAvailability;
+	public void setBlockCheckinCheckout(BlockCheckInAndCheckOut blockCheckinCheckout) {
+		this.blockCheckinCheckout = blockCheckinCheckout;
 	}
 
 	public LocalDateTime getValidityFrom() {
@@ -66,8 +67,8 @@ public class AvailabilityValidity extends BaseEntity {
 
 	@Override
 	public String toString() {
-		return "AvailabilityValidity [id=" + id + ", hotelAvailability=" + hotelAvailability + ", validityFrom="
-				+ validityFrom + ", validityTo=" + validityTo + "]";
+		return "BlockCheckinCheckoutValidity [id=" + id + ", blockCheckinCheckout=" + blockCheckinCheckout
+				+ ", validityFrom=" + validityFrom + ", validityTo=" + validityTo + "]";
 	}
 	
 	

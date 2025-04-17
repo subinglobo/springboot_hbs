@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.choosenfly.hotelbookingsystem.dto.availability.AvailabilityValidityDTO;
 import com.choosenfly.hotelbookingsystem.dto.availability.HotelAvailabilityDTO;
 import com.choosenfly.hotelbookingsystem.dto.availability.HotelListAvailabilityDTO;
+import com.choosenfly.hotelbookingsystem.dto.blockCheckinCheckout.BlockCheckInAndCheckOutDTO;
 import com.choosenfly.hotelbookingsystem.entities.availability.AvailabilityValidity;
 import com.choosenfly.hotelbookingsystem.entities.availability.HotelAvailability;
 import com.choosenfly.hotelbookingsystem.entities.hotel.Hotel;
@@ -236,6 +237,55 @@ public class AvailabilityService implements AvailabilityServiceInterface {
 		availabilityRepository.deleteById(availabilityId);
 		
 		
+	}
+
+	@Override
+	@Transactional
+	public HotelAvailabilityDTO getAvailabilityOfAHotel(Long hotelId, Long availabilityId) {
+		// TODO Auto-generated method stub
+		
+		
+		HotelAvailability availability = availabilityRepository.findById(availabilityId)
+				.orElseThrow(() -> new EntityNotFoundException("Availability Not Found with id "+availabilityId));
+				
+		
+		HotelAvailabilityDTO hotelAvailabilityDTO = new HotelAvailabilityDTO();
+		
+		hotelAvailabilityDTO.setAvailabilityType(availability.getAvailabilityType());
+		 
+		List<AvailabilityValidityDTO> availabilityList = availability.getValidityPeriods()
+		.stream()
+		.map( avail ->{
+			
+			AvailabilityValidityDTO dto = new AvailabilityValidityDTO();
+			dto.setHotelAvailabilityId(avail.getHotelAvailability().getId());
+			dto.setId(avail.getId());
+			dto.setValidityFrom(avail.getValidityFrom());
+			dto.setValidityTo(avail.getValidityTo());
+			return dto;
+		})
+		.collect(Collectors.toList());
+		
+		hotelAvailabilityDTO.setAvailabilityValidities(availabilityList);
+		hotelAvailabilityDTO.setCheckinAllowedDays(availability.getCheckinAllowedDays());
+		hotelAvailabilityDTO.setHotelId(hotelId);
+		hotelAvailabilityDTO.setHotelRoomId(availability.getHotelRoom().getId());
+		hotelAvailabilityDTO.setId(availability.getId());
+		hotelAvailabilityDTO.setMarketTypeId(availability.getMarketType().getMarketTypeId());
+		hotelAvailabilityDTO.setNoOfRooms(availability.getNoOfRooms());
+		hotelAvailabilityDTO.setReleaseDay(availability.getReleaseDay());
+		
+		return hotelAvailabilityDTO;
+	}
+
+	@Override
+	@Transactional
+	public BlockCheckInAndCheckOutDTO addBlockDatestToHotel(BlockCheckInAndCheckOutDTO request) {
+		// TODO Auto-generated method stub
+		
+		
+		
+		return null;
 	}
 
 }
