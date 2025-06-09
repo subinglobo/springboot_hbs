@@ -1,7 +1,10 @@
 package com.choosenfly.hotelbookingsystem.util.rabbitmq;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
@@ -30,6 +33,13 @@ public class RabbitMQConfig {
 	@Value("${rabbitmq.routingkey}")
 	private String emailRoutingKey;
 
+	@Value("${rabbitmq.hotel.apis}")
+	private String hotelApis;
+
+	@Value("${rabbitmq.hotel.exchange}")
+	private String hotelExchange;
+
+	
 	@Bean
 	public Queue emailQueue() {
 		
@@ -95,5 +105,28 @@ public class RabbitMQConfig {
 		simpleRabbitListenerContainerFactory.setMessageConverter(messageConverter);
 		simpleRabbitListenerContainerFactory.setDefaultRequeueRejected(false);
 		return simpleRabbitListenerContainerFactory;
+	}
+	
+
+	@Bean
+	public DirectExchange hotelExchange() {
+		return new DirectExchange(hotelExchange);
+	}
+
+	@Bean
+	public List<Queue> hotelApiQueues() {
+		return Stream.of(hotelApis.split(","))
+				.map(api -> new Queue("hotel.api." + api + ".queue", true))
+				.collect(Collectors.toList());
+	}
+
+	@Bean
+	public List<Binding> hotelApiBindings() {
+		return Stream.of(hotelApis.split(","))
+				.map(api -> BindingBuilder
+						.bind(new Queue("hotel.api." + api + ".queue"))
+						.to(hotelExchange())
+						.with("hotel.api." + api + ".routingKey"))
+				.collect(Collectors.toList());
 	}
 }
