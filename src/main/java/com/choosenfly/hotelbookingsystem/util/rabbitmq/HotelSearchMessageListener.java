@@ -30,7 +30,7 @@ public class HotelSearchMessageListener {
             .findFirst()
             .orElseThrow(() -> new RuntimeException("No API caller found for " + message.getApiKey()));
 
-        HotelSearchResult result = caller.callApi(message.getSearchRequest());
-        resultRepository.saveResult(message.getSearchId(), message.getApiKey(), result);
+//        HotelSearchResult result = caller.callApi(message.getSearchRequest());
+//        resultRepository.saveResult(message.getSearchId(), message.getApiKey(), result);
     }
 }
