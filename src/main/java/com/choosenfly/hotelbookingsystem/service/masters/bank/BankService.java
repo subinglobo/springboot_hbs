@@ -1,5 +1,6 @@
 package com.choosenfly.hotelbookingsystem.service.masters.bank;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ public class BankService implements BankServiceInterface {
 	
 	private final MasterBankRepository masterBankRepository;
 	
+	@Autowired
 	public BankService(MasterBankRepository masterBankRepository) {
 		this.masterBankRepository = masterBankRepository;
 		
@@ -28,7 +30,7 @@ public class BankService implements BankServiceInterface {
 		
 		MasterBank entity = new MasterBank();
 		entity.setName(bankDTO.getName());
-		entity.setIsDeleted(bankDTO.getIsDeleted());
+		entity.setIsDeleted(false);
 		MasterBank save = masterBankRepository.save(entity);
 		Long bankId = save.getBankId();
 		if(bankId != 0) {
@@ -50,7 +52,7 @@ public class BankService implements BankServiceInterface {
 			MasterBankDTO masterBankDTO = new MasterBankDTO();
 			masterBankDTO.setBankId(bank.getBankId());
 			masterBankDTO.setName(bank.getName());
-			masterBankDTO.setIsDeleted(false);
+			masterBankDTO.setIsDeleted(bank.getIsDeleted());
 			return masterBankDTO;
 		}
 		
@@ -80,10 +82,10 @@ public class BankService implements BankServiceInterface {
 	public ResponseEntity<String>  deleteBank(Long id) {
 		// TODO Auto-generated method stub
 		
-		MasterBank bank = 
+		MasterBank existbank = 
 				masterBankRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Bank Not Found:" + id));
 		
-		bank.setIsDeleted(true);
+		masterBankRepository.delete(existbank);
 		
 		return ResponseEntity.ok("Bank with id " + id + " deleted successfully");
 	}
