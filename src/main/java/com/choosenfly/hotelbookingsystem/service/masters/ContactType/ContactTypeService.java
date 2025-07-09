@@ -70,7 +70,7 @@ public class ContactTypeService implements ContactTypeServiceInterface {
 	}
 
 	@Override
-	public ResponseEntity<String> deleteContactType(Long id) {
+	public ResponseEntity<String> deleteContactType(Long id) { 
 		// TODO Auto-generated method stub
 		
 		MasterContactType contactType = 
