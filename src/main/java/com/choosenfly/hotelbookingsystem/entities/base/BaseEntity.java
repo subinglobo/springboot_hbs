@@ -33,4 +33,5 @@ public abstract class BaseEntity {
     private LocalDateTime updatedDate;
 
     // Getters and Setters
+    
 }
