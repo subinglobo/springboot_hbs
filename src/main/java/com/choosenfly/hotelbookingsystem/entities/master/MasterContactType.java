@@ -48,4 +48,12 @@ public class MasterContactType extends BaseEntity {
     public void setIsDeleted(Boolean isDeleted) {
         this.isDeleted = isDeleted;
     }
+
+	@Override
+	public String toString() {
+		return "MasterContactType [contacttypeId=" + contacttypeId + ", name=" + name + ", isDeleted=" + isDeleted
+				+ "]";
+	}
+    
+    
 }
