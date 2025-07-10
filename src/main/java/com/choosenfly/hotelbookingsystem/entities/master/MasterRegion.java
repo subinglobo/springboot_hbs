@@ -15,7 +15,7 @@ public class MasterRegion extends BaseEntity {
 
 	@Id
 	@Column(name = "id", nullable = false)
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
 	@Column(name = "name", length = 100, nullable = false)
