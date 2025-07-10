@@ -4,17 +4,21 @@ import com.choosenfly.hotelbookingsystem.entities.base.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "master_markup_type", schema = "public")
 public class MasterMarkupType extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private Long id;
 
@@ -24,14 +28,25 @@ public class MasterMarkupType extends BaseEntity {
     @Column(name = "is_type", length = 100)
     private String isType;
 
+    @NotBlank(message="This feild cannot be null")
+    @NotNull(message="This feild cannot be null")
     @Column(name = "markup", length = 100)
     private String markup;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "markup_type", length = 100)
-    private String markupType;
+    private Markup markupType;
 
     @Column(name = "name", length = 100)
+    @NotBlank(message="This feild cannot be null")
+    @NotNull(message="This feild cannot be null")
     private String name;
+    
+    //enum
+    public enum Markup{
+    	PERCENT,
+    	AMOUNT
+    }
 
     // Getters and Setters
     public Long getId() {
@@ -59,22 +74,22 @@ public class MasterMarkupType extends BaseEntity {
     }
 
     public String getMarkup() {
-        return markup;
-    }
+		return markup;
+	}
 
-    public void setMarkup(String markup) {
-        this.markup = markup;
-    }
+	public void setMarkup(String markup) {
+		this.markup = markup;
+	}
 
-    public String getMarkupType() {
-        return markupType;
-    }
+	public Markup getMarkupType() {
+		return markupType;
+	}
 
-    public void setMarkupType(String markupType) {
-        this.markupType = markupType;
-    }
+	public void setMarkupType(Markup markupType) {
+		this.markupType = markupType;
+	}
 
-    public String getName() {
+	public String getName() {
         return name;
     }
 

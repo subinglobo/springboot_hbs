@@ -20,7 +20,7 @@ public class ContactTypeService implements ContactTypeServiceInterface {
 
 	@Override
 	@Transactional
-	public Long saveContactType(@Valid MasterContactTypeDTO masterContactTypeDTO) {
+	public Long saveContactType(MasterContactTypeDTO masterContactTypeDTO) {
 		// TODO Auto-generated method stub
 		
 		MasterContactType entity = new MasterContactType();
