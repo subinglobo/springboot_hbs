@@ -3,6 +3,7 @@ package com.choosenfly.hotelbookingsystem.service.masters.currency;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.choosenfly.hotelbookingsystem.dto.masters.MasterCurrencyDTO;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterCurrency;
@@ -17,6 +18,7 @@ public class CurrencyService implements CurrencyServiceInterface {
 	private MasterCurrencyRepository masterCurrencyRepository;
 
 	@Override
+	@Transactional
 	public Long saveCurrency(MasterCurrencyDTO currecyDTO) {
 		// TODO Auto-generated method stub
 		
@@ -33,6 +35,7 @@ public class CurrencyService implements CurrencyServiceInterface {
 	}
 
 	@Override
+	@Transactional
 	public MasterCurrencyDTO getCurrecnyById(Long id) {
 		// TODO Auto-generated method stub
 		
@@ -50,6 +53,7 @@ public class CurrencyService implements CurrencyServiceInterface {
 	}
 
 	@Override
+	@Transactional
 	public MasterCurrencyDTO editCurrency(Long id, MasterCurrencyDTO currecyDTO) {
 		// TODO Auto-generated method stub
 		MasterCurrency entityData = 
@@ -71,6 +75,7 @@ public class CurrencyService implements CurrencyServiceInterface {
 	}
 
 	@Override
+	@Transactional
 	public ResponseEntity<String> deleteCurrency(Long id) {
 		// TODO Auto-generated method stub
 		
