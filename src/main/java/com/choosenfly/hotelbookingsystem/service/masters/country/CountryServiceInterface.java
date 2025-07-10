@@ -1,0 +1,20 @@
+package com.choosenfly.hotelbookingsystem.service.masters.country;
+
+import org.springframework.http.ResponseEntity;
+
+import com.choosenfly.hotelbookingsystem.controller.masters.MasterCountryDTO;
+
+import jakarta.validation.Valid;
+
+public interface CountryServiceInterface {
+
+	Long saveCountry(@Valid MasterCountryDTO countryDTO);
+
+	MasterCountryDTO getCountryById(Long id);
+
+	MasterCountryDTO editCountry(Long id, @Valid MasterCountryDTO countryDTO);
+
+	ResponseEntity<String> deleteCountry(Long id);
+
+
+}
