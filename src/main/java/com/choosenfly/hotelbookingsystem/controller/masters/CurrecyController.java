@@ -1,0 +1,61 @@
+package com.choosenfly.hotelbookingsystem.controller.masters;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.choosenfly.hotelbookingsystem.dto.masters.MasterCurrencyDTO;
+import com.choosenfly.hotelbookingsystem.dto.masters.MasterMarkupTypeDTO;
+import com.choosenfly.hotelbookingsystem.service.masters.currency.CurrencyServiceInterface;
+
+import jakarta.validation.Valid;
+
+@RestController
+@RequestMapping("/api/currency")
+public class CurrecyController {
+	
+	private final CurrencyServiceInterface currencyServiceInterface;
+	
+	@Autowired
+	public CurrecyController(CurrencyServiceInterface currencyServiceInterface) {
+		this.currencyServiceInterface = currencyServiceInterface;
+	}
+	
+	
+	@PostMapping("/saveCurrency")
+	public Long saveCurrency(@Valid @RequestBody MasterCurrencyDTO currecyDTO ) {
+		
+		return currencyServiceInterface.saveCurrency(currecyDTO);
+		
+	}
+	
+	@GetMapping("/{id}")
+	public MasterCurrencyDTO getCurrecnyById(@PathVariable("id") Long id) {
+		
+		return currencyServiceInterface.getCurrecnyById(id);
+		
+	}
+	
+	@PutMapping("/{id}")
+	public MasterCurrencyDTO editCurrency(@PathVariable("id") Long id , @RequestBody MasterCurrencyDTO currecyDTO)  {
+		
+		return currencyServiceInterface.editCurrency(id , currecyDTO);
+		
+	}
+	
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> deleteCurrency(@PathVariable("id") Long id) {
+		
+		return currencyServiceInterface.deleteCurrency(id);
+		
+	}
+	
+
+}
