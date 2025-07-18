@@ -1,11 +1,16 @@
 package com.choosenfly.hotelbookingsystem.repository.master;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.choosenfly.hotelbookingsystem.dto.masters.MasterStateDTO;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterState;
 
 @Repository
 public interface MasterStateRepository extends JpaRepository<MasterState, Long> {
+
+	Page<MasterState> findByNameContainingIgnoreCase(String name, Pageable pageable); 
 
 }

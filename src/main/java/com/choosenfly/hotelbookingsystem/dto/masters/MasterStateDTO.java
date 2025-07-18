@@ -1,16 +1,22 @@
 package com.choosenfly.hotelbookingsystem.dto.masters;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 public class MasterStateDTO {
 	
 	    private Long id;
 
-	    private String country;
+	    private Long countryId;
 
-	    private String name;
+	    private String stateName;
 
 	    private String atharvaCode;
 
 	    private String stateCode;
+	    
+	    private Boolean isDeleted;
+	    
+	    private String Country;
 
 		public Long getId() {
 			return id;
@@ -20,20 +26,20 @@ public class MasterStateDTO {
 			this.id = id;
 		}
 
-		public String getCountry() {
-			return country;
+		public Long getCountryId() {
+			return countryId;
 		}
 
-		public void setCountry(String country) {
-			this.country = country;
+		public void setCountryId(Long countryId) {
+			this.countryId = countryId;
 		}
 
-		public String getName() {
-			return name;
+		public String getStateName() {
+			return stateName;
 		}
 
-		public void setName(String name) {
-			this.name = name;
+		public void setStateName(String stateName) {
+			this.stateName = stateName;
 		}
 
 		public String getAtharvaCode() {
@@ -52,12 +58,32 @@ public class MasterStateDTO {
 			this.stateCode = stateCode;
 		}
 
-		@Override
-		public String toString() {
-			return "MasterStateDTO [id=" + id + ", country=" + country + ", name=" + name + ", atharvaCode="
-					+ atharvaCode + ", stateCode=" + stateCode + "]";
+		public Boolean getIsDeleted() {
+			return isDeleted;
 		}
 
+		public void setIsDeleted(Boolean isDeleted) {
+			this.isDeleted = isDeleted;
+		}
+
+		public String getCountry() {
+			return Country;
+		}
+
+		public void setCountry(String country) {
+			Country = country;
+		}
+
+		@Override
+		public String toString() {
+			return "MasterStateDTO [id=" + id + ", countryId=" + countryId + ", stateName=" + stateName
+					+ ", atharvaCode=" + atharvaCode + ", stateCode=" + stateCode + ", isDeleted=" + isDeleted
+					+ ", Country=" + Country + "]";
+		}
+
+		
+
+		
 		
 	    
 
