@@ -38,7 +38,6 @@ public class ProvinceService implements ProvinceServiceInterface {
 	public Long saveProvince(MasterStateDTO stateDTO) {
 		// TODO Auto-generated method stub
 
-		System.err.println("stateDTO::" + stateDTO);
 		MasterState entity = new MasterState();
 
 		MasterCountry countryEntity = 
