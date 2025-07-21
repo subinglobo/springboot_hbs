@@ -91,7 +91,7 @@ public class HotelCategoryService implements HotelCategoryServiceInterface {
 				.orElseThrow(() -> new EntityNotFoundException("Hotel Category not found for id :" + id));
 		
 		masterHotelCategoryRepository.delete(categoryEntity);
-		return ResponseEntity.ok("Province with id " + id + " deleted successfully");
+		return ResponseEntity.ok("Hotel Category with id " + id + " deleted successfully");
 		
 	}
 
