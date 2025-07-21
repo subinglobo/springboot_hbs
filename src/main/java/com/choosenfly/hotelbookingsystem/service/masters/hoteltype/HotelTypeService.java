@@ -45,7 +45,7 @@ public class HotelTypeService implements HotelTypeServiceInterface{
 		MasterHotelTypeDTO dto = new MasterHotelTypeDTO();
 		dto.setHotelTypeId(hotelTypeEntity.getHotelTypeId());
 		dto.setName(hotelTypeEntity.getName());
-		
+		dto.setIsDeleted(hotelTypeEntity.getIsDeleted());
 		return dto;
 	}
 
@@ -63,6 +63,7 @@ public class HotelTypeService implements HotelTypeServiceInterface{
 		
 		
 		MasterHotelTypeDTO dto = new MasterHotelTypeDTO();
+		dto.setHotelTypeId(save.getHotelTypeId());
 		dto.setName(save.getName());
 		dto.setIsDeleted(save.getIsDeleted());
 		return dto;
