@@ -1,4 +1,5 @@
-package com.choosenfly.hotelbookingsystem.repository.master;
+package com.choosenfly.hotelbookingsystem.entities.master;
+
 
 import com.choosenfly.hotelbookingsystem.entities.base.BaseEntity;
 
@@ -7,10 +8,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
-@Entity
-@Table(name = "master_occupancy_type")
+@Entity 
+@Table(name = "master_occupancy_type", schema = "public")
 public class MasterOccupancyType extends BaseEntity {
 
 	@Id
@@ -18,11 +20,11 @@ public class MasterOccupancyType extends BaseEntity {
 	@Column(name = "occupancy_type_id", nullable = false)
 	private Long occupancyTypeId;
 
-	@Column(name = "is_deleted", nullable = false)
-	private Boolean isDeleted = false; // Default value in Java
+    @Column(name = "name", length = 100)
+    private String name;
 
-	@Column(name = "name", length = 100)
-	private String name;
+    @Column(name = "is_deleted") 
+    private Boolean isDeleted;
 
 	public Long getOccupancyTypeId() {
 		return occupancyTypeId;
@@ -30,14 +32,6 @@ public class MasterOccupancyType extends BaseEntity {
 
 	public void setOccupancyTypeId(Long occupancyTypeId) {
 		this.occupancyTypeId = occupancyTypeId;
-	}
-
-	public Boolean getIsDeleted() {
-		return isDeleted;
-	}
-
-	public void setIsDeleted(Boolean isDeleted) {
-		this.isDeleted = isDeleted;
 	}
 
 	public String getName() {
@@ -48,10 +42,20 @@ public class MasterOccupancyType extends BaseEntity {
 		this.name = name;
 	}
 
+	public Boolean getIsDeleted() {
+		return isDeleted;
+	}
+
+	public void setIsDeleted(Boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
 	@Override
 	public String toString() {
-		return "MasterOccupancyType [occupancyTypeId=" + occupancyTypeId + ", isDeleted=" + isDeleted + ", name=" + name
+		return "MasterOccupancyType [occupancyTypeId=" + occupancyTypeId + ", name=" + name + ", isDeleted=" + isDeleted
 				+ "]";
 	}
 
+    // Getters and Setters
+    
 }
