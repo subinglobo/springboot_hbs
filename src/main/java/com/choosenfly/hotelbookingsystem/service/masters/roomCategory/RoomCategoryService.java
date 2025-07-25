@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.choosenfly.hotelbookingsystem.dto.masters.MasterRoomCategoryDTO;
@@ -29,6 +30,7 @@ public class RoomCategoryService implements RoomCategoryServiceImpl {
 	}
 
 	@Override
+	@Transactional
 	public Long saveRoomCategory(MasterRoomCategoryDTO dto) {
 		// TODO Auto-generated method stub
 
@@ -44,6 +46,7 @@ public class RoomCategoryService implements RoomCategoryServiceImpl {
 	}
 
 	@Override
+	@Transactional
 	public MasterRoomCategoryDTO getRoomCategoryById(Long id) {
 		// TODO Auto-generated method stub
 
@@ -60,6 +63,7 @@ public class RoomCategoryService implements RoomCategoryServiceImpl {
 	}
 
 	@Override
+	@Transactional
 	public MasterRoomCategoryDTO editRoomCategory(Long id, MasterRoomCategoryDTO roomDTO) {
 		// TODO Auto-generated method stub
 
@@ -81,6 +85,7 @@ public class RoomCategoryService implements RoomCategoryServiceImpl {
 	}
 
 	@Override
+	@Transactional
 	public ResponseEntity<String> deleteRoomCategory(Long id) {
 		// TODO Auto-generated method stub
 

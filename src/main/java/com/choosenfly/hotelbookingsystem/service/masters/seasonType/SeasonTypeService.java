@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.choosenfly.hotelbookingsystem.dto.masters.MasterSeasonTypeDTO;
@@ -22,6 +23,7 @@ public class SeasonTypeService implements SeasonTypeServiceInterface{
 	}
 
 	@Override
+	@Transactional
 	public Long saveSeasonType(MasterSeasonTypeDTO dto) {
 		// TODO Auto-generated method stub
 		
@@ -36,6 +38,7 @@ public class SeasonTypeService implements SeasonTypeServiceInterface{
 	}
 
 	@Override
+	@Transactional
 	public MasterSeasonTypeDTO getSeasonTypeById(Long id) {
 		// TODO Auto-generated method stub
 		
@@ -50,6 +53,7 @@ public class SeasonTypeService implements SeasonTypeServiceInterface{
 	}
 
 	@Override
+	@Transactional
 	public MasterSeasonTypeDTO editSeasonType(Long id, MasterSeasonTypeDTO seasonDTO) {
 		// TODO Auto-generated method stub
 		
@@ -67,6 +71,7 @@ public class SeasonTypeService implements SeasonTypeServiceInterface{
 	}
 
 	@Override
+	@Transactional
 	public ResponseEntity<String> deleteSeasonType(Long id) {
 		// TODO Auto-generated method stub
 		
@@ -79,6 +84,7 @@ public class SeasonTypeService implements SeasonTypeServiceInterface{
 	}
 
 	@Override
+	@Transactional
 	public Page<MasterSeasonTypeDTO> getAllSeasonTypes(Pageable pageable, String search) {
 		// TODO Auto-generated method stub
 		 Page<MasterSeasonType> seasonPage;
