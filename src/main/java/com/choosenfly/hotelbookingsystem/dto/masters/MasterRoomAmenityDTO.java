@@ -4,11 +4,9 @@ public class MasterRoomAmenityDTO  {
 
     private Long amenitiesId;
 
-    private String name;
+    private String roomAmenity;
 
     private Boolean isDeleted;
-
-    private String hotelRoomAmenities;
 
 	public Long getAmenitiesId() {
 		return amenitiesId;
@@ -18,12 +16,12 @@ public class MasterRoomAmenityDTO  {
 		this.amenitiesId = amenitiesId;
 	}
 
-	public String getName() {
-		return name;
+	public String getRoomAmenity() {
+		return roomAmenity;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setRoomAmenity(String roomAmenity) {
+		this.roomAmenity = roomAmenity;
 	}
 
 	public Boolean getIsDeleted() {
@@ -34,19 +32,13 @@ public class MasterRoomAmenityDTO  {
 		this.isDeleted = isDeleted;
 	}
 
-	public String getHotelRoomAmenities() {
-		return hotelRoomAmenities;
-	}
-
-	public void setHotelRoomAmenities(String hotelRoomAmenities) {
-		this.hotelRoomAmenities = hotelRoomAmenities;
-	}
-
 	@Override
 	public String toString() {
-		return "MasterRoomAmenities [amenitiesId=" + amenitiesId + ", name=" + name + ", isDeleted=" + isDeleted
-				+ ", hotelRoomAmenities=" + hotelRoomAmenities + "]";
+		return "MasterRoomAmenityDTO [amenitiesId=" + amenitiesId + ", roomAmenity=" + roomAmenity + ", isDeleted="
+				+ isDeleted + "]";
 	}
+
+	
 
 
     

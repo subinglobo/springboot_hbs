@@ -32,7 +32,7 @@ public class RoomAmenityService implements RoomAmenityServiceImpl{
 		// TODO Auto-generated method stub
 		
 		 MasterRoomAmenities entity = new MasterRoomAmenities();
-		 entity.setName(dto.getName());
+		 entity.setName(dto.getRoomAmenity());
 		 entity.setIsDeleted(false);
 		 MasterRoomAmenities save = masterRoomAmenitiesRepository.save(entity);
 		 if(save.getAmenitiesId() != 0) {
@@ -50,7 +50,7 @@ public class RoomAmenityService implements RoomAmenityServiceImpl{
 		
 		MasterRoomAmenityDTO dto = new MasterRoomAmenityDTO();
 		dto.setAmenitiesId(roomAmenityEntity.getAmenitiesId());
-		dto.setName(roomAmenityEntity.getName());
+		dto.setRoomAmenity(roomAmenityEntity.getName());
 		dto.setIsDeleted(roomAmenityEntity.getIsDeleted());
 		return dto;
 	}
@@ -62,13 +62,13 @@ public class RoomAmenityService implements RoomAmenityServiceImpl{
 		MasterRoomAmenities roomAmenityEntity = masterRoomAmenitiesRepository.findById(id)
 				.orElseThrow(() -> new EntityNotFoundException("Room Amenity not found for id : " + id));
 
-		roomAmenityEntity.setName(roomAmenityDTO.getName());
+		roomAmenityEntity.setName(roomAmenityDTO.getRoomAmenity());
 		roomAmenityEntity.setIsDeleted(false);
 		MasterRoomAmenities save = masterRoomAmenitiesRepository.save(roomAmenityEntity);
 		
 		MasterRoomAmenityDTO dto = new MasterRoomAmenityDTO();
 		dto.setAmenitiesId(save.getAmenitiesId());
-		dto.setName(save.getName());
+		dto.setRoomAmenity(save.getName());
 		dto.setIsDeleted(save.getIsDeleted());
 		return dto;
 	}
@@ -82,7 +82,7 @@ public class RoomAmenityService implements RoomAmenityServiceImpl{
 				.orElseThrow(() -> new EntityNotFoundException("Room Amenity not found for id : " + id));
 		
 		masterRoomAmenitiesRepository.delete(roomAmenityEntity);
-		return ResponseEntity.ok("Room Amenity with id "+ id + "deleted successfully");
+		return ResponseEntity.ok("Room Amenity with id "+ id + " deleted successfully");
 		
 	}
 
@@ -101,7 +101,7 @@ public class RoomAmenityService implements RoomAmenityServiceImpl{
 		    return roomAmenityPage.map(roomAmenity -> {
 		    	MasterRoomAmenityDTO dto = new MasterRoomAmenityDTO();
 				dto.setAmenitiesId(roomAmenity.getAmenitiesId());
-				dto.setName(roomAmenity.getName());
+				dto.setRoomAmenity(roomAmenity.getName());
 				dto.setIsDeleted(roomAmenity.getIsDeleted());
 				return dto;
 		    });
