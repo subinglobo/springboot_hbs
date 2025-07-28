@@ -14,7 +14,7 @@ import jakarta.persistence.Table;
 public class MasterRoomCategory extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "room_category_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "room_category_id", nullable = false)
     private Long roomCategoryId;
 

@@ -5,11 +5,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.choosenfly.hotelbookingsystem.entities.master.MasterPlace;
+import com.choosenfly.hotelbookingsystem.entities.master.MasterRoomAmenities;
 
 @Repository
-public interface MasterPlaceRepository extends JpaRepository<MasterPlace, Long> {
+public interface MasterRoomAmenitiesRepository extends JpaRepository<MasterRoomAmenities, Long>{
 
-	Page<MasterPlace> findByNameContainingIgnoreCase(String search, Pageable pageable);
+	Page<MasterRoomAmenities> findByNameContainingIgnoreCase(String search, Pageable pageable);
+
+	
 
 }

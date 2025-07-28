@@ -23,6 +23,7 @@ import com.choosenfly.hotelbookingsystem.dto.occupancy.RoomOccupancyDTO;
 import com.choosenfly.hotelbookingsystem.entities.hotel.Hotel;
 import com.choosenfly.hotelbookingsystem.entities.hotel.HotelRoom;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterMarketType;
+import com.choosenfly.hotelbookingsystem.entities.master.MasterOccupancyType;
 import com.choosenfly.hotelbookingsystem.entities.minimumlength.MinimumLength;
 import com.choosenfly.hotelbookingsystem.entities.minimumlength.MinimumLengthStay;
 import com.choosenfly.hotelbookingsystem.entities.minimumlength.MinimumLengthValidity;
@@ -34,7 +35,6 @@ import com.choosenfly.hotelbookingsystem.exceptions.HotelNotFoundException;
 import com.choosenfly.hotelbookingsystem.repository.hotel.HotelRepository;
 import com.choosenfly.hotelbookingsystem.repository.hotel.HotelRoomRepository;
 import com.choosenfly.hotelbookingsystem.repository.master.MasterMarketTypeRepository;
-import com.choosenfly.hotelbookingsystem.repository.master.MasterOccupancyType;
 import com.choosenfly.hotelbookingsystem.repository.minimumlength.MinimumLengthRepository;
 import com.choosenfly.hotelbookingsystem.repository.occupancy.OccupancyRepository;
 import com.choosenfly.hotelbookingsystem.repository.occupancy.OccupancyTypeRepository;
@@ -117,7 +117,7 @@ public class OccupancyService implements OccupancyServiceInterface {
 					.collect(Collectors.toMap(MasterOccupancyType::getOccupancyTypeId, o -> o));
 
 			// Get existing room occupancies and clear them to prevent stale data
-			List<RoomOccupancy> existingRoomOccupancies = room.getRoomOccupancies();
+			List<RoomOccupancy> existingRoomOccupancies = room.getRoomOccupancies(); 
 			existingRoomOccupancies.clear();
 
 			// Process each room occupancy in the request
