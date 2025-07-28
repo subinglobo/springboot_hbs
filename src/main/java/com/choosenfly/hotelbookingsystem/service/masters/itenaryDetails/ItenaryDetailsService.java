@@ -4,16 +4,24 @@ import java.io.File;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.choosenfly.hotelbookingsystem.dto.masters.MasterAgentCategoryDTO;
 import com.choosenfly.hotelbookingsystem.dto.masters.MasterItenaryDetailsDTO;
+import com.choosenfly.hotelbookingsystem.dto.masters.MasterVisaInformationDTO;
+import com.choosenfly.hotelbookingsystem.entities.master.MasterAgentCategory;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterItenaryDetails;
+import com.choosenfly.hotelbookingsystem.entities.master.MasterVisaInformation;
 import com.choosenfly.hotelbookingsystem.repository.master.MasterAgentCategoryRepository;
 import com.choosenfly.hotelbookingsystem.repository.master.MasterItenaryDetailsRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
@@ -28,62 +36,155 @@ public class ItenaryDetailsService implements ItenaryDetailsServiceInterface{
 		
 	}
 
-	@Override
-	@Transactional
 	public Long saveItenaryDetails(@Valid MasterItenaryDetailsDTO itenaryDTO) {
-		// TODO Auto-generated method stub
-		MasterItenaryDetails entity = new MasterItenaryDetails();
-		entity.setItineraryCode(itenaryDTO.getItineraryCode());
-		entity.setItineraryDesc(itenaryDTO.getItineraryDesc());
-		entity.setItineraryHeading(itenaryDTO.getItineraryHeading());
-	    // Handle image upload
-		MultipartFile itineraryImg = itenaryDTO.getItineraryImg();
-	    if (itineraryImg != null && !itineraryImg.isEmpty()) {
-	//        String uploadDir = ContextConstants.fileStoreLocationSave + "/itineraryImages/";
-//	        String imageUrl = saveImage(uploadDir, itineraryImg);
-//	        entity.setItineraryImg(imageUrl);
-	    }
+	    
+	    MasterItenaryDetails entity = new MasterItenaryDetails();
+	    entity.setItineraryCode(itenaryDTO.getItineraryCode());
+	    entity.setItineraryDesc(itenaryDTO.getItineraryDesc());
+	    entity.setItineraryHeading(itenaryDTO.getItineraryHeading());
 
-		return null;
+	    MultipartFile itineraryImg = itenaryDTO.getItineraryImg();
+	    System.out.println("itineraryImg:::" + itineraryImg);
+
+	    if (itineraryImg != null && !itineraryImg.isEmpty()) {
+	        try {
+	            String uploadDir = "D:/akhil sajeev/save/";
+	            String fileName = System.currentTimeMillis() + "_" + itineraryImg.getOriginalFilename(); // prevent overwrite
+
+	            File saveFile = new File(uploadDir + fileName);
+	            saveFile.getParentFile().mkdirs();
+
+	            itineraryImg.transferTo(saveFile);
+	            System.out.println("Image saved to disk at: " + saveFile.getAbsolutePath());
+	            entity.setItineraryImg(saveFile.getAbsolutePath()); // Assuming your entity has this field
+
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	    itenaryDetailsRepository.save(entity);
+	    return entity.getItineraryId(); // Assuming your entity has an auto-generated ID
 	}
 	
-	private String saveImage(String directory, MultipartFile file) throws IOException {
-	    if (file == null || file.isEmpty()) {
-	        throw new IllegalArgumentException("File is null or empty");
+	@Override
+	@Transactional
+	public MasterItenaryDetailsDTO getItenaryDetailsById(Long id) {
+	    MasterItenaryDetails itenaryDetails = itenaryDetailsRepository.findById(id)
+	        .orElseThrow(() -> new EntityNotFoundException("itinerary is not found Exception: " + id));
+
+	    if (itenaryDetails.getItineraryId() != null) {
+	        MasterItenaryDetailsDTO itenaryDetailsDTO = new MasterItenaryDetailsDTO();
+	        itenaryDetailsDTO.setItineraryCode(itenaryDetails.getItineraryCode());
+	        itenaryDetailsDTO.setItineraryDesc(itenaryDetails.getItineraryDesc());
+	        itenaryDetailsDTO.setItineraryHeading(itenaryDetails.getItineraryHeading());
+	        itenaryDetailsDTO.setItineraryId(itenaryDetails.getItineraryId());
+
+	        itenaryDetailsDTO.setImagePath(itenaryDetails.getItineraryImg());
+
+	        return itenaryDetailsDTO;
 	    }
-	    
-	    String originalFilename = file.getOriginalFilename();
-	    if (originalFilename == null) {
-	        originalFilename = "unnamed_file";
-	    }
-	    
-	    String sanitizedFilename = originalFilename.replaceAll("[^a-zA-Z0-9.-]", "_");
-	    String fileName = System.currentTimeMillis() + "_" + sanitizedFilename;
-	    File dest = new File(directory + fileName);
-	    dest.getParentFile().mkdirs();
-	    file.transferTo(dest);
-	    
-	    // Return the public URL (adjust this based on your actual public URL structure)
-	    String publicUrlPrefix = "https://b2b.choosenfly.com/assets/itineraryImages/";
-	    return publicUrlPrefix + fileName;
+
+	    return null;
 	}
 
 	@Override
-	public MasterAgentCategoryDTO getItenaryDetailsById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public MasterItenaryDetailsDTO editItenaryDetails(Long id, @Valid MasterItenaryDetailsDTO itenaryDTO) {
 
-	@Override
-	public MasterAgentCategoryDTO editItenaryDetails(Long id, @Valid MasterItenaryDetailsDTO itenaryDTO) {
-		// TODO Auto-generated method stub
-		return null;
+	    // Step 1: Fetch existing record
+	    MasterItenaryDetails itenaryDetails = itenaryDetailsRepository.findById(id)
+	            .orElseThrow(() -> new EntityNotFoundException("Itinerary not found: " + id));
+
+	    // Step 2: Update text fields
+	    itenaryDetails.setItineraryCode(itenaryDTO.getItineraryCode());
+	    itenaryDetails.setItineraryDesc(itenaryDTO.getItineraryDesc());
+	    itenaryDetails.setItineraryHeading(itenaryDTO.getItineraryHeading());
+
+	    // Step 3: Handle file replacement
+	    MultipartFile newFile = itenaryDTO.getItineraryImg();
+	    if (newFile != null && !newFile.isEmpty()) {
+	        try {
+	            // Define upload path
+	            String uploadDir = "D:/akhil sajeev/save/";
+	            String newFileName = System.currentTimeMillis() + "_" + newFile.getOriginalFilename();
+	            File destFile = new File(uploadDir + newFileName);
+	            destFile.getParentFile().mkdirs();
+
+	            // Save new file to disk
+	            newFile.transferTo(destFile);
+
+	            // Optionally: delete old file if needed
+	            String oldFilePath = itenaryDetails.getItineraryImg();
+	            if (oldFilePath != null) {
+	                File oldFile = new File(oldFilePath);
+	                if (oldFile.exists()) {
+	                    oldFile.delete(); // delete old file
+	                }
+	            }
+
+	            // Update path in entity
+	            itenaryDetails.setItineraryImg(destFile.getAbsolutePath());
+
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    // Step 4: Save updated entity
+	    itenaryDetailsRepository.save(itenaryDetails);
+
+	    // Step 5: Return updated DTO
+	    MasterItenaryDetailsDTO responseDTO = new MasterItenaryDetailsDTO();
+	    responseDTO.setItineraryId(itenaryDetails.getItineraryId());
+	    responseDTO.setItineraryCode(itenaryDetails.getItineraryCode());
+	    responseDTO.setItineraryDesc(itenaryDetails.getItineraryDesc());
+	    responseDTO.setItineraryHeading(itenaryDetails.getItineraryHeading());
+	    responseDTO.setImagePath(itenaryDetails.getItineraryImg());
+
+	    return responseDTO;
 	}
 
 	@Override
 	public ResponseEntity<String> deleteItenaryDetails(Long id) {
 		// TODO Auto-generated method stub
-		return null;
+		  MasterItenaryDetails itenaryDetails = itenaryDetailsRepository.findById(id)
+		            .orElseThrow(() -> new EntityNotFoundException("Itinerary not found: " + id));
+		  
+		    String imagePath = itenaryDetails.getItineraryImg(); // or .getItineraryImg()
+		    if (imagePath != null) {
+		        File imageFile = new File(imagePath);
+		        if (imageFile.exists()) {
+		            imageFile.delete();
+		        }
+		    }
+		    itenaryDetailsRepository.delete(itenaryDetails);
+		    
+		  return ResponseEntity.ok("Itenary with id " + id + " deleted successfully");
+
 	}
+
+	@Override
+	@Transactional
+	public Page<MasterItenaryDetailsDTO> getAllItenaryDetails(Pageable pageable, String search) {
+		// TODO Auto-generated method stub
+		
+	    Page<MasterItenaryDetails> itenaryPage;
+
+	    if (StringUtils.hasText(search)) {
+	    	itenaryPage = itenaryDetailsRepository.findByitineraryHeadingContainingIgnoreCase(search, pageable);
+	    } else {
+	    	itenaryPage = itenaryDetailsRepository.findAll(pageable);
+	    }
+
+	    return itenaryPage.map(dayActivity -> {
+	    	MasterItenaryDetailsDTO dto = new MasterItenaryDetailsDTO();
+	    	dto.setItineraryId(dayActivity.getItineraryId());
+	    	dto.setImagePath(dayActivity.getItineraryImg());
+	    	dto.setItineraryCode(dayActivity.getItineraryCode());
+	    	dto.setItineraryDesc(dayActivity.getItineraryDesc());
+	    	dto.setItineraryHeading(dayActivity.getItineraryHeading());
+	        return dto;
+	    });
+	}
+	
 
 }

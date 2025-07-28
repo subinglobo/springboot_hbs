@@ -143,6 +143,7 @@ public class DayActivitiesService implements DayActivitiesServiceInterface{
 
 	    return dayActivityPage.map(dayActivity -> {
 	    	MasterDayActivitiesDTO dto = new MasterDayActivitiesDTO();
+	    	dto.setDayActivityId(dayActivity.getDayActivityId());
 	    	dto.setActivityName(dayActivity.getActivityName());
 	    	dto.setActivityCode(dayActivity.getActivityCode());
 	    	dto.setDescription(dayActivity.getDescription());

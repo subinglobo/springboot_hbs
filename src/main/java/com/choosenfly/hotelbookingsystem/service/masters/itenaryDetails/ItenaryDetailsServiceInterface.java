@@ -1,5 +1,7 @@
 package com.choosenfly.hotelbookingsystem.service.masters.itenaryDetails;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
 import com.choosenfly.hotelbookingsystem.dto.masters.MasterAgentCategoryDTO;
@@ -11,10 +13,12 @@ public interface ItenaryDetailsServiceInterface {
 
 	Long saveItenaryDetails(@Valid MasterItenaryDetailsDTO itenaryDTO);
 
-	MasterAgentCategoryDTO getItenaryDetailsById(Long id);
+	MasterItenaryDetailsDTO getItenaryDetailsById(Long id);
 
-	MasterAgentCategoryDTO editItenaryDetails(Long id, @Valid MasterItenaryDetailsDTO itenaryDTO);
+	MasterItenaryDetailsDTO editItenaryDetails(Long id, @Valid MasterItenaryDetailsDTO itenaryDTO);
 
 	ResponseEntity<String> deleteItenaryDetails(Long id);
+
+	Page<MasterItenaryDetailsDTO> getAllItenaryDetails(Pageable pageable, String search);
 
 }

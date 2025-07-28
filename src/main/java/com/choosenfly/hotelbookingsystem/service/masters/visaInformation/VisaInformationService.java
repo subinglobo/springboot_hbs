@@ -98,6 +98,7 @@ public class VisaInformationService implements VisaInformationServiceInterface{
 		
 		MasterVisaInformation save = informationRepository.save(visaData);
 		MasterVisaInformationDTO dto = new MasterVisaInformationDTO();
+		dto.setVisaId(save.getVisaId());
 		dto.setCountryId(save.getCountry().getId());
 		dto.setPassportCode(save.getPassportCode());
 		dto.setPaxPassportCountryId(save.getPassportCountry().getId());
@@ -132,6 +133,7 @@ public class VisaInformationService implements VisaInformationServiceInterface{
 
 	    return visaInfoPage.map(dayActivity -> {
 			MasterVisaInformationDTO dto = new MasterVisaInformationDTO();
+			dto.setVisaId(dayActivity.getVisaId());
 			dto.setCountryId(dayActivity.getCountry().getId());
 			dto.setPassportCode(dayActivity.getPassportCode());
 			dto.setPaxPassportCountryId(dayActivity.getPassportCountry().getId());

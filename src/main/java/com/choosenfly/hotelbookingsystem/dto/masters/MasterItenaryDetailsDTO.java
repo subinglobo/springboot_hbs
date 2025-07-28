@@ -13,6 +13,8 @@ public class MasterItenaryDetailsDTO {
     private String itineraryHeading;
     
     private MultipartFile itineraryImg;
+    
+    private String imagePath;
 
 	public Long getItineraryId() {
 		return itineraryId;
@@ -54,11 +56,21 @@ public class MasterItenaryDetailsDTO {
 		this.itineraryImg = itineraryImg;
 	}
 
+	
+	public String getImagePath() {
+		return imagePath;
+	}
+
+	public void setImagePath(String imagePath) {
+		this.imagePath = imagePath;
+	}
+
+	
 	@Override
 	public String toString() {
 		return "MasterItenaryDetailsDTO [itineraryId=" + itineraryId + ", itineraryCode=" + itineraryCode
 				+ ", itineraryDesc=" + itineraryDesc + ", itineraryHeading=" + itineraryHeading + ", itineraryImg="
-				+ itineraryImg + "]";
+				+ itineraryImg + ", imagePath=" + imagePath + "]";
 	}  
     
     
