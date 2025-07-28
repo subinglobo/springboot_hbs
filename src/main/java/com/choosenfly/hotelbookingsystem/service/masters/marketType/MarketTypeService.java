@@ -73,7 +73,7 @@ public class MarketTypeService implements MarketTypeServiceInterface {
 				masterMarketTypeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Market Type not found for id :" + id));
 		
 		masterMarketTypeRepository.delete(marketData);
-		return ResponseEntity.ok("Market Type  with id " + id + " deleted successfully");
+		return ResponseEntity.ok("Market Type with id " + id + " deleted successfully");
 	}
 
 }
