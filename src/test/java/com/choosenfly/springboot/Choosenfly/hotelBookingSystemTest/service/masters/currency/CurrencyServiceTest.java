@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -67,6 +68,19 @@ class CurrencyServiceTest {
         assertEquals(1L, savedId);
         verify(masterCurrencyRepository, times(1)).save(any(MasterCurrency.class));
     }
+    
+    @Test
+    void testSaveCurrency_NullOrEmptyDTO() {
+        // Null case
+        assertThrows(IllegalArgumentException.class, () -> currencyService.saveCurrency(null));
+        verify(masterCurrencyRepository, never()).save(any());
+
+        // Empty case
+        MasterCurrencyDTO emptyDTO = new MasterCurrencyDTO();
+        assertThrows(IllegalArgumentException.class, () -> currencyService.saveCurrency(emptyDTO));
+        verify(masterCurrencyRepository, never()).save(any());
+    }
+
 
     @Test
     void testGetCurrencyDetailsById_Success() {

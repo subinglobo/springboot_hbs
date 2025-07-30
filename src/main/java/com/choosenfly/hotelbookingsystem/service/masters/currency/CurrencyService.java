@@ -7,9 +7,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.choosenfly.hotelbookingsystem.dto.masters.MasterCurrencyDTO;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterCurrency;
+import com.choosenfly.hotelbookingsystem.exceptions.EntityNotFoundException;
+import com.choosenfly.hotelbookingsystem.exceptions.InvalidFeildException;
+import com.choosenfly.hotelbookingsystem.exceptions.MissingRequestBodyException;
 import com.choosenfly.hotelbookingsystem.repository.master.MasterCurrencyRepository;
 
-import jakarta.persistence.EntityNotFoundException;
+
 
 @Service
 public class CurrencyService implements CurrencyServiceInterface {
@@ -22,14 +25,24 @@ public class CurrencyService implements CurrencyServiceInterface {
 	public Long saveCurrency(MasterCurrencyDTO currecyDTO) {
 		// TODO Auto-generated method stub
 		
+		if (currecyDTO == null) {
+	        throw new MissingRequestBodyException("Request Body cannot be null"); 
+	        
+	    }
+		if (currecyDTO.getCurrencyId() != null) {
+	        throw new InvalidFeildException("Currency ID should not be provided when creating a new currency");
+	    }
+		
 		MasterCurrency entity = new MasterCurrency();
-		entity.setName(currecyDTO.getName());
-		entity.setCurrencyCode(currecyDTO.getCurrencyCode());
-		entity.setValue(currecyDTO.getValue());
-		entity.setIsDeleted(false);
-		MasterCurrency save = masterCurrencyRepository.save(entity);
-		if(save.getCurrencyId() != 0 ) {
-			return save.getCurrencyId();
+		if (currecyDTO.getCurrencyId() == null) {
+			entity.setName(currecyDTO.getName());
+			entity.setCurrencyCode(currecyDTO.getCurrencyCode());
+			entity.setValue(currecyDTO.getValue());
+			entity.setIsDeleted(false);
+			MasterCurrency save = masterCurrencyRepository.save(entity);
+			if (save.getCurrencyId() != 0) {
+				return save.getCurrencyId();
+			}
 		}
 		return null;
 	}
