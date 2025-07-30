@@ -27,7 +27,6 @@ import com.choosenfly.hotelbookingsystem.service.masters.bank.BankService;
 
 import jakarta.persistence.EntityNotFoundException;
 
-//@SpringBootTest(classes = com.choosenfly.hotelbookingsystem.ChoosenflyHotelBookingSystemApplication.class)
 @ExtendWith(MockitoExtension.class)
 class BankServiceTest {
 

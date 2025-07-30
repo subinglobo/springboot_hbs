@@ -33,7 +33,7 @@ import com.choosenfly.hotelbookingsystem.service.masters.marketType.MarketTypeSe
 import jakarta.persistence.EntityNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
-class MarketTypeTest {
+class MarketTypeServiceTest {
 
     @Mock
     private MasterMarketTypeRepository masterMarketTypeRepository;
