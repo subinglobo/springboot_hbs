@@ -18,6 +18,8 @@ import com.choosenfly.hotelbookingsystem.exceptions.HotelNotFoundException;
 import com.choosenfly.hotelbookingsystem.exceptions.InvalidFeildException;
 import com.choosenfly.hotelbookingsystem.exceptions.InvalidUserTypeException;
 import com.choosenfly.hotelbookingsystem.exceptions.MissingRequestBodyException;
+import com.choosenfly.hotelbookingsystem.exceptions.StateCountryMismatchException;
+
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -132,5 +134,26 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
 	}
 	
+	@ExceptionHandler(EntityCreationException.class)
+	public ResponseEntity<ErrorResponse> handleEntityCreationException(EntityCreationException ex) {
+	    String errorMessage = ex.getMessage();
 
-}
+	    ErrorResponse errorResponse = new ErrorResponse(
+	            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+	            "Entity Creation Failed",
+	            errorMessage
+	    );
+
+	    return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	@ExceptionHandler(StateCountryMismatchException.class)
+	public ResponseEntity<ErrorResponse> handleStateCountryMismatch(StateCountryMismatchException ex) {
+		// Extract the first error message
+		String errorMessage = ex.getMessage();
+		
+		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Bad Request", errorMessage);
+		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
+
+} 
