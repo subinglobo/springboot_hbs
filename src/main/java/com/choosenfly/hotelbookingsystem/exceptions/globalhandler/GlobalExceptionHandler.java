@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.choosenfly.hotelbookingsystem.dto.error.ErrorResponse;
+import com.choosenfly.hotelbookingsystem.exceptions.DataNotFoundException;
 import com.choosenfly.hotelbookingsystem.exceptions.EntityNotFoundException;
 import com.choosenfly.hotelbookingsystem.exceptions.HotelNotFoundException;
 import com.choosenfly.hotelbookingsystem.exceptions.InvalidFeildException;
@@ -113,6 +114,16 @@ public class GlobalExceptionHandler {
 	
 	@ExceptionHandler(InvalidFeildException.class)
 	public ResponseEntity<ErrorResponse> handleInvalidFeildException(InvalidFeildException ex) {
+		// Extract the first error message
+		String errorMessage = ex.getMessage();
+		
+
+		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Bad Request", errorMessage);
+		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(DataNotFoundException.class)
+	public ResponseEntity<ErrorResponse> handleDataNotFoundException(DataNotFoundException ex) {
 		// Extract the first error message
 		String errorMessage = ex.getMessage();
 		

@@ -1,12 +1,14 @@
 package com.choosenfly.hotelbookingsystem.service.masters.currency;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.choosenfly.hotelbookingsystem.dto.masters.MasterCurrencyDTO;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterCurrency;
+import com.choosenfly.hotelbookingsystem.exceptions.DataNotFoundException;
 import com.choosenfly.hotelbookingsystem.exceptions.EntityNotFoundException;
 import com.choosenfly.hotelbookingsystem.exceptions.InvalidFeildException;
 import com.choosenfly.hotelbookingsystem.exceptions.MissingRequestBodyException;
@@ -92,13 +94,26 @@ public class CurrencyService implements CurrencyServiceInterface {
 	public ResponseEntity<String> deleteCurrency(Long id) {
 		// TODO Auto-generated method stub
 		
-		MasterCurrency entityData = 
-				masterCurrencyRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Currency not found for id :"+id));
+		try {
+			MasterCurrency entityData = 
+					masterCurrencyRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Currency not found for id :"+id));
+			
+			masterCurrencyRepository.delete(entityData);
+			
+			
+			return ResponseEntity.ok("Currency with id " + id + " deleted successfully");
 		
-		masterCurrencyRepository.delete(entityData);
-		
-		
-		return ResponseEntity.ok("Currency with id " + id + " deleted successfully");
+		}catch (DataNotFoundException e) {
+			// Log the not found error
+
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+
+		} 
+		catch(Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("An error occurred while deleting hotel with id " + id + ": " + e.getMessage());
+		}
+	
 	}
 
 }
