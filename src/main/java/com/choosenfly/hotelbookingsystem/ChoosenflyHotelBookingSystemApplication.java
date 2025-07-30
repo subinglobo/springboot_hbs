@@ -16,6 +16,6 @@ public class ChoosenflyHotelBookingSystemApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(ChoosenflyHotelBookingSystemApplication.class, args); 
-	}
+	} 
 
 }
