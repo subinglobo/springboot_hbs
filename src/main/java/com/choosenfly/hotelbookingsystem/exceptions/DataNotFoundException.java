@@ -1,12 +1,12 @@
 package com.choosenfly.hotelbookingsystem.exceptions;
 
-public class InvalidFeildException extends RuntimeException{
+public class DataNotFoundException  extends RuntimeException{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public InvalidFeildException(String message) {
+	public DataNotFoundException(String message) {
 		super(message);
 	}
 

@@ -7,9 +7,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.choosenfly.hotelbookingsystem.dto.masters.MasterMarkupTypeDTO;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterMarkupType;
+import com.choosenfly.hotelbookingsystem.exceptions.EntityNotFoundException;
+import com.choosenfly.hotelbookingsystem.exceptions.InvalidFeildException;
 import com.choosenfly.hotelbookingsystem.repository.master.MasterMarkupTypeRepository;
 
-import jakarta.persistence.EntityNotFoundException;
+
 
 @Service
 public class MarkupTypeService implements MarkupTypeServiceInterface{
@@ -25,6 +27,14 @@ public class MarkupTypeService implements MarkupTypeServiceInterface{
 	@Transactional
 	public Long saveMarkupType(MasterMarkupTypeDTO markupDTO) {
 		// TODO Auto-generated method stub
+		
+		if (markupDTO == null) {
+	        throw new NullPointerException("Request Body cannot be null");  
+	        
+	    }
+		if (markupDTO.getId() != null) {
+	        throw new InvalidFeildException("Markup Type ID should not be provided when creating a new markupType");
+	    }
 		
 		MasterMarkupType entity = new MasterMarkupType();
 		entity.setName(markupDTO.getName());

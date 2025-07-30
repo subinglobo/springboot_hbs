@@ -2,16 +2,25 @@ package com.choosenfly.hotelbookingsystem.dto.masters;
 
 import com.choosenfly.hotelbookingsystem.entities.base.BaseEntity;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 public class MasterCurrencyDTO extends BaseEntity{
     
     private Long currencyId;
 
     private Boolean isDeleted;
 
+    @NotNull(message = "Name cannot be null")
+    @NotBlank(message = "Name cannot be empty")
     private String name;
 
+    @NotNull(message = "Value cannot be null")
+    @NotBlank(message = "Value cannot be empty")
     private String value;
 
+    @NotNull(message = "Currency code cannot be null")
+    @NotBlank(message = "Currency code cannot be empty")
     private String currencyCode;
 
 	public Long getCurrencyId() {

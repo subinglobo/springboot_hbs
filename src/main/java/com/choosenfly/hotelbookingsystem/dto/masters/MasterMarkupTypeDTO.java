@@ -2,6 +2,11 @@ package com.choosenfly.hotelbookingsystem.dto.masters;
 
 import com.choosenfly.hotelbookingsystem.entities.master.MasterMarkupType.Markup;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+
+
 public class MasterMarkupTypeDTO {
 
     private Long id;
@@ -10,10 +15,15 @@ public class MasterMarkupTypeDTO {
 
     private  String  isType;
 
+    @NotNull(message = "Markup cannot be null")
+    @NotBlank(message = "Markup cannot be empty")
     private String markup;
 
+    @NotNull(message = "MarkupType cannot be null")
     private Markup markupType;
 
+    @NotNull(message = "Name cannot be null")
+    @NotBlank(message = "Name cannot be empty")
     private String name;
 
 	public Long getId() {
