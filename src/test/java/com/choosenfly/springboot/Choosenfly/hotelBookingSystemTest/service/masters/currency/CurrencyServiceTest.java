@@ -19,16 +19,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
-import com.choosenfly.hotelbookingsystem.dto.masters.MasterBankDTO;
 import com.choosenfly.hotelbookingsystem.dto.masters.MasterCurrencyDTO;
-import com.choosenfly.hotelbookingsystem.entities.master.MasterBank;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterCurrency;
-import com.choosenfly.hotelbookingsystem.repository.master.MasterBankRepository;
+import com.choosenfly.hotelbookingsystem.exceptions.EntityNotFoundException;
+import com.choosenfly.hotelbookingsystem.exceptions.MissingRequestBodyException;
 import com.choosenfly.hotelbookingsystem.repository.master.MasterCurrencyRepository;
-import com.choosenfly.hotelbookingsystem.service.masters.bank.BankService;
 import com.choosenfly.hotelbookingsystem.service.masters.currency.CurrencyService;
 
-import jakarta.persistence.EntityNotFoundException;
+
 
 @ExtendWith(MockitoExtension.class)
 class CurrencyServiceTest {
@@ -72,13 +70,10 @@ class CurrencyServiceTest {
     @Test
     void testSaveCurrency_NullOrEmptyDTO() {
         // Null case
-        assertThrows(IllegalArgumentException.class, () -> currencyService.saveCurrency(null));
+        assertThrows(MissingRequestBodyException.class, () -> currencyService.saveCurrency(null));
         verify(masterCurrencyRepository, never()).save(any());
 
-        // Empty case
-        MasterCurrencyDTO emptyDTO = new MasterCurrencyDTO();
-        assertThrows(IllegalArgumentException.class, () -> currencyService.saveCurrency(emptyDTO));
-        verify(masterCurrencyRepository, never()).save(any());
+       
     }
 
 

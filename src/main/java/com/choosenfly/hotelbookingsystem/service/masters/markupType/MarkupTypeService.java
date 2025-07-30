@@ -9,6 +9,7 @@ import com.choosenfly.hotelbookingsystem.dto.masters.MasterMarkupTypeDTO;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterMarkupType;
 import com.choosenfly.hotelbookingsystem.exceptions.EntityNotFoundException;
 import com.choosenfly.hotelbookingsystem.exceptions.InvalidFeildException;
+import com.choosenfly.hotelbookingsystem.exceptions.MissingRequestBodyException;
 import com.choosenfly.hotelbookingsystem.repository.master.MasterMarkupTypeRepository;
 
 
@@ -29,7 +30,7 @@ public class MarkupTypeService implements MarkupTypeServiceInterface{
 		// TODO Auto-generated method stub
 		
 		if (markupDTO == null) {
-	        throw new NullPointerException("Request Body cannot be null");  
+	        throw new MissingRequestBodyException("Request Body cannot be null");  
 	        
 	    }
 		if (markupDTO.getId() != null) {

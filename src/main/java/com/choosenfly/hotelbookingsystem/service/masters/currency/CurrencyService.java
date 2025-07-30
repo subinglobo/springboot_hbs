@@ -94,7 +94,6 @@ public class CurrencyService implements CurrencyServiceInterface {
 	public ResponseEntity<String> deleteCurrency(Long id) {
 		// TODO Auto-generated method stub
 		
-		try {
 			MasterCurrency entityData = 
 					masterCurrencyRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Currency not found for id :"+id));
 			
@@ -103,16 +102,7 @@ public class CurrencyService implements CurrencyServiceInterface {
 			
 			return ResponseEntity.ok("Currency with id " + id + " deleted successfully");
 		
-		}catch (DataNotFoundException e) {
-			// Log the not found error
-
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-
-		} 
-		catch(Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("An error occurred while deleting hotel with id " + id + ": " + e.getMessage());
-		}
+		
 	
 	}
 
