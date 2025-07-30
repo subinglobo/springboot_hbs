@@ -29,7 +29,7 @@ public class MarkupTypeService implements MarkupTypeServiceInterface{
 		// TODO Auto-generated method stub
 		
 		if (markupDTO == null) {
-	        throw new NullPointerException("Request Body cannot be null"); 
+	        throw new NullPointerException("Request Body cannot be null");  
 	        
 	    }
 		if (markupDTO.getId() != null) {
