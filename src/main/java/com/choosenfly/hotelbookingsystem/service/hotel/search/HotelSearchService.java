@@ -39,7 +39,7 @@ public class HotelSearchService {
     @PostConstruct
     public void debugRoutingKeys() {
         System.out.println("Hotel RabbitMQ Properties: " + rabbitMQProperties);
-    }
+    } 
 
     public String initiateSearch(HotelSearchRequest request) {
         String searchId = UUID.randomUUID().toString();
