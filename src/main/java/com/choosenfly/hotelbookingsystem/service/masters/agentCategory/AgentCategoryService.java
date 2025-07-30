@@ -1,6 +1,7 @@
 package com.choosenfly.hotelbookingsystem.service.masters.agentCategory;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -8,10 +9,12 @@ import com.choosenfly.hotelbookingsystem.dto.masters.MasterAgentCategoryDTO;
 import com.choosenfly.hotelbookingsystem.dto.masters.MasterBankDTO;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterAgentCategory;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterBank;
+import com.choosenfly.hotelbookingsystem.exceptions.EntityNotFoundException;
+import com.choosenfly.hotelbookingsystem.exceptions.globalhandler.EntityCreationException;
 import com.choosenfly.hotelbookingsystem.repository.master.MasterAgentCategoryRepository;
 import com.choosenfly.hotelbookingsystem.repository.master.MasterBankRepository;
 
-import jakarta.persistence.EntityNotFoundException;
+
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
@@ -33,12 +36,22 @@ public class AgentCategoryService implements AgentCategoryServiceInterface{
 		MasterAgentCategory entity = new MasterAgentCategory();
 		entity.setName(agentCategoryDTO.getName());
 		entity.setIsDeleted(false);
-		MasterAgentCategory save = agentCategoryRepository.save(entity);
-		Long agentCatId = save.getCategoryId();
-		if(agentCatId != 0) {
-			return agentCatId;
-		}
-		return null;
+		try {
+			MasterAgentCategory save = agentCategoryRepository.save(entity);
+			if (save == null || save.getCategoryId() == null || save.getCategoryId() == 0) {
+	            throw new EntityCreationException("Failed to persist Meal Plan.");
+	        }
+
+	        return save.getCategoryId();
+			
+		} catch (IllegalArgumentException e) {
+	        throw new EntityCreationException("Entity cannot be null while saving Meal Plan.", e);
+	    } catch (OptimisticLockingFailureException e) {
+	        throw new EntityCreationException("Meal Plan version conflict occurred during save.", e);
+	    } catch (Exception e) {
+	        throw new EntityCreationException("Unexpected error while saving Meal Plan: " + e.getMessage(), e);
+	    }
+		
 	}
 
 	@Override

@@ -61,6 +61,31 @@ public class PackageTypeServiceTest {
 	        assertEquals(1L, savedId);
 	        verify(packageTypeRepository, times(1)).save(any(MasterPackageType.class));
 	    }
+	    
+	    @Test
+	    void testSaveMasterPackaType_nullDTO() {
+	    	assertThrows(IllegalArgumentException.class, ()->{
+	    		packageTypeService.saveMasterPackageType(null);
+	    	});
+	    }
+	    
+	    @Test
+	    void testMasterPackageType_missingFields() {
+	    	MasterPackageTypeDTO invalidDTO = new MasterPackageTypeDTO();
+	    	assertThrows(NullPointerException.class, ()->{
+	    		packageTypeService.saveMasterPackageType(invalidDTO);
+	    	});
+	    }
+	    
+	    @Test
+	    void testSaveMasterPackageType_RepositoryThrowsException() {
+	        when(packageTypeRepository.save(any(MasterPackageType.class)))
+	            .thenThrow(new RuntimeException("Database error"));
+
+	        assertThrows(RuntimeException.class, () -> {
+	            packageTypeService.saveMasterPackageType(packageTypeDTO);
+	        });
+	    }
 
 	    @Test
 	    void testGetpackageTypeById_Success() {

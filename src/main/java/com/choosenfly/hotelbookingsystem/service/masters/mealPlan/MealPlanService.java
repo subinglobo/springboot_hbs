@@ -1,6 +1,7 @@
 package com.choosenfly.hotelbookingsystem.service.masters.mealPlan;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,6 +10,8 @@ import com.choosenfly.hotelbookingsystem.dto.masters.MasterBankDTO;
 import com.choosenfly.hotelbookingsystem.dto.masters.MasterMealPlanDTO;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterBank;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterMeal;
+import com.choosenfly.hotelbookingsystem.exceptions.MissingRequestBodyException;
+import com.choosenfly.hotelbookingsystem.exceptions.globalhandler.EntityCreationException;
 import com.choosenfly.hotelbookingsystem.repository.master.MasterBankRepository;
 import com.choosenfly.hotelbookingsystem.repository.master.MasterMealPlanRepository;
 
@@ -30,7 +33,10 @@ public class MealPlanService implements MealPlanServiceInterface{
 	@Transactional
 	public Long saveMasterMealPlan(@Valid MasterMealPlanDTO mealDTO) {
 		// TODO Auto-generated method stub
-			
+			if (mealDTO == null) {
+			throw new MissingRequestBodyException("mealDTO data is null.");
+			}
+
 			MasterMeal entity = new MasterMeal();
 			entity.setName(mealDTO.getName());
 			entity.setIsDeleted(false);
@@ -38,12 +44,23 @@ public class MealPlanService implements MealPlanServiceInterface{
 			entity.setStatusBreakfast(mealDTO.getStatusBreakfast());
 			entity.setStatusLunch(mealDTO.getStatusLunch());
 			entity.setStatusDinner(mealDTO.getStatusDinner());
-			MasterMeal save = mealPlanRepository.save(entity);
-			Long mealId = save.getMealPlanId();
-			if(mealId != 0) {
-				return mealId;
-			}
-			return null;
+
+		    try {
+		        MasterMeal savedEntity = mealPlanRepository.save(entity);
+
+		        if (savedEntity == null || savedEntity.getMealPlanId() == null || savedEntity.getMealPlanId() == 0) {
+		            throw new EntityCreationException("Failed to persist Meal Plan.");
+		        }
+
+		        return savedEntity.getMealPlanId();
+
+		    } catch (IllegalArgumentException e) {
+		        throw new EntityCreationException("Entity cannot be null while saving Meal Plan.", e);
+		    } catch (OptimisticLockingFailureException e) {
+		        throw new EntityCreationException("Meal Plan version conflict occurred during save.", e);
+		    } catch (Exception e) {
+		        throw new EntityCreationException("Unexpected error while saving Meal Plan: " + e.getMessage(), e);
+		    }
 		}
 
 	@Override

@@ -1,5 +1,7 @@
 package com.choosenfly.hotelbookingsystem.dto.masters;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class MasterMealPlanDTO {
 
     private Long mealPlanId;
@@ -8,6 +10,7 @@ public class MasterMealPlanDTO {
     
     private Boolean mainMeals;
     
+    @NotBlank(message = "name cannot be null or empty")
     private String name;
     
     private Boolean statusBreakfast;

@@ -1,9 +1,12 @@
 package com.choosenfly.hotelbookingsystem.dto.masters;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class MasterAgentCategoryDTO {
 
  	private Long agentCategoryId;
 
+ 	@NotBlank(message = "cannot be null or empty")
     private String name;
 
     private Boolean isDeleted;

@@ -1,5 +1,7 @@
 package com.choosenfly.hotelbookingsystem.service.masters.packageType;
 
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,9 @@ public class PackageTypeService implements PackageTypeServiceInterface{
 	@Transactional
 	public Long saveMasterPackageType(@Valid MasterPackageTypeDTO typeDTO) {
 		// TODO Auto-generated method stub
+		if(typeDTO == null) {
+			throw new IllegalArgumentException("MasterPackageTypeDTO cannot be null");
+		}
 		MasterPackageType entity = new MasterPackageType();
 		entity.setName(typeDTO.getName());
 		entity.setCode(typeDTO.getCode());

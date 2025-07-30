@@ -21,11 +21,11 @@ import org.springframework.http.ResponseEntity;
 import com.choosenfly.hotelbookingsystem.dto.masters.MasterAgentCategoryDTO;
 import com.choosenfly.hotelbookingsystem.dto.masters.MasterAgentCategoryDTO;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterAgentCategory;
+import com.choosenfly.hotelbookingsystem.exceptions.EntityNotFoundException;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterAgentCategory;
 import com.choosenfly.hotelbookingsystem.repository.master.MasterAgentCategoryRepository;
 import com.choosenfly.hotelbookingsystem.service.masters.agentCategory.AgentCategoryService;
 
-import jakarta.persistence.EntityNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 public class AgentCategoryServiceTest {

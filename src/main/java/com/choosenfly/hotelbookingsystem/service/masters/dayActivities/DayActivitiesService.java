@@ -11,11 +11,15 @@ import com.choosenfly.hotelbookingsystem.dto.masters.MasterStateDTO;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterCountry;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterDayActivities;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterState;
+import com.choosenfly.hotelbookingsystem.exceptions.EntityNotFoundException;
+import com.choosenfly.hotelbookingsystem.exceptions.InvalidFeildException;
+import com.choosenfly.hotelbookingsystem.exceptions.MissingRequestBodyException;
+import com.choosenfly.hotelbookingsystem.exceptions.StateCountryMismatchException;
 import com.choosenfly.hotelbookingsystem.repository.master.MasterCountryRepository;
 import com.choosenfly.hotelbookingsystem.repository.master.MasterDayActivitiesRepository;
 import com.choosenfly.hotelbookingsystem.repository.master.MasterStateRepository;
 
-import jakarta.persistence.EntityNotFoundException;
+
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
@@ -49,6 +53,13 @@ public class DayActivitiesService implements DayActivitiesServiceInterface{
 			
 			MasterState stateEntity = 
 					masterStateRepository.findById(activitiesDTO.getStateId()).orElseThrow(() -> new EntityNotFoundException("Province not found for id :" + activitiesDTO.getStateId()));
+			
+	        if (!stateEntity.getCountry().getId().equals(countryEntity.getId())) {
+	            throw new StateCountryMismatchException(
+	                String.format("State with ID %d does not belong to country with ID %d", 
+	                activitiesDTO.getStateId(), activitiesDTO.getCountryId())
+	            );
+	        }
 			entity.setState(stateEntity);
 			entity.setActivityCode(activitiesDTO.getActivityCode());
 			entity.setActivityName(activitiesDTO.getActivityName());
@@ -66,6 +77,11 @@ public class DayActivitiesService implements DayActivitiesServiceInterface{
 	@Transactional
 	public MasterDayActivitiesDTO getDayActivitiesById(Long id) {
 		// TODO Auto-generated method stub
+		
+	    if (id == null || id <= 0) {
+	        throw new InvalidFeildException("Invalid activity ID: " + id);
+	    }
+		
 		MasterDayActivities ActivitesData = 
 				activitiesRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Day activity not found for id :" + id));
 
@@ -89,6 +105,14 @@ public class DayActivitiesService implements DayActivitiesServiceInterface{
 	public MasterDayActivitiesDTO editDayActivities(Long id, @Valid MasterDayActivitiesDTO activitiesDTO) {
 		// TODO Auto-generated method stub
 		
+	    if (id == null || id <= 0) {
+	        throw new InvalidFeildException("Invalid activity ID: " + id);
+	    }
+        // Validate DTO
+        if (activitiesDTO == null) {
+            throw new MissingRequestBodyException("Day activities data cannot be null");
+        }
+		
 		MasterDayActivities ActivitesData = 
 				activitiesRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Day activity not found for id :" + id));
 
@@ -102,6 +126,12 @@ public class DayActivitiesService implements DayActivitiesServiceInterface{
 
 		MasterState stateEntity = 
 				masterStateRepository.findById(activitiesDTO.getStateId()).orElseThrow(() -> new EntityNotFoundException("Province not found for id :" + activitiesDTO.getStateId()));	
+        if (!stateEntity.getCountry().getId().equals(countryEntity.getId())) {
+            throw new StateCountryMismatchException(
+                String.format("State with ID %d does not belong to country with ID %d", 
+                activitiesDTO.getStateId(), activitiesDTO.getCountryId())
+            );
+        }
 		ActivitesData.setState(stateEntity);
 		MasterDayActivities save = activitiesRepository.save(ActivitesData);
 	

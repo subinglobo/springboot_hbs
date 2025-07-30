@@ -61,7 +61,23 @@ public class PackageCategoryServceTest {
         assertEquals(1L, savedId);
         verify(packageCategoryRepository, times(1)).save(any(MasterPackageCategory.class));
     }
+    
+    @Test
+    void testSavePackageCategoryNullDTO() {
+    	assertThrows(NullPointerException.class, ()->{
+    		 categoryService.saveMasterPackageCategory(null);	
+    	});
+    }
 
+    @Test
+    void testSavePackageCategoryMissingFields() {
+    	MasterPackageCategoryDTO categoryDTO = new MasterPackageCategoryDTO();
+    	assertThrows(NullPointerException.class, ()->
+    	{
+    		 categoryService.saveMasterPackageCategory(categoryDTO);	
+    	});
+    }
+    
     @Test
     void testGetPackageCategoryById_Success() {
         when(packageCategoryRepository.findById(1L)).thenReturn(Optional.of(categoryEntity));

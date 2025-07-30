@@ -14,7 +14,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.choosenfly.hotelbookingsystem.dto.error.ErrorResponse;
 import com.choosenfly.hotelbookingsystem.exceptions.EntityNotFoundException;
 import com.choosenfly.hotelbookingsystem.exceptions.HotelNotFoundException;
+import com.choosenfly.hotelbookingsystem.exceptions.InvalidFeildException;
 import com.choosenfly.hotelbookingsystem.exceptions.InvalidUserTypeException;
+import com.choosenfly.hotelbookingsystem.exceptions.MissingRequestBodyException;
+import com.choosenfly.hotelbookingsystem.exceptions.StateCountryMismatchException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -97,6 +100,48 @@ public class GlobalExceptionHandler {
 		if (str == null || str.isEmpty())
 			return str;
 		return str.substring(0, 1).toUpperCase() + str.substring(1);
+	}
+	
+	
+	
+	@ExceptionHandler(MissingRequestBodyException.class)
+	public ResponseEntity<ErrorResponse> handleMissingRequestBodyException(MissingRequestBodyException ex) {
+		// Extract the first error message
+		String errorMessage = ex.getMessage();
+		
+		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Bad Request", errorMessage);
+		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(InvalidFeildException.class)
+	public ResponseEntity<ErrorResponse> handleInvalidFeildException(InvalidFeildException ex) {
+		// Extract the first error message
+		String errorMessage = ex.getMessage();
+		
+		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Bad Request", errorMessage);
+		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(EntityCreationException.class)
+	public ResponseEntity<ErrorResponse> handleEntityCreationException(EntityCreationException ex) {
+	    String errorMessage = ex.getMessage();
+
+	    ErrorResponse errorResponse = new ErrorResponse(
+	            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+	            "Entity Creation Failed",
+	            errorMessage
+	    );
+
+	    return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	@ExceptionHandler(StateCountryMismatchException.class)
+	public ResponseEntity<ErrorResponse> handleStateCountryMismatch(StateCountryMismatchException ex) {
+		// Extract the first error message
+		String errorMessage = ex.getMessage();
+		
+		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Bad Request", errorMessage);
+		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
 	}
 
 }

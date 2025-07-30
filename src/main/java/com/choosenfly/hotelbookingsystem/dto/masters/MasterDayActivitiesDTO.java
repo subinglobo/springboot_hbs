@@ -1,17 +1,25 @@
 package com.choosenfly.hotelbookingsystem.dto.masters;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 public class MasterDayActivitiesDTO {
 
     private Long dayActivityId;
     
+    @NotNull(message = "Country ID cannot be null")
     private Long countryId;
     
+    @NotNull(message = "State ID cannot be null")
     private Long stateId;
     
+    @NotBlank(message ="cannot be null or empty")
     private String activityCode;
     
+    @NotBlank(message ="cannot be null or empty")
     private String activityName;
 
+    @NotBlank(message ="cannot be null or empty")
     private String description;
 
 	public Long getDayActivityId() {
