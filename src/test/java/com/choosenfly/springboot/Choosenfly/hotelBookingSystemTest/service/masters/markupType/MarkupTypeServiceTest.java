@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import com.choosenfly.hotelbookingsystem.dto.masters.MasterMarkupTypeDTO;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterMarkupType;
 import com.choosenfly.hotelbookingsystem.exceptions.EntityNotFoundException;
+import com.choosenfly.hotelbookingsystem.exceptions.MissingRequestBodyException;
 import com.choosenfly.hotelbookingsystem.repository.master.MasterMarkupTypeRepository;
 import com.choosenfly.hotelbookingsystem.service.masters.markupType.MarkupTypeService;
 
@@ -71,7 +72,7 @@ public class MarkupTypeServiceTest {
     @Test
     void testSaveMasterMarkupType_NullOrEmptyDTO() {
         // Null case
-        assertThrows(NullPointerException.class, () -> mastermaMarkupTypeService.saveMarkupType(null));
+        assertThrows(MissingRequestBodyException.class, () -> mastermaMarkupTypeService.saveMarkupType(null));
         verify(masterMarkupTypeRepository, never()).save(any());
 
        
