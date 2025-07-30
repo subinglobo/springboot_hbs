@@ -1,8 +1,8 @@
 package com.choosenfly.hotelbookingsystem.repository.hotel;
 
 import java.time.Duration;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +16,9 @@ public class ResultRepository {
 
 
     @Autowired
-    private RedisTemplate<String, HotelSearchResult> redisTemplate;
+    private RedisTemplate<String, Object> redisTemplate;
 
-    private static final String PREFIX = "hotelSearch:";
+    private static final String PREFIX = "hotel_search:";
 
     public void saveResult(String searchId, String apiKey, HotelSearchResult result) {
         String key = PREFIX + searchId;
@@ -28,9 +28,19 @@ public class ResultRepository {
 
     public List<HotelSearchResult> getResults(String searchId) {
         String key = PREFIX + searchId;
-        Map<Object, Object> entries = redisTemplate.opsForHash().entries(key);
-        return entries.values().stream()
-            .map(obj -> (HotelSearchResult) obj)
-            .collect(Collectors.toList());
+        System.out.println("key : " + key);
+
+        try {
+            List<Object> objects = redisTemplate.opsForList().range(key, 0, -1);
+            System.out.println("entries::" + objects);
+
+            return objects.stream()
+                          .map(obj -> (HotelSearchResult) obj)
+                          .collect(Collectors.toList());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return Collections.emptyList();
     }
 }
