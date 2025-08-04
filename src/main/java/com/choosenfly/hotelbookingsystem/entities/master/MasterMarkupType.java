@@ -44,8 +44,8 @@ public class MasterMarkupType extends BaseEntity {
     
     //enum
     public enum Markup{
-    	PERCENT,
-    	AMOUNT
+    	Percent,
+    	Amount
     }
 
     // Getters and Setters

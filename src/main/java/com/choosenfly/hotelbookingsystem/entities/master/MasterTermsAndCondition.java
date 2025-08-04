@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "Master_terms_And_condition", schema = "public")
@@ -29,15 +30,18 @@ public class MasterTermsAndCondition extends BaseEntity{
     private MasterState state;
 
     @Column(name = "description")
+    @NotBlank(message = "cannot be null or empty")
     private String description;
 
     @Column(name = "description_type")
+    @NotBlank(message = "cannot be null or empty")
     private Integer descriptionType;
 
     @Column(name = "tag_line")
     private String tagline;
 
     @Column(name = "terms_code")
+    @NotBlank(message = "cannot be null or empty")
     private String termsCode;
 
 	public Long getTermsAndConditionsId() {

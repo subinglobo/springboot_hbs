@@ -1,15 +1,22 @@
 package com.choosenfly.hotelbookingsystem.dto.masters;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 public class MasterVisaInformationDTO {
 
     private Long visaId;
     
+    @NotNull(message = "countryId cannot be null or empty")
     private Long countryId;
     
+    @NotNull(message = "passport countryId cannot be null or empty")
     private Long paxPassportCountryId;
 
+    
     private String passportCode;
     
+    @NotBlank(message = "decription cannot be null or empty")
     private String visaDescription;
 
 	public Long getVisaId() {

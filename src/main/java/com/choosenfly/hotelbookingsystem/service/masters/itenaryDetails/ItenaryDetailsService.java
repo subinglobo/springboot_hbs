@@ -12,16 +12,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.choosenfly.hotelbookingsystem.configuration.FileStorageProperties;
 import com.choosenfly.hotelbookingsystem.dto.masters.MasterAgentCategoryDTO;
 import com.choosenfly.hotelbookingsystem.dto.masters.MasterItenaryDetailsDTO;
 import com.choosenfly.hotelbookingsystem.dto.masters.MasterVisaInformationDTO;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterAgentCategory;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterItenaryDetails;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterVisaInformation;
+import com.choosenfly.hotelbookingsystem.exceptions.EntityNotFoundException;
 import com.choosenfly.hotelbookingsystem.repository.master.MasterAgentCategoryRepository;
 import com.choosenfly.hotelbookingsystem.repository.master.MasterItenaryDetailsRepository;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
@@ -30,41 +31,88 @@ public class ItenaryDetailsService implements ItenaryDetailsServiceInterface{
 	
 	private final MasterItenaryDetailsRepository itenaryDetailsRepository;
 	
+	 private final String uploadDir;
+	
 	@Autowired
-	public ItenaryDetailsService(MasterItenaryDetailsRepository itenaryDetailsRepository) {
+	public ItenaryDetailsService(MasterItenaryDetailsRepository itenaryDetailsRepository,FileStorageProperties fileStorageProperties) {
 		this.itenaryDetailsRepository = itenaryDetailsRepository;
+		this.uploadDir = fileStorageProperties.getDirectory();
+		
+		File uploadDirFile = new File(uploadDir);
+		if(!uploadDirFile.exists()) {
+			uploadDirFile.mkdir();
+		}
 		
 	}
 
-	public Long saveItenaryDetails(@Valid MasterItenaryDetailsDTO itenaryDTO) {
-	    
-	    MasterItenaryDetails entity = new MasterItenaryDetails();
-	    entity.setItineraryCode(itenaryDTO.getItineraryCode());
-	    entity.setItineraryDesc(itenaryDTO.getItineraryDesc());
-	    entity.setItineraryHeading(itenaryDTO.getItineraryHeading());
+//	public Long saveItenaryDetails(@Valid MasterItenaryDetailsDTO itenaryDTO) {
+//	    
+//	    MasterItenaryDetails entity = new MasterItenaryDetails();
+//	    entity.setItineraryCode(itenaryDTO.getItineraryCode());
+//	    entity.setItineraryDesc(itenaryDTO.getItineraryDesc());
+//	    entity.setItineraryHeading(itenaryDTO.getItineraryHeading());
+//
+//	    MultipartFile itineraryImg = itenaryDTO.getItineraryImg();
+//	    System.out.println("itineraryImg:::" + itineraryImg);
+//
+//	    if (itineraryImg != null && !itineraryImg.isEmpty()) {
+//	        try {
+////	            String uploadDir = "D:/akhil sajeev/save/";
+//	            String fileName = System.currentTimeMillis() + "_" + itineraryImg.getOriginalFilename(); // prevent overwrite
+//
+//	            File saveFile = new File(uploadDir + fileName);
+//	            saveFile.getParentFile().mkdirs();
+//
+//	            itineraryImg.transferTo(saveFile);
+//	            System.out.println("Image saved to disk at: " + saveFile.getAbsolutePath());
+//	            entity.setItineraryImg(saveFile.getAbsolutePath()); // Assuming your entity has this field
+//
+//	        } catch (IOException e) {
+//	            e.printStackTrace();
+//	        }
+//	    }
+//	    itenaryDetailsRepository.save(entity);
+//	    return entity.getItineraryId(); // Assuming your entity has an auto-generated ID
+//	}
+	
+    public Long saveItenaryDetails(@Valid MasterItenaryDetailsDTO itenaryDTO) {
+        MasterItenaryDetails entity = new MasterItenaryDetails();
+        entity.setItineraryCode(itenaryDTO.getItineraryCode());
+        entity.setItineraryDesc(itenaryDTO.getItineraryDesc());
+        entity.setItineraryHeading(itenaryDTO.getItineraryHeading());
 
-	    MultipartFile itineraryImg = itenaryDTO.getItineraryImg();
-	    System.out.println("itineraryImg:::" + itineraryImg);
+        MultipartFile itineraryImg = itenaryDTO.getItineraryImg();
 
-	    if (itineraryImg != null && !itineraryImg.isEmpty()) {
-	        try {
-	            String uploadDir = "D:/akhil sajeev/save/";
-	            String fileName = System.currentTimeMillis() + "_" + itineraryImg.getOriginalFilename(); // prevent overwrite
+        if (itineraryImg != null && !itineraryImg.isEmpty()) {
+            try {
+                String fileName = System.currentTimeMillis() + "_" + itineraryImg.getOriginalFilename();
+                File saveFile = new File(uploadDir + fileName);
+                
+                // Ensure parent directories exist
+                saveFile.getParentFile().mkdirs();
+                
+                // Save the file
+                itineraryImg.transferTo(saveFile);
+                entity.setItineraryImg(saveFile.getAbsolutePath());
+                
+            } catch (IOException e) {
+                // Continue without image path
+                entity.setItineraryImg(null);
+            } catch (Exception e) {
+            	System.out.println("Unexpected error while saving itinerary image"+ e);
+                // Continue without image path
+                entity.setItineraryImg(null);
+            }
+        }
 
-	            File saveFile = new File(uploadDir + fileName);
-	            saveFile.getParentFile().mkdirs();
-
-	            itineraryImg.transferTo(saveFile);
-	            System.out.println("Image saved to disk at: " + saveFile.getAbsolutePath());
-	            entity.setItineraryImg(saveFile.getAbsolutePath()); // Assuming your entity has this field
-
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        }
-	    }
-	    itenaryDetailsRepository.save(entity);
-	    return entity.getItineraryId(); // Assuming your entity has an auto-generated ID
-	}
+        // Save the entity
+        MasterItenaryDetails savedEntity = itenaryDetailsRepository.save(entity);
+        
+        System.out.println("Saved itinerary with ID: {}"+ savedEntity.getItineraryId());
+        
+        return savedEntity.getItineraryId();
+    
+}
 	
 	@Override
 	@Transactional
@@ -104,7 +152,7 @@ public class ItenaryDetailsService implements ItenaryDetailsServiceInterface{
 	    if (newFile != null && !newFile.isEmpty()) {
 	        try {
 	            // Define upload path
-	            String uploadDir = "D:/akhil sajeev/save/";
+//	            String uploadDir = "D:/akhil sajeev/save/";
 	            String newFileName = System.currentTimeMillis() + "_" + newFile.getOriginalFilename();
 	            File destFile = new File(uploadDir + newFileName);
 	            destFile.getParentFile().mkdirs();
@@ -147,7 +195,7 @@ public class ItenaryDetailsService implements ItenaryDetailsServiceInterface{
 	public ResponseEntity<String> deleteItenaryDetails(Long id) {
 		// TODO Auto-generated method stub
 		  MasterItenaryDetails itenaryDetails = itenaryDetailsRepository.findById(id)
-		            .orElseThrow(() -> new EntityNotFoundException("Itinerary not found: " + id));
+		            .orElseThrow(() -> new com.choosenfly.hotelbookingsystem.exceptions.EntityNotFoundException("Itinerary not found: " + id));
 		  
 		    String imagePath = itenaryDetails.getItineraryImg(); // or .getItineraryImg()
 		    if (imagePath != null) {

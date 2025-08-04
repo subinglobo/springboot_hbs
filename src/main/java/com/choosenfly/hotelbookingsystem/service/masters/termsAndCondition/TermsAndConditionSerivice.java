@@ -6,18 +6,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.choosenfly.hotelbookingsystem.dto.masters.MasterDayActivitiesDTO;
+
 import com.choosenfly.hotelbookingsystem.dto.masters.MasterTermsAndConditionDTO;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterCountry;
-import com.choosenfly.hotelbookingsystem.entities.master.MasterDayActivities;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterState;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterTermsAndCondition;
+import com.choosenfly.hotelbookingsystem.exceptions.EntityNotFoundException;
 import com.choosenfly.hotelbookingsystem.repository.master.MasterCountryRepository;
-import com.choosenfly.hotelbookingsystem.repository.master.MasterDayActivitiesRepository;
 import com.choosenfly.hotelbookingsystem.repository.master.MasterStateRepository;
 import com.choosenfly.hotelbookingsystem.repository.master.MasterTermsAndConditionRepository;
 
-import jakarta.persistence.EntityNotFoundException;
+
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 @Service
