@@ -7,8 +7,8 @@ import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 
-import com.choosenfly.hotelbookingsystem.dto.email.EmailDTO;
-import com.choosenfly.hotelbookingsystem.service.email.EmailService;
+import com.choosenfly.hotelbookingsystem.common.email.dto.EmailDTO;
+import com.choosenfly.hotelbookingsystem.email.service.EmailService;
 
 @Service
 public class EmailConsumer {

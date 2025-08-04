@@ -11,7 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.choosenfly.hotelbookingsystem.dto.error.ErrorResponse;
+import com.choosenfly.hotelbookingsystem.common.error.dto.ErrorResponse;
 import com.choosenfly.hotelbookingsystem.exceptions.EntityNotFoundException;
 import com.choosenfly.hotelbookingsystem.exceptions.HotelNotFoundException;
 import com.choosenfly.hotelbookingsystem.exceptions.InvalidUserTypeException;

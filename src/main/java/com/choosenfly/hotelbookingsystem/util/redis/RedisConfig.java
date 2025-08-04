@@ -7,7 +7,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-import com.choosenfly.hotelbookingsystem.dto.hotel.search.HotelSearchResult;
+import com.choosenfly.hotelbookingsystem.hotel.search.dto.HotelSearchResult;
 
 @Configuration
 public class RedisConfig {

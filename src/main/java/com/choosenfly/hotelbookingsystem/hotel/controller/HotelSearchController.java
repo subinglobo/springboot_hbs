@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.choosenfly.hotelbookingsystem.dto.hotel.search.HotelSearchRequest;
-import com.choosenfly.hotelbookingsystem.dto.hotel.search.HotelSearchResult;
-import com.choosenfly.hotelbookingsystem.dto.hotel.search.SearchResponse;
-import com.choosenfly.hotelbookingsystem.service.hotel.search.HotelSearchService;
+import com.choosenfly.hotelbookingsystem.hotel.search.dto.HotelSearchRequest;
+import com.choosenfly.hotelbookingsystem.hotel.search.dto.HotelSearchResult;
+import com.choosenfly.hotelbookingsystem.hotel.search.dto.SearchResponse;
+import com.choosenfly.hotelbookingsystem.hotel.search.service.HotelSearchService;
 
 @RestController
 @RequestMapping("/hotel-search")

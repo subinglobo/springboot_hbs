@@ -4,7 +4,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.choosenfly.hotelbookingsystem.dto.email.EmailDTO;
+import com.choosenfly.hotelbookingsystem.common.email.dto.EmailDTO;
 
 @Service
 public class EmailProducer {

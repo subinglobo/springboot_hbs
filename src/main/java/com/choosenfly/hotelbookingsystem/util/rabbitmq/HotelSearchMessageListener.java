@@ -2,11 +2,11 @@ package com.choosenfly.hotelbookingsystem.util.rabbitmq;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 
-import com.choosenfly.hotelbookingsystem.dto.hotel.search.HotelSearchResult;
-import com.choosenfly.hotelbookingsystem.dto.hotel.search.SearchMessage;
-import com.choosenfly.hotelbookingsystem.repository.hotel.ResultRepository;
-import com.choosenfly.hotelbookingsystem.service.hotel.search.HotelApiCallerContext;
-import com.choosenfly.hotelbookingsystem.service.hotel.search.HotelSearchApiCaller;
+import com.choosenfly.hotelbookingsystem.hotel.search.dto.HotelSearchResult;
+import com.choosenfly.hotelbookingsystem.hotel.search.dto.SearchMessage;
+import com.choosenfly.hotelbookingsystem.hotel.search.service.HotelApiCallerContext;
+import com.choosenfly.hotelbookingsystem.hotel.search.service.HotelSearchApiCaller;
+import com.choosenfly.hotelbookingsystem.inventory.hotel.repository.ResultRepository;
 
 public class HotelSearchMessageListener {
 
