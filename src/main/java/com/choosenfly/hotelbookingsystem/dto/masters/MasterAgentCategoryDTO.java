@@ -40,6 +40,6 @@ public class MasterAgentCategoryDTO {
 		return "MasterAgentCategoryDTO [agentCategoryId=" + agentCategoryId + ", name=" + name + ", isDeleted="
 				+ isDeleted + "]";
 	}
-    
+     
     
 }
