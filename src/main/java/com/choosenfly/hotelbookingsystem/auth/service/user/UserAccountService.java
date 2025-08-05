@@ -25,10 +25,10 @@ import com.choosenfly.hotelbookingsystem.auth.repository.user.UserTypeRepository
 import com.choosenfly.hotelbookingsystem.common.email.dto.EmailDTO;
 import com.choosenfly.hotelbookingsystem.exceptions.HotelNotFoundException;
 import com.choosenfly.hotelbookingsystem.exceptions.InvalidUserTypeException;
-import com.choosenfly.hotelbookingsystem.inventory.hotel.entities.Hotel;
-import com.choosenfly.hotelbookingsystem.inventory.hotel.entities.HotelContactDetails;
-import com.choosenfly.hotelbookingsystem.inventory.hotel.linked.entities.LinkedHotelContactDetailsMailType;
-import com.choosenfly.hotelbookingsystem.inventory.hotel.repository.HotelRepository;
+import com.choosenfly.hotelbookingsystem.inventory.entities.Hotel;
+import com.choosenfly.hotelbookingsystem.inventory.entities.HotelContactDetails;
+import com.choosenfly.hotelbookingsystem.inventory.entities.LinkedHotelContactDetailsMailType;
+import com.choosenfly.hotelbookingsystem.inventory.repository.HotelRepository;
 import com.choosenfly.hotelbookingsystem.util.rabbitmq.EmailProducer;
 
 import jakarta.transaction.Transactional;

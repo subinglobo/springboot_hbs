@@ -14,7 +14,7 @@ import com.choosenfly.hotelbookingsystem.configuration.HotelRabbitMQProperties;
 import com.choosenfly.hotelbookingsystem.hotel.search.dto.HotelSearchRequest;
 import com.choosenfly.hotelbookingsystem.hotel.search.dto.HotelSearchResult;
 import com.choosenfly.hotelbookingsystem.hotel.search.dto.SearchMessage;
-import com.choosenfly.hotelbookingsystem.inventory.hotel.repository.ResultRepository;
+import com.choosenfly.hotelbookingsystem.inventory.repository.ResultRepository;
 
 import jakarta.annotation.PostConstruct;
 

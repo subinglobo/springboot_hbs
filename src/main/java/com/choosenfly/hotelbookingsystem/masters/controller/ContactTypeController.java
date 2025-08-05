@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.choosenfly.hotelbookingsystem.masters.ContactType.service.ContactTypeServiceInterface;
 import com.choosenfly.hotelbookingsystem.masters.dto.MasterContactTypeDTO;
+import com.choosenfly.hotelbookingsystem.masters.service.ContactTypeServiceInterface;
 
 import jakarta.validation.Valid;
 

@@ -6,7 +6,7 @@ import com.choosenfly.hotelbookingsystem.hotel.search.dto.HotelSearchResult;
 import com.choosenfly.hotelbookingsystem.hotel.search.dto.SearchMessage;
 import com.choosenfly.hotelbookingsystem.hotel.search.service.HotelApiCallerContext;
 import com.choosenfly.hotelbookingsystem.hotel.search.service.HotelSearchApiCaller;
-import com.choosenfly.hotelbookingsystem.inventory.hotel.repository.ResultRepository;
+import com.choosenfly.hotelbookingsystem.inventory.repository.ResultRepository;
 
 public class HotelSearchMessageListener {
 
