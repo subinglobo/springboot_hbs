@@ -15,7 +15,7 @@ import io.swagger.v3.oas.annotations.info.Info;
 public class ChoosenflyHotelBookingSystemApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ChoosenflyHotelBookingSystemApplication.class, args); 
+		SpringApplication.run(ChoosenflyHotelBookingSystemApplication.class, args);  
 	}
 
 }
