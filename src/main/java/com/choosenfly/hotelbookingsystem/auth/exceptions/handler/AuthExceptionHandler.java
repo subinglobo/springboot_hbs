@@ -2,18 +2,25 @@ package com.choosenfly.hotelbookingsystem.auth.exceptions.handler;
 
 
 
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.choosenfly.hotelbookingsystem.auth.exceptions.InvalidRoleException;
 import com.choosenfly.hotelbookingsystem.auth.exceptions.MissingCredentialsException;
 import com.choosenfly.hotelbookingsystem.auth.exceptions.MissingEmailException;
+import com.choosenfly.hotelbookingsystem.auth.exceptions.MissingRequestBodyException;
 import com.choosenfly.hotelbookingsystem.auth.exceptions.UserRegistrationException;
 import com.choosenfly.hotelbookingsystem.common.error.dto.ErrorResponse;
+import com.choosenfly.hotelbookingsystem.exceptions.HotelNotFoundException;
+import com.choosenfly.hotelbookingsystem.exceptions.InvalidUserTypeException;
 
 @RestControllerAdvice(basePackages = "com.choosenfly.hotelbookingsystem.auth")
 public class AuthExceptionHandler {
@@ -50,6 +57,51 @@ public class AuthExceptionHandler {
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
                 "Something went wrong. Please contact support.");
     }
+    
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
+        String message = ex.getBindingResult().getFieldErrors()
+                           .stream()
+                           .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                           .collect(Collectors.joining(", "));
+        log.warn("Validation error: {}", message);
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, message);
+    }
+    
+    
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+        log.warn("Request body error: {}", ex.getMessage());
+        if (ex.getMessage().contains("Required request body is missing")) {
+            return handleMissingRequestBody(new MissingRequestBodyException("Request body is missing or malformed"));
+        }
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, "Invalid request body format");
+    }
+
+    @ExceptionHandler(MissingRequestBodyException.class)
+    public ResponseEntity<ErrorResponse> handleMissingRequestBody(MissingRequestBodyException ex) {
+        log.warn("Missing request body: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+    
+    @ExceptionHandler(HotelNotFoundException.class)
+	public ResponseEntity<ErrorResponse> handleHotelNotFoundException(HotelNotFoundException ex) {
+		// Extract the first error message
+		String errorMessage = ex.getMessage();
+
+		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Hotel Not Found", errorMessage);
+		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
+    
+    @ExceptionHandler(InvalidUserTypeException.class)
+	public ResponseEntity<ErrorResponse> handleInvalidUserTypeException(InvalidUserTypeException ex) {
+		// Extract the first error message
+		String errorMessage = ex.getMessage();
+		
+		
+		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Bad Request", errorMessage);
+		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
 
     private ResponseEntity<ErrorResponse> buildErrorResponse(HttpStatus status, String message) {
         ErrorResponse response = new ErrorResponse(

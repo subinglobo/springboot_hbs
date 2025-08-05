@@ -202,23 +202,30 @@ List<HotelContactDetails> contactDetails = hotel.getContactDetails();
 	    
 	    
 	    List<Long> inputRoleIds = user.getUserRoleIds();
-	    List<Role> foundRoles = rolerepository.findAllById(inputRoleIds);
 
-	    if (foundRoles.size() != inputRoleIds.size()) {
-	        // Find which IDs are missing
-	        Set<Long> foundIds = foundRoles.stream()
-	                                       .map(Role::getId)
-	                                       .collect(Collectors.toSet());
+	 // If no roles provided, assign default role based on userTypeId
+	 if (inputRoleIds == null || inputRoleIds.isEmpty()) {
+	     Long defaultRoleId = user.getUserTypeId();
+	     Role defaultRole = rolerepository.findById(defaultRoleId)
+	             .orElseThrow(() -> new InvalidRoleException("No role found for userTypeId: " + defaultRoleId));
 
-	        List<Long> missingIds = inputRoleIds.stream()
-	                                            .filter(id -> !foundIds.contains(id))
-	                                            .collect(Collectors.toList());
+	     userAccount.setUserRoles(Set.of(defaultRole));
+	 } else {
+	     // Validate provided roles
+	     List<Role> foundRoles = rolerepository.findAllById(inputRoleIds);
 
-	        throw new InvalidRoleException("Invalid role IDs: " + missingIds);
-	    }
-	    
-	    Set<Role> roles = new HashSet<>(rolerepository.findAllById(user.getUserRoleIds()));
-	    userAccount.setUserRoles(roles);
+	     if (foundRoles.size() != inputRoleIds.size()) {
+	         // Find missing role IDs
+	         Set<Long> foundIds = foundRoles.stream().map(Role::getId).collect(Collectors.toSet());
+	         List<Long> missingIds = inputRoleIds.stream()
+	                                             .filter(id -> !foundIds.contains(id))
+	                                             .collect(Collectors.toList());
+	         throw new InvalidRoleException("Invalid role IDs: " + missingIds);
+	     }
+
+	     Set<Role> roles = new HashSet<>(foundRoles);
+	     userAccount.setUserRoles(roles);
+	 }
 
 	    // Save user
 	
