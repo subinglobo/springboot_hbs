@@ -1,5 +1,7 @@
 package com.choosenfly.hotelbookingsystem.masters.entities;
 
+
+
 import com.choosenfly.hotelbookingsystem.common.base.entities.BaseEntity;
 
 import jakarta.persistence.Column;

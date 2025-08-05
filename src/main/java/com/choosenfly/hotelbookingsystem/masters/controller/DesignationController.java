@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.choosenfly.hotelbookingsystem.masters.dto.MasterDesignationDTO;
-import com.choosenfly.hotelbookingsystem.masters.service.DesignationServiceInterface;
+import com.choosenfly.hotelbookingsystem.masters.service.designation.DesignationServiceInterface;
 
 import jakarta.validation.Valid;
 

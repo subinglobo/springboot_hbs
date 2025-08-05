@@ -36,8 +36,8 @@ import com.choosenfly.hotelbookingsystem.inventory.repository.MinimumLengthRepos
 import com.choosenfly.hotelbookingsystem.inventory.repository.OccupancyRepository;
 import com.choosenfly.hotelbookingsystem.inventory.repository.OccupancyTypeRepository;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterMarketType;
+import com.choosenfly.hotelbookingsystem.masters.entities.MasterOccupancyType;
 import com.choosenfly.hotelbookingsystem.masters.repository.MasterMarketTypeRepository;
-import com.choosenfly.hotelbookingsystem.masters.repository.MasterOccupancyType;
 
 import jakarta.transaction.Transactional;
 
@@ -134,7 +134,6 @@ public class OccupancyService implements OccupancyServiceInterface {
 							throw new EntityNotFoundException(
 									"Occupancy Type not found with id " + occupancyDTO.getOccupancyTypeId());
 						}
-
 						roomOccupancy.setOccupancyType(occupancyType);
 						roomOccupancy.setTotalAdult(occupancyDTO.getTotalAdult());
 						roomOccupancy.setTotalChild(occupancyDTO.getTotalChild());

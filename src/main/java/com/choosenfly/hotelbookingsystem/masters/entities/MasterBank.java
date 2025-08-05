@@ -1,5 +1,7 @@
 package com.choosenfly.hotelbookingsystem.masters.entities;
 
+
+
 import com.choosenfly.hotelbookingsystem.common.base.entities.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -14,7 +16,7 @@ import jakarta.persistence.Table;
 public class MasterBank extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "bank_id", nullable = false)
     private Long bankId;
 

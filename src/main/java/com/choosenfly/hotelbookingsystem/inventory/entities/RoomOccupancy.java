@@ -1,6 +1,8 @@
 package com.choosenfly.hotelbookingsystem.inventory.entities;
 
-import com.choosenfly.hotelbookingsystem.masters.repository.MasterOccupancyType;
+
+
+import com.choosenfly.hotelbookingsystem.masters.entities.MasterOccupancyType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

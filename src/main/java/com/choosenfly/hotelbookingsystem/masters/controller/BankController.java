@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.choosenfly.hotelbookingsystem.masters.dto.MasterBankDTO;
-import com.choosenfly.hotelbookingsystem.masters.service.BankServiceInterface;
+import com.choosenfly.hotelbookingsystem.masters.service.bank.BankServiceInterface;
 
 import jakarta.validation.Valid;
 

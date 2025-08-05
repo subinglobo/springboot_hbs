@@ -1,5 +1,7 @@
 package com.choosenfly.hotelbookingsystem.masters.entities;
 
+
+
 import com.choosenfly.hotelbookingsystem.common.base.entities.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -39,9 +41,6 @@ public class MasterCountry extends BaseEntity {
     @Column(name = "country_code", length = 100)
     private String countryCode;
 
-    @Column(name = "wht_code", length = 100)
-    private String whtCode;
-
     // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -55,6 +54,5 @@ public class MasterCountry extends BaseEntity {
     public void setRegion(MasterRegion region) { this.region = region; }
     public String getCountryCode() { return countryCode; }
     public void setCountryCode(String countryCode) { this.countryCode = countryCode; }
-    public String getWhtCode() { return whtCode; }
-    public void setWhtCode(String whtCode) { this.whtCode = whtCode; }
+   
 }
