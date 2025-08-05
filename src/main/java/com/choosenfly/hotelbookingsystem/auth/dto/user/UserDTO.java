@@ -4,15 +4,20 @@ import java.util.Arrays;
 import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class UserDTO {
 
+	@NotNull(message = "User Id is required")
 	private Long userId;
 
+	@NotNull(message = "User type is required")
 	private Long userTypeId;
 
+	@NotBlank(message = "User name cannot be empty")
+	@NotNull(message = "User name is required")
 	private String userName;
 
 

@@ -3,11 +3,13 @@ package com.choosenfly.hotelbookingsystem.auth.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.choosenfly.hotelbookingsystem.auth.dto.login.LoginRequest;
 import com.choosenfly.hotelbookingsystem.auth.dto.login.LoginResponse;
 import com.choosenfly.hotelbookingsystem.auth.dto.user.UserDTO;
+import com.choosenfly.hotelbookingsystem.auth.exceptions.MissingCredentialsException;
+import com.choosenfly.hotelbookingsystem.auth.exceptions.UserRegistrationException;
 import com.choosenfly.hotelbookingsystem.auth.service.user.UserAccountServiceInterface;
 import com.choosenfly.hotelbookingsystem.auth.util.jwt.JwtUtil;
 
@@ -43,23 +47,24 @@ public class AuthController {
         return userAccountService.registerUser(user);
     }
 
+
     @PostMapping("/login")
-    public LoginResponse login(@RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(@Valid  @RequestBody(required = true) LoginRequest request) {
+        // Validate request
+       
+
         try {
-        	
-      
             Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
             );
-            
-            
 
             // Get user roles from authenticated principal
             List<String> roles = authentication.getAuthorities()
-                                               .stream()
-                                               .map(auth -> auth.getAuthority())
-                                               .toList();
+                    .stream()
+                    .map(auth -> auth.getAuthority())
+                    .toList();
 
+           
             // Generate JWT token
             String token = jwtUtil.generateToken(request.getUsername(), roles);
 
@@ -69,14 +74,15 @@ public class AuthController {
             response.setUsername(request.getUsername());
             response.setRoles(roles);
 
-            return response;
+            return ResponseEntity.ok(response);
 
-        } catch (AuthenticationException e) {
-        	
-        	e.printStackTrace();
-            
+        } catch (BadCredentialsException e) {
+            throw new MissingCredentialsException("Invalid username or password");
+        } catch (LockedException e) {
+            throw new UserRegistrationException("Account is locked");
+        } catch (DisabledException e) {
+            throw new UserRegistrationException("Account is disabled");
         }
-		return null;
     }
 
 }
