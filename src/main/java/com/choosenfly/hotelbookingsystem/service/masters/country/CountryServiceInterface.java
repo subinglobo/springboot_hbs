@@ -1,5 +1,7 @@
 package com.choosenfly.hotelbookingsystem.service.masters.country;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
 import com.choosenfly.hotelbookingsystem.controller.masters.MasterCountryDTO;
@@ -15,6 +17,9 @@ public interface CountryServiceInterface {
 	MasterCountryDTO editCountry(Long id, @Valid MasterCountryDTO countryDTO);
 
 	ResponseEntity<String> deleteCountry(Long id);
+
+	Page<MasterCountryDTO> getAllCountries(Pageable pageable, String search);
+
 
 
 }

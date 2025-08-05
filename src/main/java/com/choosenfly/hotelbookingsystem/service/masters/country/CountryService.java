@@ -1,13 +1,19 @@
 package com.choosenfly.hotelbookingsystem.service.masters.country;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.choosenfly.hotelbookingsystem.controller.masters.MasterCountryDTO;
+import com.choosenfly.hotelbookingsystem.dto.masters.MasterStateDTO;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterCountry;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterMarketType;
 import com.choosenfly.hotelbookingsystem.entities.master.MasterRegion;
+import com.choosenfly.hotelbookingsystem.entities.master.MasterState;
 import com.choosenfly.hotelbookingsystem.repository.master.MasterCountryRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -104,5 +110,31 @@ public class CountryService implements CountryServiceInterface{
 
 		return ResponseEntity.ok("Country with id " + id + " deleted successfully");
 	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public Page<MasterCountryDTO> getAllCountries(Pageable pageable, String search) {
+
+	    Page<MasterCountry> countryPage;
+
+	    if (StringUtils.hasText(search)) {
+	    	countryPage = masterCountryRepository.findByNameContainingIgnoreCase(search, pageable);
+	    } else {
+	    	countryPage = masterCountryRepository.findAll(pageable);
+	    }
+
+	    return countryPage.map(country -> {
+	       MasterCountryDTO dto = new MasterCountryDTO();
+	      dto.setId(country.getId());
+	      dto.setName(country.getName());
+	      dto.setCountryCode(country.getCountryCode());
+	       dto.setIsDeleted(country.getIsDeleted());
+
+	       
+
+	        return dto;
+	    });
+	}
+
 
 }

@@ -81,11 +81,18 @@ public class ProvinceController {
 
 				// Returns an empty list if statePage is null or getContent() returns null
 				// (fallback for edge cases)
-				.orElse(List.of());
+				.orElse(List.of()); 
 
 		// Returns the list of HotelDTOs wrapped in a ResponseEntity with HTTP status
 		// 200 (OK)
 		return new ResponseEntity<>(listStateDTO, HttpStatus.OK);
 	}
+	
+	//pass country to fetch corresponsing state/province list
+//	@GetMapping
+//	private MasterStateDTO getProvinveByCountryId(@PathVariable("countryId") Long countryId) {
+//		
+//		return provinceServiceInterface.getProvinveById(countryId);
+//	}
 
 }
