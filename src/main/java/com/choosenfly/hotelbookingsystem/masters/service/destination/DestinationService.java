@@ -1,5 +1,8 @@
 package com.choosenfly.hotelbookingsystem.masters.service.destination;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.choosenfly.hotelbookingsystem.masters.dto.MasterPlaceDTO;
+import com.choosenfly.hotelbookingsystem.masters.dto.MasterStateDTO;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterCountry;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterPlace;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterState;
@@ -148,6 +152,28 @@ public class DestinationService implements DestinationServiceInterface {
 
 	        return dto;
 	    });
+	}
+
+	@Override
+	public List<MasterPlaceDTO> getplacesByPassingStateId(Long stateId) {
+		// TODO Auto-generated method stub
+
+		MasterState stateEntity = masterStateRepository.findById(stateId)
+				.orElseThrow(() -> new EntityNotFoundException("State not found for id: " + stateId));
+
+		List<MasterPlace> placeEntity = masterPlaceRepository.findByStateId(stateId);
+
+		List<MasterPlaceDTO> collect = placeEntity.stream().map(entity -> {
+			MasterPlaceDTO dto = new MasterPlaceDTO();
+			dto.setId(entity.getId());
+			dto.setName(entity.getName());
+			dto.setPlaceCode(entity.getPlaceCode());
+			dto.setStateId(entity.getState().getId());
+			dto.setCountryId(entity.getCountry().getId());
+			return dto;
+		}).collect(Collectors.toList());
+
+		return collect;
 	}
 
 }

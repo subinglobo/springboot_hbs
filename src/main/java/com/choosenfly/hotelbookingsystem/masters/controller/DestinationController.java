@@ -88,5 +88,12 @@ public class DestinationController {
 		// 200 (OK)
 		return new ResponseEntity<>(placeListDTO, HttpStatus.OK);
 	}
+	
+	@GetMapping("/getplaces/{stateId}")
+	private List<MasterPlaceDTO> getplacesByPassingStateId(@PathVariable("stateId") Long stateId) {
+		
+		return destinationServiceInterface.getplacesByPassingStateId(stateId);
+	}
+
 
 }

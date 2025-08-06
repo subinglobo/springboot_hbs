@@ -46,7 +46,7 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/login", "/api/agent/register","/api/province/getByCountryId/*","/api/country").permitAll()
+                .requestMatchers("/auth/login", "/api/agent/register","/api/province/getByCountryId/*","/api/country" ,"/api/destination/getplaces/*").permitAll()
                 .anyRequest().authenticated())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
