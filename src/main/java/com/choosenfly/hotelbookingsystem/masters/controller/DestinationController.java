@@ -62,7 +62,7 @@ public class DestinationController {
 	
 	@GetMapping
 	public ResponseEntity<List<MasterPlaceDTO>> getAllDestination(@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "20") int limit, // Default to 20 hotels per page
+			@RequestParam(defaultValue = "80000") int limit, // Default to 20 hotels per page
 			@RequestParam(required = false) String search) {
 
 		// Creates a Pageable object specifying the page number and size (limit) for
