@@ -89,10 +89,10 @@ public class ProvinceController {
 	}
 	
 	//pass country to fetch corresponsing state/province list
-//	@GetMapping
-//	private MasterStateDTO getProvinveByCountryId(@PathVariable("countryId") Long countryId) {
-//		
-//		return provinceServiceInterface.getProvinveById(countryId);
-//	}
+	@GetMapping("/getByCountryId/{countryId}")
+	private List<MasterStateDTO> getProvinveByCountryId(@PathVariable("countryId") Long countryId) {
+		
+		return provinceServiceInterface.getProvinveByCountryId(countryId);
+	}
 
 }
