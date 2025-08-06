@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.choosenfly.hotelbookingsystem.agent.dto.AgentRegistrationRequestDTO;
+import com.choosenfly.hotelbookingsystem.agent.dto.AgentResponseDTO;
 import com.choosenfly.hotelbookingsystem.agent.entity.Agent;
 import com.choosenfly.hotelbookingsystem.agent.entity.AgentCategory;
 import com.choosenfly.hotelbookingsystem.agent.entity.AgentGSTDetails;
@@ -54,7 +55,7 @@ public class AgentServiceImpl implements AgentService {
    
     @Override
     @Transactional
-    public void registerAgent(AgentRegistrationRequestDTO request) {
+    public AgentResponseDTO registerAgent(AgentRegistrationRequestDTO request) {
         if (request == null) {
             throw new AgentRegistrationException("Agent registration request cannot be null");
         }
@@ -119,28 +120,30 @@ public class AgentServiceImpl implements AgentService {
         agent.setAddress(request.getAddress());
 
         // Set GST details
-        if (request.getAgentGSTDetailsDTO() == null) {
-            throw new InvalidGSTDetailsException("GST details cannot be null");
+        if (request.getAgentGSTDetailsDTO() != null) {
+            AgentGSTDetails gst = new AgentGSTDetails();
+
+            // Optional: validate individual GST fields if needed
+            if (request.getAgentGSTDetailsDTO().getAgentClassification() == null) {
+                throw new InvalidGSTDetailsException("Agent classification cannot be null when GST is provided");
+            }
+
+            gst.setAgentClassification(request.getAgentGSTDetailsDTO().getAgentClassification());
+            gst.setAgentGstIn(request.getAgentGSTDetailsDTO().getAgentGstIn());
+            gst.setAgentProvisionalGstno(request.getAgentGSTDetailsDTO().getAgentProvisionalGstno());
+            gst.setAgentCorrespondmail(request.getAgentGSTDetailsDTO().getAgentCorrespondmail());
+            gst.setAgentRegisterstatus(request.getAgentGSTDetailsDTO().getAgentRegisterstatus());
+            gst.setAgentHsncode(request.getAgentGSTDetailsDTO().getAgentHsncode());
+            gst.setAgentStatus(request.getAgentGSTDetailsDTO().getAgentStatus());
+
+            agent.setGstDetails(gst);
         }
 
-        AgentGSTDetails gst = new AgentGSTDetails();
-        if (request.getAgentGSTDetailsDTO().getAgentClassification() == null) {
-            throw new InvalidGSTDetailsException("Agent classification cannot be null");
-        }
-
-        gst.setAgentClassification(request.getAgentGSTDetailsDTO().getAgentClassification());
-        gst.setAgentGstIn(request.getAgentGSTDetailsDTO().getAgentGstIn());
-        gst.setAgentProvisionalGstno(request.getAgentGSTDetailsDTO().getAgentProvisionalGstno());
-        gst.setAgentCorrespondmail(request.getAgentGSTDetailsDTO().getAgentCorrespondmail());
-        gst.setAgentRegisterstatus(request.getAgentGSTDetailsDTO().getAgentRegisterstatus());
-        gst.setAgentHsncode(request.getAgentGSTDetailsDTO().getAgentHsncode());
-        gst.setAgentStatus(request.getAgentGSTDetailsDTO().getAgentStatus());
-        
-        agent.setGstDetails(gst);
 
         try {
-            agentRepository.save(agent);
-            logger.info("Agent registered successfully with email: {}", request.getPersonalEmail());
+            Agent savedAgent = agentRepository.save(agent);
+            logger.info("Agent registered successfully with email: {}", savedAgent.getPersonalEmail());
+            return new AgentResponseDTO(savedAgent.getId(), savedAgent.getPersonalEmail());
         } catch (Exception e) {
             logger.error("Failed to register agent: {}", e.getMessage(), e);
             throw new AgentRegistrationException("Failed to save agent: " + e.getMessage());
