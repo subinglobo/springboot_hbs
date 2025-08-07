@@ -2,17 +2,17 @@ package com.choosenfly.hotelbookingsystem.masters.service.agentCategory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.choosenfly.hotelbookingsystem.exceptions.EntityCreationException;
 import com.choosenfly.hotelbookingsystem.exceptions.EntityNotFoundException;
 import com.choosenfly.hotelbookingsystem.masters.dto.MasterAgentCategoryDTO;
-import com.choosenfly.hotelbookingsystem.masters.dto.MasterBankDTO;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterAgentCategory;
-import com.choosenfly.hotelbookingsystem.masters.entities.MasterBank;
 import com.choosenfly.hotelbookingsystem.masters.repository.MasterAgentCategoryRepository;
-import com.choosenfly.hotelbookingsystem.masters.repository.MasterBankRepository;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -101,6 +101,32 @@ public class AgentCategoryService implements AgentCategoryServiceInterface{
 		return ResponseEntity.ok("Agent category with id " + id + " deleted successfully");
 	
 	}
+
+	@Override
+	@Transactional
+	public Page<MasterAgentCategoryDTO> getAllAvailableAgentCategories(Pageable pageable, String search) {
+		// TODO Auto-generated method stub
+		   Page<MasterAgentCategory> agentCategoryPage;
+
+		    if (StringUtils.hasText(search)) {
+		    	agentCategoryPage = agentCategoryRepository.findByNameContainingIgnoreCase(search, pageable);
+		    } else {
+		    	agentCategoryPage = agentCategoryRepository.findAll(pageable);
+		    }
+
+		    return agentCategoryPage.map(agentCategory -> {
+		       
+		       MasterAgentCategoryDTO dto = new MasterAgentCategoryDTO();
+		       dto.setAgentCategoryId(agentCategory.getCategoryId());
+		       dto.setName(agentCategory.getName());
+		       dto.setIsDeleted(agentCategory.getIsDeleted());
+		       return dto;
+		    });
+	}
+
+	
+	
+	
 
 
 

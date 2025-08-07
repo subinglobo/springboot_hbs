@@ -12,7 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "master_agent_category", schema = "public")
+@Table(name = "agent_category", schema = "public")
 public class MasterAgentCategory extends BaseEntity{
 
     @Id
