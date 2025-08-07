@@ -3,6 +3,7 @@ package com.choosenfly.hotelbookingsystem.inventory.entities;
 import java.util.List;
 
 import com.choosenfly.hotelbookingsystem.common.base.entities.BaseEntity;
+import com.choosenfly.hotelbookingsystem.inventory.entities.contractrate.ContractRate;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterCountry;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterCurrency;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterHotelCategory;
@@ -135,7 +136,14 @@ public class Hotel extends BaseEntity{
 	@OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private List<BlockCheckInAndCheckOut> hotelBlockedDates;
 	
+    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
+    private List<ContractRate> contractRates ;
 	
+    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
+    private List<HotelRoomCategory> hotelRoomCategories ;
+    
+    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
+    private List<HotelRoomType> hotelRoomTypes ;
 	
 	
 	public List<BlockCheckInAndCheckOut> getHotelBlockedDates() {
@@ -384,6 +392,32 @@ public class Hotel extends BaseEntity{
 
 	public void setHotelAmenities(List<LinkedHotelAmenity> hotelAmenities) {
 		this.hotelAmenities = hotelAmenities;
+	}
+
+	
+	public List<ContractRate> getContractRates() {
+		return contractRates;
+	}
+
+	public void setContractRates(List<ContractRate> contractRates) {
+		this.contractRates = contractRates;
+	}
+	
+	
+	public List<HotelRoomCategory> getHotelRoomCategories() {
+		return hotelRoomCategories;
+	}
+
+	public void setHotelRoomCategories(List<HotelRoomCategory> hotelRoomCategories) {
+		this.hotelRoomCategories = hotelRoomCategories;
+	}
+
+	public List<HotelRoomType> getHotelRoomTypes() {
+		return hotelRoomTypes;
+	}
+
+	public void setHotelRoomTypes(List<HotelRoomType> hotelRoomTypes) {
+		this.hotelRoomTypes = hotelRoomTypes;
 	}
 
 	@Override

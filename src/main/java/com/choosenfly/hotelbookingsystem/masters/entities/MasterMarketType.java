@@ -2,13 +2,20 @@ package com.choosenfly.hotelbookingsystem.masters.entities;
 
 
 
-import com.choosenfly.hotelbookingsystem.common.base.entities.BaseEntity;
+import java.util.List;
 
+import com.choosenfly.hotelbookingsystem.common.base.entities.BaseEntity;
+import com.choosenfly.hotelbookingsystem.inventory.entities.LinkedHotelAmenity;
+import com.choosenfly.hotelbookingsystem.inventory.entities.contractrate.ContractRateMarketType;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -25,6 +32,11 @@ public class MasterMarketType extends BaseEntity {
 
     @Column(name = "is_deleted")
     private Boolean isDeleted;
+    
+	
+    @OneToMany(mappedBy = "marketType", cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<ContractRateMarketType> contractRateMarketTypes ;
+
 
 	public Long getMarketTypeId() {
 		return marketTypeId;
@@ -48,6 +60,13 @@ public class MasterMarketType extends BaseEntity {
 
 	public void setIsDeleted(Boolean isDeleted) {
 		this.isDeleted = isDeleted;
+	}
+	public List<ContractRateMarketType> getContractRateMarketTypes() {
+		return contractRateMarketTypes;
+	}
+
+	public void setContractRateMarketTypes(List<ContractRateMarketType> contractRateMarketTypes) {
+		this.contractRateMarketTypes = contractRateMarketTypes;
 	}
 
    
