@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.choosenfly.hotelbookingsystem.common.base.entities.BaseEntity;
 import com.choosenfly.hotelbookingsystem.inventory.entities.contractrate.ContractRate;
+import com.choosenfly.hotelbookingsystem.inventory.entities.specialrate.SpecialRate;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterCountry;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterCurrency;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterHotelCategory;
@@ -144,6 +145,9 @@ public class Hotel extends BaseEntity{
     
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
     private List<HotelRoomType> hotelRoomTypes ;
+    
+    @OneToMany(mappedBy = "hotel" ,cascade = CascadeType.ALL ,orphanRemoval = true,fetch = FetchType.LAZY)
+    private List<SpecialRate>specialRates;
 	
 	
 	public List<BlockCheckInAndCheckOut> getHotelBlockedDates() {
@@ -420,14 +424,31 @@ public class Hotel extends BaseEntity{
 		this.hotelRoomTypes = hotelRoomTypes;
 	}
 
+	
+	public List<SpecialRate> getSpecialRates() {
+		return specialRates;
+	}
+
+	public void setSpecialRates(List<SpecialRate> specialRates) {
+		this.specialRates = specialRates;
+	}
+
+	
 	@Override
 	public String toString() {
 		return "Hotel [hotelId=" + hotelId + ", hotelName=" + hotelName + ", hotelCurrency=" + hotelCurrency
-				+ ", hotelType=" + hotelType + ", image360=" + image360 + ", hotelDescription=" + hotelDescription
-				+ ", childComAgeMin=" + childComAgeMin + ", childComAgeMax=" + childComAgeMax
-				+ ", childChargeableAgeMin=" + childChargeableAgeMin + ", childChargeableAgeMax="
-				+ childChargeableAgeMax + ", address=" + address + ", zipcode=" + zipcode + ", latitude=" + latitude
-				+ ", longitude=" + longitude + ", isDeleted=" + isDeleted + "]";
+				+ ", hotelCategory=" + hotelCategory + ", hotelType=" + hotelType + ", markupType=" + markupType
+				+ ", image360=" + image360 + ", hotelDescription=" + hotelDescription + ", childComAgeMin="
+				+ childComAgeMin + ", childComAgeMax=" + childComAgeMax + ", childChargeableAgeMin="
+				+ childChargeableAgeMin + ", childChargeableAgeMax=" + childChargeableAgeMax + ", region=" + region
+				+ ", country=" + country + ", state=" + state + ", place=" + place + ", address=" + address
+				+ ", zipcode=" + zipcode + ", latitude=" + latitude + ", longitude=" + longitude + ", isDeleted="
+				+ isDeleted + ", contactDetails=" + contactDetails + ", bankDetails=" + bankDetails + ", weekDays="
+				+ weekDays + ", rooms=" + rooms + ", termsAndConditions=" + termsAndConditions + ", hotelAmenities="
+				+ hotelAmenities + ", hotelOccupancies=" + hotelOccupancies + ", minimumLengths=" + minimumLengths
+				+ ", hotelAvailabilities=" + hotelAvailabilities + ", hotelBlockedDates=" + hotelBlockedDates
+				+ ", contractRates=" + contractRates + ", hotelRoomCategories=" + hotelRoomCategories
+				+ ", hotelRoomTypes=" + hotelRoomTypes + ", specialRates=" + specialRates + "]";
 	}
 
 

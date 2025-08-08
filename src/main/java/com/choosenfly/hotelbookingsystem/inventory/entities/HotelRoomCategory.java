@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.choosenfly.hotelbookingsystem.common.base.entities.BaseEntity;
 import com.choosenfly.hotelbookingsystem.inventory.entities.contractrate.ContractRateRoom;
+import com.choosenfly.hotelbookingsystem.inventory.entities.specialrate.SpecialRateRoom;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterRoomCategory;
 
 import jakarta.persistence.CascadeType;
@@ -38,12 +39,15 @@ public class HotelRoomCategory extends BaseEntity{
 	@Column(length=100)
 	private String name;
 
-	@Column(length=100)
-	private String no_of_rooms;
+	@Column(name="no_of_rooms")
+	private String noOfRooms;
 	
 	
     @OneToMany(mappedBy = "roomCategory", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
     private List<ContractRateRoom>  contractRateRooms;
+    
+    @OneToMany(mappedBy = "roomCategory", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
+    private List<SpecialRateRoom> specialRateRooms;
 
 	public long getHotel_room_category_id() {
 		return hotel_room_category_id;
@@ -77,15 +81,17 @@ public class HotelRoomCategory extends BaseEntity{
 		this.name = name;
 	}
 
-	public String getNo_of_rooms() {
-		return no_of_rooms;
-	}
-
-	public void setNo_of_rooms(String no_of_rooms) {
-		this.no_of_rooms = no_of_rooms;
-	}
+	
 
 	
+	public String getNoOfRooms() {
+		return noOfRooms;
+	}
+
+	public void setNoOfRooms(String noOfRooms) {
+		this.noOfRooms = noOfRooms;
+	}
+
 	public List<ContractRateRoom> getContractRateRooms() {
 		return contractRateRooms;
 	}
@@ -94,10 +100,21 @@ public class HotelRoomCategory extends BaseEntity{
 		this.contractRateRooms = contractRateRooms;
 	}
 
+	
+	public List<SpecialRateRoom> getSpecialRateRooms() {
+		return specialRateRooms;
+	}
+
+	public void setSpecialRateRooms(List<SpecialRateRoom> specialRateRooms) {
+		this.specialRateRooms = specialRateRooms;
+	}
+
+	
 	@Override
 	public String toString() {
 		return "HotelRoomCategory [hotel_room_category_id=" + hotel_room_category_id + ", hotel=" + hotel
-				+ ", roomCategory=" + roomCategory + ", name=" + name + ", no_of_rooms=" + no_of_rooms + "]";
+				+ ", roomCategory=" + roomCategory + ", name=" + name + ", noOfRooms=" + noOfRooms
+				+ ", contractRateRooms=" + contractRateRooms + ", specialRateRooms=" + specialRateRooms + "]";
 	}
 	
 	

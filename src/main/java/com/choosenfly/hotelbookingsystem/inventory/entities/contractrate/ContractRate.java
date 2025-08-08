@@ -28,7 +28,8 @@ public class ContractRate extends BaseEntity{
     @Column(name = "contractrate_id")
     private Long id;
 
-    private String exclude_country;
+    @Column(name="exclude_country")
+    private String excludeCountry;
     
     @ManyToOne
     @JoinColumn(name = "hotel_id",nullable = false)
@@ -75,12 +76,14 @@ public class ContractRate extends BaseEntity{
 		this.id = id;
 	}
 
-	public String getExclude_country() {
-		return exclude_country;
+	
+
+	public String getExcludeCountry() {
+		return excludeCountry;
 	}
 
-	public void setExclude_country(String exclude_country) {
-		this.exclude_country = exclude_country;
+	public void setExcludeCountry(String excludeCountry) {
+		this.excludeCountry = excludeCountry;
 	}
 
 	public Hotel getHotel() {
@@ -187,7 +190,7 @@ public class ContractRate extends BaseEntity{
 
 	@Override
 	public String toString() {
-		return "ContractRate [id=" + id + ", exclude_country=" + exclude_country + ", hotel=" + hotel + ", isAllDays="
+		return "ContractRate [id=" + id + ", excludeCountry=" + excludeCountry + ", hotel=" + hotel + ", isAllDays="
 				+ isAllDays + ", isLive=" + isLive + ", isValidity=" + isValidity + ", isWeekDay=" + isWeekDay
 				+ ", isWeekEndDay=" + isWeekEndDay + ", rateCode=" + rateCode + ", seasonId=" + seasonId
 				+ ", marketTypes=" + marketTypes + ", validities=" + validities + ", rooms=" + rooms

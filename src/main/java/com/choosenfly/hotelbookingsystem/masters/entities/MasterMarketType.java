@@ -7,6 +7,7 @@ import java.util.List;
 import com.choosenfly.hotelbookingsystem.common.base.entities.BaseEntity;
 import com.choosenfly.hotelbookingsystem.inventory.entities.LinkedHotelAmenity;
 import com.choosenfly.hotelbookingsystem.inventory.entities.contractrate.ContractRateMarketType;
+import com.choosenfly.hotelbookingsystem.inventory.entities.specialrate.SpecialRateMarketType;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -36,6 +37,9 @@ public class MasterMarketType extends BaseEntity {
 	
     @OneToMany(mappedBy = "marketType", cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ContractRateMarketType> contractRateMarketTypes ;
+    
+    @OneToMany(mappedBy = "marketType", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<SpecialRateMarketType>specialRateMarketTypes ;
 
 
 	public Long getMarketTypeId() {
@@ -63,6 +67,16 @@ public class MasterMarketType extends BaseEntity {
 	}
 	public List<ContractRateMarketType> getContractRateMarketTypes() {
 		return contractRateMarketTypes;
+	}
+
+	
+	
+	public List<SpecialRateMarketType> getSpecialRateMarketTypes() {
+		return specialRateMarketTypes;
+	}
+
+	public void setSpecialRateMarketTypes(List<SpecialRateMarketType> specialRateMarketTypes) {
+		this.specialRateMarketTypes = specialRateMarketTypes;
 	}
 
 	public void setContractRateMarketTypes(List<ContractRateMarketType> contractRateMarketTypes) {

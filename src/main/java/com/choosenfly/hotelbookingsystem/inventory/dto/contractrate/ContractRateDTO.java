@@ -10,17 +10,17 @@ public class ContractRateDTO {
 
 	@NotNull(message = "Market types cannot be null")
 	@Size(min = 1, message = "At least one market type must be specified")
-    private List<Long> marketype;
+    private List<Long> markeType;
     
-    private List<Long> exclude_country;
+    private List<Long> excludeCountry;
     
     @NotNull(message = "Hotel ID is required")
-    private Long hotel_id;
+    private Long hotelId;
     
     @NotNull(message = "season is required")
-    private Long season_id;
+    private Long seasonId;
     
-    private Long contractrate_id;
+    private Long contractrateId;
     
     @NotBlank(message = "rateCode is required")
     private String rateCode;
@@ -40,30 +40,46 @@ public class ContractRateDTO {
     private List<ContractRateRoomDetailsDTO> contractRateRoomDTO;
     
 
-	public List<Long> getMarketype() {
-		return marketype;
-	}
-
-	public void setMarketype(List<Long> marketype) {
-		this.marketype = marketype;
-	}
-
-	public List<Long> getExclude_country() {
-		return exclude_country;
-	}
-
-	public void setExclude_country(List<Long> exclude_country) {
-		this.exclude_country = exclude_country;
-	}
-
 	
 
-	public Long getHotel_id() {
-		return hotel_id;
+	public List<Long> getMarkeType() {
+		return markeType;
 	}
 
-	public void setHotel_id(Long hotel_id) {
-		this.hotel_id = hotel_id;
+	public void setMarkeType(List<Long> markeType) {
+		this.markeType = markeType;
+	}
+
+	public List<Long> getExcludeCountry() {
+		return excludeCountry;
+	}
+
+	public void setExcludeCountry(List<Long> excludeCountry) {
+		this.excludeCountry = excludeCountry;
+	}
+
+	public Long getHotelId() {
+		return hotelId;
+	}
+
+	public void setHotelId(Long hotelId) {
+		this.hotelId = hotelId;
+	}
+
+	public Long getSeasonId() {
+		return seasonId;
+	}
+
+	public void setSeasonId(Long seasonId) {
+		this.seasonId = seasonId;
+	}
+
+	public Long getContractrateId() {
+		return contractrateId;
+	}
+
+	public void setContractrateId(Long contractrateId) {
+		this.contractrateId = contractrateId;
 	}
 
 	public List<ContractRateRoomDetailsDTO> getContractRateRoomDTO() {
@@ -72,26 +88,6 @@ public class ContractRateDTO {
 
 	public void setContractRateRoomDTO(List<ContractRateRoomDetailsDTO> contractRateRoomDTO) {
 		this.contractRateRoomDTO = contractRateRoomDTO;
-	}
-
-	
-
-	
-
-	public Long getSeason_id() {
-		return season_id;
-	}
-
-	public void setSeason_id(Long season_id) {
-		this.season_id = season_id;
-	}
-
-	public Long getContractrate_id() {
-		return contractrate_id;
-	}
-
-	public void setContractrate_id(Long contractrate_id) {
-		this.contractrate_id = contractrate_id;
 	}
 
 	public String getRateCode() {
@@ -149,11 +145,11 @@ public class ContractRateDTO {
 	
 	@Override
 	public String toString() {
-		return "ContractRateDTO [marketype=" + marketype + ", exclude_country=" + exclude_country + ", hotel_id="
-				+ hotel_id + ", season_id=" + season_id + ", contractrate_id=" + contractrate_id + ", rateCode="
-				+ rateCode + ", weekDay=" + weekDay + ", weekEndDay=" + weekEndDay + ", allDays=" + allDays
-				+ ", isLive=" + isLive + ", contractRateValidityDTO=" + contractRateValidityDTO
-				+ ", contractRateRoomDTO=" + contractRateRoomDTO + "]";
+		return "ContractRateDTO [markeType=" + markeType + ", excludeCountry=" + excludeCountry + ", hotelId=" + hotelId
+				+ ", seasonId=" + seasonId + ", contractrateId=" + contractrateId + ", rateCode=" + rateCode
+				+ ", weekDay=" + weekDay + ", weekEndDay=" + weekEndDay + ", allDays=" + allDays + ", isLive=" + isLive
+				+ ", contractRateValidityDTO=" + contractRateValidityDTO + ", contractRateRoomDTO="
+				+ contractRateRoomDTO + "]";
 	}
 
 	

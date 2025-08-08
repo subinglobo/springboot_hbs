@@ -14,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.choosenfly.hotelbookingsystem.exceptions.EntityNotFoundException;
 import com.choosenfly.hotelbookingsystem.exceptions.HotelNotFoundException;
 import com.choosenfly.hotelbookingsystem.exceptions.MissingRequestBodyException;
 import com.choosenfly.hotelbookingsystem.inventory.dto.contractrate.ContractRateDTO;
@@ -29,6 +28,7 @@ import com.choosenfly.hotelbookingsystem.inventory.entities.contractrate.Contrac
 import com.choosenfly.hotelbookingsystem.inventory.entities.contractrate.ContractRateRoom;
 import com.choosenfly.hotelbookingsystem.inventory.entities.contractrate.ContractRateValidity;
 import com.choosenfly.hotelbookingsystem.inventory.entities.hotelstopsale.HotelStopSale;
+import com.choosenfly.hotelbookingsystem.inventory.exceptions.EntityNotFoundException;
 import com.choosenfly.hotelbookingsystem.inventory.repository.HotelContractRateRepository;
 import com.choosenfly.hotelbookingsystem.inventory.repository.HotelRepository;
 import com.choosenfly.hotelbookingsystem.inventory.repository.HotelRoomCategoryRepositoy;
@@ -83,9 +83,9 @@ public class HotelContractRateService implements HotelContractRateServiceInterfa
 	@Transactional
 	public Long saveContractRate(@Valid ContractRateDTO contractRateDTO) {
 		// TODO Auto-generated method stub
-		
+		System.out.println("contractRateDTO"+contractRateDTO);
 		if(contractRateDTO==null) {
-			throw new MissingRequestBodyException("contractRateDTO cannot be null");
+			throw new com.choosenfly.hotelbookingsystem.inventory.exceptions.MissingRequestBodyException("contractRateDTO cannot be null");
 		}
 	    ContractRate contractEntity = new ContractRate();
 	    contractEntity.setRateCode(contractRateDTO.getRateCode());
@@ -93,14 +93,14 @@ public class HotelContractRateService implements HotelContractRateServiceInterfa
 	    contractEntity.setIsWeekDay(contractRateDTO.getWeekDay());
 	    contractEntity.setIsWeekEndDay(contractRateDTO.getWeekEndDay());
 	    contractEntity.setIsLive(contractRateDTO.getIsLive());
-	    contractEntity.setSeasonId(contractRateDTO.getSeason_id());
+	    contractEntity.setSeasonId(contractRateDTO.getSeasonId());
 
-		Hotel hotel = hotelRepository.findById(contractRateDTO.getHotel_id()).orElseThrow(() -> new HotelNotFoundException("Hotel not found with id: " + contractRateDTO.getHotel_id()));
+		Hotel hotel = hotelRepository.findById(contractRateDTO.getHotelId()).orElseThrow(() -> new HotelNotFoundException("Hotel not found with id: " + contractRateDTO.getHotelId()));
 
 		contractEntity.setHotel(hotel);
 
 	    // 1. MarketTypes
-	    List<ContractRateMarketType> marketTypes = contractRateDTO.getMarketype().stream()
+	    List<ContractRateMarketType> marketTypes = contractRateDTO.getMarkeType().stream()
 	        .map(mid -> {
 	            ContractRateMarketType mt = new ContractRateMarketType();
 	    		MasterMarketType marketData = masterMarketTypeRepository.findById(mid).orElseThrow(() -> new EntityNotFoundException("Market Type not found for id :" + mid));
@@ -111,7 +111,7 @@ public class HotelContractRateService implements HotelContractRateServiceInterfa
 	    contractEntity.setMarketTypes(marketTypes);
 	    
 	    //excludeded countryList
-	    List<ContractRateExcludeCountry> collect = Optional.ofNullable(contractRateDTO.getExclude_country())
+	    List<ContractRateExcludeCountry> collect = Optional.ofNullable(contractRateDTO.getExcludeCountry())
 	    		.orElse(Collections.emptyList())
 	    		.stream().map(excountryId ->{
 	    	    ContractRateExcludeCountry contractRateExcludeCountry = new ContractRateExcludeCountry();
@@ -135,29 +135,29 @@ public class HotelContractRateService implements HotelContractRateServiceInterfa
 	            return validity;
 	        }).collect(Collectors.toList());
 	    contractEntity.setValidities(validities);
-
+	    System.out.println("room");
 	    // 3. Room Rates
 	     List<ContractRateRoom> collect2 = contractRateDTO.getContractRateRoomDTO().stream()
 	        .map(r -> {
 	            ContractRateRoom room = new ContractRateRoom();
 	            room.setContractRate(contractEntity);
 
-	            room.setRoomCategory(roomCategoryRepo.findById(r.getHotel_roomcategory_id())
-	                                    .orElseThrow(() -> new EntityNotFoundException("Room Category not found")));
-	            room.setRoomType(roomTypeRepo.findById(r.getHotel_roomtype_id())
+	            room.setRoomCategory(roomCategoryRepo.findById(r.getHotelRoomcategoryId())
+	                                    .orElseThrow(() -> new com.choosenfly.hotelbookingsystem.inventory.exceptions.EntityNotFoundException("Room Category not found")));
+	            room.setRoomType(roomTypeRepo.findById(r.getHotelRoomtypeId())
 	                                  .orElseThrow(() -> new EntityNotFoundException("Room Type not found")));
-	            room.setHotelOccupancy(occupancyRepo.findById(r.getOcuppancytype_id())
+	            room.setHotelOccupancy(occupancyRepo.findById(r.getOcuppancytypeId())
 	                                  .orElseThrow(() -> new EntityNotFoundException("Occupancy not found")));
 
 	            room.setRate(r.getRate());
 	            room.setIsExtraBed(r.isExtraBed());
 	            room.setIsMeal(r.isMeal());
-	            room.setIsRefundable(r.isIsrefundable());
-	            if (r.getAdultrate()!= null&&r.isExtraBed()==true) {
-	                room.setAdultRate(r.getAdultrate());
+	            room.setIsRefundable(r.isRefundable());
+	            if (r.getAdultRate()!= null&&r.isExtraBed()==true) {
+	                room.setAdultRate(r.getAdultRate());
 	            }
-	            if (r.getChildrate() != null&&r.isExtraBed()==true) {
-	                room.setChildRate(r.getChildrate());
+	            if (r.getChildRate()!= null&&r.isExtraBed()==true) {
+	                room.setChildRate(r.getChildRate());
 	            }
 
 	            return room;
@@ -184,21 +184,21 @@ public class HotelContractRateService implements HotelContractRateServiceInterfa
 	private ContractRateDTO convertToDTO(ContractRate entity) {
 	    ContractRateDTO dto = new ContractRateDTO();
 
-	    dto.setContractrate_id(entity.getId());
+	    dto.setContractrateId(entity.getId());
 	    dto.setRateCode(entity.getRateCode());
-	    dto.setHotel_id(entity.getHotel().getHotelId());
-	    dto.setSeason_id(entity.getSeasonId());
+	    dto.setHotelId(entity.getHotel().getHotelId());
+	    dto.setSeasonId(entity.getSeasonId());
 	    dto.setAllDays(entity.getIsAllDays());
 	    dto.setWeekDay(entity.getIsWeekDay() );
 	    dto.setWeekEndDay(entity.getIsWeekEndDay());
 	    dto.setIsLive(entity.getIsLive());
 	    // 1. Market Types
-	    dto.setMarketype(entity.getMarketTypes().stream()
+	    dto.setMarkeType(entity.getMarketTypes().stream()
 	        .map(mt -> mt.getMarketType().getMarketTypeId())
 	        .collect(Collectors.toList()));
 
 	    // 2. Excluded Countries
-	    dto.setExclude_country(entity.getContractRateExcludeCountries().stream()
+	    dto.setExcludeCountry(entity.getContractRateExcludeCountries().stream()
 	        .map(ContractRateExcludeCountry::getCoutryId)
 	        .collect(Collectors.toList()));
 
@@ -214,19 +214,19 @@ public class HotelContractRateService implements HotelContractRateServiceInterfa
 	    // 4. Room DTOs
 	    dto.setContractRateRoomDTO(entity.getRooms().stream().map(r -> {
 	        ContractRateRoomDetailsDTO roomDTO = new ContractRateRoomDetailsDTO();
-	        roomDTO.setHotel_roomcategory_id(r.getRoomCategory().getHotel_room_category_id());
-	        roomDTO.setHotel_roomtype_id(r.getRoomType().getHotel_roomType_id());
-	        roomDTO.setOcuppancytype_id(r.getHotelOccupancy().getId());
+	        roomDTO.setHotelRoomcategoryId(r.getRoomCategory().getHotel_room_category_id());
+	        roomDTO.setHotelRoomtypeId(r.getRoomType().getHotelRoomTypeId());
+	        roomDTO.setOcuppancytypeId(r.getHotelOccupancy().getId());
 	        roomDTO.setRate(r.getRate());
 	        roomDTO.setExtraBed(r.getIsExtraBed());
 	        roomDTO.setMeal(r.getIsMeal());
 	        if (r.getIsRefundable() != null) {
-	            roomDTO.setIsrefundable(r.getIsRefundable());
+	            roomDTO.setRefundable(r.getIsRefundable());
 	        } else {
-	            roomDTO.setIsrefundable(false); // or true, or leave unset, depending on your logic
+	            roomDTO.setRefundable(false); // or true, or leave unset, depending on your logic
 	        }
-	        if (r.getAdultRate() != null) roomDTO.setAdultrate(r.getAdultRate());
-	        if (r.getChildRate() != null) roomDTO.setChildrate(r.getChildRate());
+	        if (r.getAdultRate() != null) roomDTO.setAdultRate(r.getAdultRate());
+	        if (r.getChildRate() != null) roomDTO.setChildRate(r.getChildRate());
 	        return roomDTO;
 	    }).collect(Collectors.toList()));
 
@@ -244,15 +244,15 @@ public class HotelContractRateService implements HotelContractRateServiceInterfa
 	    contractEntity.setIsWeekDay(contractRateDTO.getWeekDay());
 	    contractEntity.setIsWeekEndDay(contractRateDTO.getWeekEndDay());
 	    contractEntity.setIsLive(contractRateDTO.getIsLive());
-	    contractEntity.setSeasonId(contractRateDTO.getSeason_id());
+	    contractEntity.setSeasonId(contractRateDTO.getSeasonId());
 
 	    // Hotel
-	    Hotel hotel = hotelRepository.findById(contractRateDTO.getHotel_id())
-	        .orElseThrow(() -> new HotelNotFoundException("Hotel not found with id: " + contractRateDTO.getHotel_id()));
+	    Hotel hotel = hotelRepository.findById(contractRateDTO.getHotelId())
+	        .orElseThrow(() -> new HotelNotFoundException("Hotel not found with id: " + contractRateDTO.getHotelId()));
 	    contractEntity.setHotel(hotel);
 
 	    // 1. MarketTypes
-	    List<ContractRateMarketType> marketTypes = contractRateDTO.getMarketype().stream()
+	    List<ContractRateMarketType> marketTypes = contractRateDTO.getMarkeType().stream()
 	        .map(mid -> {
 	            ContractRateMarketType mt = new ContractRateMarketType();
 	            mt.setContractRate(contractEntity);
@@ -268,7 +268,7 @@ public class HotelContractRateService implements HotelContractRateServiceInterfa
 //	    contractEntity.setMarketTypes(marketTypes);
 
 	    // 2. Excluded Countries
-	    List<ContractRateExcludeCountry> excluded = Optional.ofNullable(contractRateDTO.getExclude_country())
+	    List<ContractRateExcludeCountry> excluded = Optional.ofNullable(contractRateDTO.getExcludeCountry())
 	        .orElse(Collections.emptyList())
 	        .stream()
 	        .map(cid -> {
@@ -306,21 +306,21 @@ public class HotelContractRateService implements HotelContractRateServiceInterfa
 	        .map(r -> {
 	            ContractRateRoom room = new ContractRateRoom();
 	            room.setContractRate(contractEntity);
-	            room.setRoomCategory(roomCategoryRepo.findById(r.getHotel_roomcategory_id())
+	            room.setRoomCategory(roomCategoryRepo.findById(r.getHotelRoomcategoryId())
 	                .orElseThrow(() -> new EntityNotFoundException("Room Category not found")));
-	            room.setRoomType(roomTypeRepo.findById(r.getHotel_roomtype_id())
+	            room.setRoomType(roomTypeRepo.findById(r.getHotelRoomtypeId())
 	                .orElseThrow(() -> new EntityNotFoundException("Room Type not found")));
-	            room.setHotelOccupancy(occupancyRepo.findById(r.getOcuppancytype_id())
+	            room.setHotelOccupancy(occupancyRepo.findById(r.getOcuppancytypeId())
 	                .orElseThrow(() -> new EntityNotFoundException("Occupancy not found")));
 	            room.setRate(r.getRate());
 	            room.setIsExtraBed(r.isExtraBed());
 	            room.setIsMeal(r.isMeal());
-	            room.setIsRefundable(r.isIsrefundable());
-	            if (r.getAdultrate() != null && r.isExtraBed()) {
-	                room.setAdultRate(r.getAdultrate());
+	            room.setIsRefundable(r.isRefundable());
+	            if (r.getAdultRate() != null && r.isExtraBed()) {
+	                room.setAdultRate(r.getAdultRate());
 	            }
-	            if (r.getChildrate() != null && r.isExtraBed()) {
-	                room.setChildRate(r.getChildrate());
+	            if (r.getChildRate() != null && r.isExtraBed()) {
+	                room.setChildRate(r.getChildRate());
 	            }
 	            return room;
 	        }).collect(Collectors.toList());
@@ -359,36 +359,36 @@ public class HotelContractRateService implements HotelContractRateServiceInterfa
 	        }
 
 	        ContractRateDTO dto = new ContractRateDTO();
-	        dto.setContractrate_id(contractRate.getId());
+	        dto.setContractrateId(contractRate.getId());
 	        dto.setRateCode(contractRate.getRateCode());
-	        dto.setHotel_id(contractRate.getHotel() != null ? contractRate.getHotel().getHotelId() : null);
-	        dto.setSeason_id(contractRate.getSeasonId() != null ? contractRate.getSeasonId() : null);
+	        dto.setHotelId(contractRate.getHotel() != null ? contractRate.getHotel().getHotelId() : null);
+	        dto.setSeasonId(contractRate.getSeasonId() != null ? contractRate.getSeasonId() : null);
 	        dto.setAllDays(contractRate.getIsAllDays());
 	        dto.setWeekDay(contractRate.getIsWeekDay() );
 	        dto.setWeekEndDay(contractRate.getIsWeekEndDay());
 	        dto.setIsLive(contractRate.getIsLive());
 	        // Market Types
 	        if (contractRate.getMarketTypes() != null) {
-	            dto.setMarketype(
+	            dto.setMarkeType(
 	                contractRate.getMarketTypes().stream()
 	                    .filter(Objects::nonNull)
 	                    .map(mt -> mt.getMarketType().getMarketTypeId())
 	                    .collect(Collectors.toList())
 	            );
 	        } else {
-	            dto.setMarketype(Collections.emptyList());
+	            dto.setMarkeType(Collections.emptyList());
 	        }
 
 	        // Exclude Country List
 	        if (contractRate.getContractRateExcludeCountries() != null) {
-	            dto.setExclude_country(
+	            dto.setExcludeCountry(
 	                contractRate.getContractRateExcludeCountries().stream()
 	                    .filter(Objects::nonNull)
 	                    .map(ContractRateExcludeCountry::getCoutryId)
 	                    .collect(Collectors.toList())
 	            );
 	        } else {
-	            dto.setExclude_country(Collections.emptyList());
+	            dto.setExcludeCountry(Collections.emptyList());
 	        }
 
 	        // Validity List
@@ -415,28 +415,28 @@ public class HotelContractRateService implements HotelContractRateServiceInterfa
 	                    .filter(Objects::nonNull)
 	                    .map(room -> {
 	                        ContractRateRoomDetailsDTO roomDTO = new ContractRateRoomDetailsDTO();
-	                        roomDTO.setHotel_roomcategory_id(
+	                        roomDTO.setHotelRoomcategoryId(
 	                            room.getRoomCategory() != null ? room.getRoomCategory().getHotel_room_category_id() : null
 	                        );
-	                        roomDTO.setHotel_roomtype_id(
-	                            room.getRoomType() != null ? room.getRoomType().getHotel_roomType_id() : null
+	                        roomDTO.setHotelRoomtypeId(
+	                            room.getRoomType() != null ? room.getRoomType().getHotelRoomTypeId() : null
 	                        );
-	                        roomDTO.setOcuppancytype_id(
+	                        roomDTO.setOcuppancytypeId(
 	                            room.getHotelOccupancy() != null ? room.getHotelOccupancy().getId() : null
 	                        );
 	                        roomDTO.setRate(room.getRate());
 	                        roomDTO.setExtraBed(room.getIsExtraBed());
 	                        roomDTO.setMeal(room.getIsMeal());
 	                        if (room.getIsRefundable() != null) {
-	                            roomDTO.setIsrefundable(room.getIsRefundable());
+	                            roomDTO.setRefundable(room.getIsRefundable());
 	                        } else {
-	                            roomDTO.setIsrefundable(false); // or true, or leave unset, depending on your logic
+	                            roomDTO.setRefundable(false); // or true, or leave unset, depending on your logic
 	                        }
 	                        if (room.getAdultRate() != null) {
-	                            roomDTO.setAdultrate(room.getAdultRate());
+	                            roomDTO.setAdultRate(room.getAdultRate());
 	                        }
 	                        if (room.getChildRate() != null) {
-	                            roomDTO.setChildrate(room.getChildRate());
+	                            roomDTO.setChildRate(room.getChildRate());
 	                        }
 	                        return roomDTO;
 	                    }).collect(Collectors.toList())

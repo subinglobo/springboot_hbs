@@ -19,6 +19,7 @@ public class ContractRateExcludeCountry {
 	@Column(name="exclude_country_id")
 	private Long id;
 
+	@Column(name = "country_id")
 	private Long coutryId;
 
 	@ManyToOne
