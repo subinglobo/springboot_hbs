@@ -101,6 +101,7 @@ public class AuthController {
             cookie.setPath("/");
             cookie.setMaxAge(cookieMaxAge);
             // Optionally set SameSite via header since Cookie API lacks direct support
+            
             response.addCookie(cookie);
 
             // Optionally return refresh token in body (not recommended). Here we return tokens:
