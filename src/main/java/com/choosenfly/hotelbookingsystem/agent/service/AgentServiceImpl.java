@@ -77,6 +77,10 @@ public class AgentServiceImpl implements AgentService {
         }
         agent.setCompanyName(request.getCompanyName());
 
+        agent.setFirstName(request.getFirstName());
+        
+        agent.setLastName(request.getLastName());
+        
         // Set business type
         agent.setBusinessType(request.getBusinessType());
 
