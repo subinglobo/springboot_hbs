@@ -1,196 +1,195 @@
 package com.choosenfly.hotelbookingsystem.auth.controller;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.choosenfly.hotelbookingsystem.agent.entity.Agent;
+import com.choosenfly.hotelbookingsystem.agent.repository.AgentRepository;
 import com.choosenfly.hotelbookingsystem.auth.dto.login.LoginRequest;
 import com.choosenfly.hotelbookingsystem.auth.dto.login.LoginResponse;
-import com.choosenfly.hotelbookingsystem.auth.dto.user.UserDTO;
+import com.choosenfly.hotelbookingsystem.auth.dto.login.OTPVerifyRequest;
 import com.choosenfly.hotelbookingsystem.auth.enitities.user.UserAccount;
-import com.choosenfly.hotelbookingsystem.auth.exceptions.MissingCredentialsException;
-import com.choosenfly.hotelbookingsystem.auth.exceptions.UserRegistrationException;
 import com.choosenfly.hotelbookingsystem.auth.repository.user.UserAccountRepository;
+import com.choosenfly.hotelbookingsystem.auth.service.OtpRedisService;
 import com.choosenfly.hotelbookingsystem.auth.service.token.RefreshTokenService;
 import com.choosenfly.hotelbookingsystem.auth.service.user.UserAccountServiceInterface;
 import com.choosenfly.hotelbookingsystem.auth.util.jwt.CustomUserDetailsService;
 import com.choosenfly.hotelbookingsystem.auth.util.jwt.JwtUtil;
+import com.choosenfly.hotelbookingsystem.email.service.EmailService;
+import com.choosenfly.hotelbookingsystem.exceptions.EntityNotFoundException;
+import com.choosenfly.hotelbookingsystem.inventory.entities.Hotel;
+import com.choosenfly.hotelbookingsystem.inventory.entities.HotelContactDetails;
+import com.choosenfly.hotelbookingsystem.inventory.repository.HotelRepository;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final UserAccountServiceInterface userAccountService;
-    private final AuthenticationManager authenticationManager;
-    private final JwtUtil jwtUtil;
-    private final CustomUserDetailsService userDetailsService;
-    private final RefreshTokenService refreshTokenService;
-    private final UserAccountRepository userRepo;
+	private final UserAccountServiceInterface userAccountService;
+	private final AuthenticationManager authenticationManager;
+	private final JwtUtil jwtUtil;
+	private final CustomUserDetailsService userDetailsService;
+	private final RefreshTokenService refreshTokenService;
+	private final UserAccountRepository userRepo;
+	private final OtpRedisService otpRedisService;
+	private final EmailService emailService;
+	private final AgentRepository agentRepository;
+	private final HotelRepository hotelRepository;
 
-    @Value("${app.refresh.cookie.name:refreshToken}")
-    private String refreshCookieName;
+	@Value("${app.refresh.cookie.name:refreshToken}")
+	private String refreshCookieName;
 
-    @Value("${app.refresh.cookie.secure:true}")
-    private boolean cookieSecure;
+	@Value("${app.refresh.cookie.secure:true}")
+	private boolean cookieSecure;
 
-    @Value("${app.refresh.cookie.max-age-seconds:604800}")
-    private int cookieMaxAge;
+	@Value("${app.refresh.cookie.max-age-seconds:604800}")
+	private int cookieMaxAge;
 
-    @Autowired
-    public AuthController(UserAccountServiceInterface userAccountService,
-                          AuthenticationManager authenticationManager,
-                          JwtUtil jwtUtil,
-                          CustomUserDetailsService userDetailsService,
-                          RefreshTokenService refreshTokenService,
-                          UserAccountRepository userRepo) {
-        this.userAccountService = userAccountService;
-        this.authenticationManager = authenticationManager;
-        this.jwtUtil = jwtUtil;
-        this.userDetailsService = userDetailsService;
-        this.refreshTokenService = refreshTokenService;
-        this.userRepo = userRepo;
-    }
+	@Value("${app.otp.max-attempts:5}")
+	private int maxOtpAttempts;
 
-    @PostMapping("/register")
-    public UserDTO registerUser(@Valid @RequestBody UserDTO user) {
-        return userAccountService.registerUser(user);
-    }
+	public AuthController(UserAccountServiceInterface userAccountService, AuthenticationManager authenticationManager,
+			JwtUtil jwtUtil, CustomUserDetailsService userDetailsService, RefreshTokenService refreshTokenService,
+			UserAccountRepository userRepo, OtpRedisService otpRedisService, EmailService emailService,
+			AgentRepository agentRepository, HotelRepository hotelRepository) {
+		this.userAccountService = userAccountService;
+		this.authenticationManager = authenticationManager;
+		this.jwtUtil = jwtUtil;
+		this.userDetailsService = userDetailsService;
+		this.refreshTokenService = refreshTokenService;
+		this.userRepo = userRepo;
+		this.otpRedisService = otpRedisService;
+		this.emailService = emailService;
+		this.agentRepository = agentRepository;
+		this.hotelRepository = hotelRepository;
+	}
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request, HttpServletResponse response) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-            );
+	@PostMapping("/register")
+	public ResponseEntity<?> registerUser(@RequestBody LoginRequest user) {
+		return ResponseEntity.ok(userAccountService.registerUser(null)); // adapt to your existing logic
+	}
 
-            List<String> roles = authentication.getAuthorities()
-                    .stream()
-                    .map(auth -> auth.getAuthority())
-                    .toList();
+	@PostMapping("/login")
+	public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpServletResponse response) {
+		authenticationManager
+				.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
-            String accessToken = jwtUtil.generateAccessToken(request.getUsername(), roles);
+		Instant now = Instant.now();
+		Instant lastPwdLogin = otpRedisService.getLastPasswordLogin(request.getUsername());
 
-            // create & persist refresh token (raw)
-            UserAccount userEntity = userRepo.findByUsername(request.getUsername()).orElseThrow();
-            String rawRefreshToken = refreshTokenService.createRefreshToken(userEntity,
-                    getClientIp(), request.getUsername());
+		if (lastPwdLogin == null || lastPwdLogin.isBefore(now.minus(7, ChronoUnit.DAYS))) {
+			// Need OTP verification
+			String otp = String.format("%06d", (int) (Math.random() * 1_000_000));
+			otpRedisService.storeOtp(request.getUsername(), otp);
+			emailService.sendOtpEmail(getUserEmail(request.getUsername()), otp);
 
-            // set HttpOnly cookie (refresh token)
-            Cookie cookie = new Cookie(refreshCookieName, rawRefreshToken);
-            cookie.setHttpOnly(true);
-            cookie.setSecure(cookieSecure); // set false for local http testing if needed
-            cookie.setPath("/");
-            cookie.setMaxAge(cookieMaxAge);
-            // Optionally set SameSite via header since Cookie API lacks direct support
-            response.addCookie(cookie);
+			return ResponseEntity
+					.ok(Map.of("otpRequired", true, "message", "OTP sent to your registered email address."));
+		}
 
-            // Optionally return refresh token in body (not recommended). Here we return tokens:
-            LoginResponse lr = new LoginResponse();
-            lr.setToken(accessToken);
-            // Do not set refreshToken in body to encourage cookie usage; but if you want, set it.
-            lr.setUsername(request.getUsername());
-            lr.setRoles(roles);
+		return completeLoginFlow(request.getUsername(), response);
+	}
 
-            return ResponseEntity.ok(lr);
+	@PostMapping("/verify-otp")
+	public ResponseEntity<?> verifyOtp(@RequestBody OTPVerifyRequest request, HttpServletResponse response) {
+		var otpInfo = otpRedisService.getOtpInfo(request.getUsername());
 
-        } catch (BadCredentialsException e) {
-            throw new MissingCredentialsException("Invalid username or password");
-        } catch (LockedException e) {
-            throw new UserRegistrationException("Account is locked");
-        } catch (DisabledException e) {
-            throw new UserRegistrationException("Account is disabled");
-        }
-    }
+		if (otpInfo == null || otpInfo.getExpiry().isBefore(Instant.now())) {
+			return ResponseEntity.badRequest().body(Map.of("error", "OTP expired or not found."));
+		}
 
-    @PostMapping("/refresh-token")
-    public ResponseEntity<?> refreshToken(HttpServletRequest request, HttpServletResponse response) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No refresh token cookie found");
-        }
+		int attempts = otpRedisService.incrementOtpAttempts(request.getUsername());
+		if (attempts > maxOtpAttempts) {
+			otpRedisService.deleteOtp(request.getUsername());
+			return ResponseEntity.badRequest().body(Map.of("error", "Too many invalid attempts. OTP blocked."));
+		}
 
-        String rawRefreshToken = null;
-        for (Cookie c : cookies) {
-            if (refreshCookieName.equals(c.getName())) {
-                rawRefreshToken = c.getValue();
-                break;
-            }
-        }
+		if (!otpInfo.getOtp().equals(request.getOtp())) {
+			return ResponseEntity.badRequest().body(Map.of("error", "Invalid OTP."));
+		}
 
-        if (rawRefreshToken == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token missing");
-        }
+		otpRedisService.deleteOtp(request.getUsername());
+		otpRedisService.updateLastPasswordLogin(request.getUsername());
 
-        try {
-            // validate raw token exists & not expired
-            var optToken = refreshTokenService.validateRawToken(rawRefreshToken);
-            if (optToken.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired refresh token");
-            }
+		return completeLoginFlow(request.getUsername(), response);
+	}
 
-            var tokenEntity = optToken.get();
-            var user = tokenEntity.getUser();
+	// ---------------------- Private Helpers ----------------------
 
-            // load roles from DB
-            var userDetails = userDetailsService.loadUserByUsername(user.getUsername());
-            List<String> roles = userDetails.getAuthorities().stream()
-                    .map(auth -> auth.getAuthority())
-                    .toList();
+	private ResponseEntity<LoginResponse> completeLoginFlow(String username, HttpServletResponse response) {
+		var userDetails = userDetailsService.loadUserByUsername(username);
+		List<String> roles = userDetails.getAuthorities().stream().map(auth -> auth.getAuthority()).toList();
 
-            // rotate refresh token: old -> new
-            String newRawRefresh = refreshTokenService.rotate(rawRefreshToken, getClientIpFromRequest(request),
-                    request.getHeader("User-Agent"));
+		String accessToken = jwtUtil.generateAccessToken(username, roles);
+		UserAccount userEntity = userRepo.findByUsername(username).orElseThrow();
+		String rawRefreshToken = refreshTokenService.createRefreshToken(userEntity, getClientIp(), username);
 
-            // set new cookie
-            Cookie cookie = new Cookie(refreshCookieName, newRawRefresh);
-            cookie.setHttpOnly(true);
-            cookie.setSecure(cookieSecure);
-            cookie.setPath("/");
-            cookie.setMaxAge(cookieMaxAge);
-            response.addCookie(cookie);
+		Cookie cookie = new Cookie(refreshCookieName, rawRefreshToken);
+		cookie.setHttpOnly(true);
+		cookie.setSecure(cookieSecure);
+		cookie.setPath("/");
+		cookie.setMaxAge(cookieMaxAge);
+		response.addCookie(cookie);
 
-            // create new access token
-            String newAccessToken = jwtUtil.generateAccessToken(user.getUsername(), roles);
+		LoginResponse lr = new LoginResponse();
+		lr.setToken(accessToken);
+		lr.setUsername(username);
+		lr.setRoles(roles);
+		lr.setOtpRequired(false);
 
-            return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
+		return ResponseEntity.ok(lr);
+	}
 
-        } catch (IllegalStateException ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token invalid");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
-        }
-    }
+	private String getClientIp() {
+		return "127.0.0.1"; // TODO: extract from HttpServletRequest if needed
+	}
 
-    // helper - get client ip (simple). Replace with your existing util if present.
-    private String getClientIpFromRequest(HttpServletRequest request) {
-        String xfHeader = request.getHeader("X-Forwarded-For");
-        if (xfHeader == null) {
-            return request.getRemoteAddr();
-        }
-        return xfHeader.split(",")[0];
-    }
+	private String[] getUserEmail(String username) {
+	    try {
+	        UserAccount userAccount = userRepo.findByUsername(username)
+	                .orElseThrow(() -> new EntityNotFoundException("User not found: " + username));
 
-    // lightweight stub (when HttpServletRequest not available) - you may replace or remove
-    private String getClientIp() {
-        return "127.0.0.1";
-    }
+	        String typeName = userAccount.getUserType().getTypeName();
+
+	        switch (typeName.toUpperCase()) {
+	            case "AGENT":
+	                return agentRepository.findById(userAccount.getUserId())
+	                        .map(Agent::getPersonalEmail)
+	                        .map(email -> new String[]{ email })
+	                        .orElse(new String[0]); // empty array if no email found
+
+	            case "EXTRANET":
+	                return hotelRepository.findById(userAccount.getUserId())
+	                        .map(Hotel::getContactDetails)
+	                        .stream()
+	                        .flatMap(List::stream)
+	                        .map(HotelContactDetails::getPersonalEmail)
+	                        .toArray(String[]::new);
+
+	            default:
+	                System.err.println("Unsupported user type: " + typeName);
+	                return new String[0];
+	        }
+	    } catch (Exception e) {
+	        System.err.println("Error while fetching user email for username: " + username);
+	        e.printStackTrace();
+	        return new String[0]; // fallback to empty array if anything fails
+	    }
+	}
+
+
 }

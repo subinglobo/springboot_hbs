@@ -1,7 +1,5 @@
 package com.choosenfly.hotelbookingsystem.configuration;
-
 import java.util.Arrays;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,30 +15,23 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
 import com.choosenfly.hotelbookingsystem.auth.util.jwt.CustomUserDetailsService;
 import com.choosenfly.hotelbookingsystem.auth.util.jwt.JwtAuthenticationFilter;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
     @Autowired
     private JwtAuthenticationFilter jwtFilter;
-
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
-
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
-
     // Properly hook in CustomUserDetailsService
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(customUserDetailsService)
             .passwordEncoder(passwordEncoder);
     }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
@@ -51,6 +42,7 @@ public class SecurityConfig {
             		"/api/province/getByCountryId/*",
             		"/api/country" ,
             		"/api/destination/getplaces/*",
+            		"/api/agentCategory",
             		"/auth/refresh-token",
             		"/swagger-ui/**",
                     "/swagger-ui.html",
@@ -62,12 +54,10 @@ public class SecurityConfig {
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-    
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
@@ -75,7 +65,6 @@ public class SecurityConfig {
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("*"));
         config.setAllowCredentials(true); // If sending cookies or auth headers
-
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;

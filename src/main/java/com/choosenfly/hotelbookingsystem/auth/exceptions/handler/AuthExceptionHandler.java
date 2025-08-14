@@ -13,10 +13,12 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.choosenfly.hotelbookingsystem.auth.exceptions.EmailSendException;
 import com.choosenfly.hotelbookingsystem.auth.exceptions.InvalidRoleException;
 import com.choosenfly.hotelbookingsystem.auth.exceptions.MissingCredentialsException;
 import com.choosenfly.hotelbookingsystem.auth.exceptions.MissingEmailException;
 import com.choosenfly.hotelbookingsystem.auth.exceptions.MissingRequestBodyException;
+import com.choosenfly.hotelbookingsystem.auth.exceptions.OTPException;
 import com.choosenfly.hotelbookingsystem.auth.exceptions.UserRegistrationException;
 import com.choosenfly.hotelbookingsystem.common.error.dto.ErrorResponse;
 import com.choosenfly.hotelbookingsystem.exceptions.HotelNotFoundException;
@@ -111,4 +113,25 @@ public class AuthExceptionHandler {
         );
         return new ResponseEntity<>(response, status);
     }
+    
+    @ExceptionHandler(OTPException.class)
+    public ResponseEntity<ErrorResponse> handleOTPException(OTPException ex) {
+    	
+    	String errorMessage = ex.getMessage();
+    	
+    	ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "OTP Exception", errorMessage);
+		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+   
+    }
+    
+    @ExceptionHandler(EmailSendException.class)
+   	public ResponseEntity<ErrorResponse> handleEmailSendException(EmailSendException ex) {
+   		// Extract the first error message
+   		String errorMessage = ex.getMessage();
+   		
+   		
+   		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Internal Server error", errorMessage);
+   		return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+   	}
+
 }

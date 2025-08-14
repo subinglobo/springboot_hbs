@@ -7,9 +7,19 @@ public class LoginResponse {
 	private String token;
 	private String username;
 	private List<String> roles;
-
+    private boolean otpRequired;
+    
+    
 
 	
+	public boolean isOtpRequired() {
+		return otpRequired;
+	}
+
+	public void setOtpRequired(boolean otpRequired) {
+		this.otpRequired = otpRequired;
+	}
+
 	public String getToken() {
 		return token;
 	}
@@ -36,7 +46,10 @@ public class LoginResponse {
 
 	@Override
 	public String toString() {
-		return "LoginResponse [token=" + token + ", username=" + username + ", roles=" + roles + "]";
+		return "LoginResponse [token=" + token + ", username=" + username + ", roles=" + roles + ", otpRequired="
+				+ otpRequired + "]";
 	}
 
+	
+	
 }
