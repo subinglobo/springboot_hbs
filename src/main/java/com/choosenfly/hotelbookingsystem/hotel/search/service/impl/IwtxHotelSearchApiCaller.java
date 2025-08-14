@@ -79,8 +79,20 @@ public class IwtxHotelSearchApiCaller implements HotelSearchApiCaller {
 
         
         List<HotelInfoIwtx> hotelInfos = Arrays.asList(
-        	    new HotelInfoIwtx("9999-19861433", "The Grand Palace", "https://example.com/images/h001.jpg", 5, "123 Palace Road, City A"),
-        	    new HotelInfoIwtx("9999-19861463", "Sunset Resort", "https://example.com/images/h002.jpg", 4, "456 Beach Avenue, City B")
+        	    new HotelInfoIwtx("9999-19861433", "The Grand Palace", "https://b2b.choosenfly.com/assets/details/profilepic/hotel/08_02_2024_17073725370_hotel.jpg", 5, "123 Palace Road, City A"),
+        	    new HotelInfoIwtx("9999-19861463", "Sunset Resort", "	https://b2b.choosenfly.com/assets/details/profilepic/hotel/18_06_2023_16870742840_hotel.jpg", 4, "456 Beach Avenue, City B"),
+        	    new HotelInfoIwtx("9999-17301412", "The Heritage Hotel, Autograph Collection", "https://b2b.choosenfly.com/assets/details/profilepic/hotel/21_06_2023_16873286470_hotel.jpg", 4, "Heritage Beach Avenue, Cit"),
+        	    new HotelInfoIwtx(" 9999-19862479", " Renaissance Business Bay Hotel, Dubai", "	https://b2b.choosenfly.com/assets/details/profilepic/hotel/18_06_2023_16870742840_hotel.jpg", 4, "Heritage Beach Avenue, Cit"),
+        	    new HotelInfoIwtx("9999-19861447 ", "Mövenpick Hotel Jumeirah Beach", "https://b2b.choosenfly.com/assets/details/profilepic/hotel/21_06_2023_16873286470_hotel.jpg", 4, "Heritage Beach Avenue, Cit"),
+        	    new HotelInfoIwtx("9999-19861387", "Pullman Dubai Creek City Centre", "https://b2b.choosenfly.com/assets/details/profilepic/hotel/21_06_2023_16873286470_hotel.jpg", 4, "Heritage Beach Avenue, Cit"),
+        	    new HotelInfoIwtx("9999-19861413", "ibis Styles Dragon Mart Dubai", "	https://b2b.choosenfly.com/assets/details/profilepic/hotel/18_06_2023_16870742840_hotel.jpg", 4, "Heritage Beach Avenue, Cit"),
+        	    new HotelInfoIwtx("9999-17109179", "Premier Inn Dubai Silicon Oasis", "https://b2b.choosenfly.com/assets/details/profilepic/hotel/21_06_2023_16873286470_hotel.jpg", 4, "Heritage Beach Avenue, Cit"),
+        	    new HotelInfoIwtx("9999-19594942", "DAMAC Maison Mall Street", "https://b2b.choosenfly.com/assets/details/profilepic/hotel/21_06_2023_16873286470_hotel.jpg", 4, "Heritage Beach Avenue, Cit"),
+        	    new HotelInfoIwtx("9999-19758127", "DAMAC Maison Distinction", "	https://b2b.choosenfly.com/assets/details/profilepic/hotel/18_06_2023_16870742840_hotel.jpg", 4, "Heritage Beach Avenue, Cit"),
+        	    new HotelInfoIwtx("9999-19597428 ", "DAMAC Maison Aykon City Dubai", "https://b2b.choosenfly.com/assets/details/profilepic/hotel/21_06_2023_16873286470_hotel.jpg", 4, "Heritage Beach Avenue, Cit"),
+        	    new HotelInfoIwtx("9999-19859541", "The First Collection at Jumeirah Village Circle, a Tribute Portfolio Hotel", "https://b2b.choosenfly.com/assets/details/profilepic/hotel/hoteldefault.jpg", 4, "Heritage Beach Avenue, Cit")
+        	    
+        
         	);
 
         if (hotelInfos == null || hotelInfos.isEmpty()) {
@@ -126,7 +138,8 @@ public class IwtxHotelSearchApiCaller implements HotelSearchApiCaller {
             result.setStarRating(hotelInfo.getStarRating());
             result.setHotelAddress(hotelInfo.getHotelAddress());
             result.setApiType("IWTX");
-            result.setBaseRate(baseRateMap.getOrDefault(hotelInfo.getHotelCode(), null));
+          //  result.setBaseRate(baseRateMap.getOrDefault(hotelInfo.getHotelCode(), null));
+            result.setBaseRate(70.50);
             results.add(result);
         }
 

@@ -18,4 +18,7 @@ public interface MasterPlaceRepository extends JpaRepository<MasterPlace, Long> 
 	@Query("SELECT m FROM MasterPlace m WHERE m.state.id = :stateId AND m.isDeleted = false")
 	List<MasterPlace> findByStateId(Long stateId);
 
+	@Query("SELECT m FROM MasterPlace m WHERE m.country.id = :countryId AND m.isDeleted = false")
+	List<MasterPlace> findByCountryId(Long countryId);
+
 }

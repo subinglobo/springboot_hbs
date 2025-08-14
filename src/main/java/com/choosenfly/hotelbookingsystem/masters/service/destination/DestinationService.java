@@ -170,6 +170,29 @@ public class DestinationService implements DestinationServiceInterface {
 			dto.setPlaceCode(entity.getPlaceCode());
 			dto.setStateId(entity.getState().getId());
 			dto.setCountryId(entity.getCountry().getId());
+			dto.setCountry(entity.getCountry().getName());
+			return dto;
+		}).collect(Collectors.toList());
+
+		return collect;
+	}
+
+	@Override
+	public List<MasterPlaceDTO> getCitiesByPassingCountryId(Long countryId) {
+		// TODO Auto-generated method stub
+		
+		MasterCountry orElseThrow = masterCountryRepository.findById(countryId)
+				.orElseThrow(() -> new EntityNotFoundException("Country not found for id : "+ countryId));
+		
+		List<MasterPlace> placeEntity = masterPlaceRepository.findByCountryId(countryId);
+		List<MasterPlaceDTO> collect = placeEntity.stream().map(entity -> {
+			MasterPlaceDTO dto = new MasterPlaceDTO();
+			dto.setId(entity.getId());
+			dto.setName(entity.getName());
+			dto.setPlaceCode(entity.getPlaceCode());
+			dto.setStateId(entity.getState().getId());
+			dto.setCountryId(entity.getCountry().getId());
+			dto.setCountry(entity.getCountry().getName());
 			return dto;
 		}).collect(Collectors.toList());
 

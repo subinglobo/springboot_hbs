@@ -94,6 +94,12 @@ public class DestinationController {
 		
 		return destinationServiceInterface.getplacesByPassingStateId(stateId);
 	}
+	
+	@GetMapping("/getCitiesByCountryId/{countryId}")
+	private List<MasterPlaceDTO> getCitiesByPassingCountryId(@PathVariable("countryId") Long countryId) {
+		
+		return destinationServiceInterface.getCitiesByPassingCountryId(countryId);
+	}
 
 
 }
