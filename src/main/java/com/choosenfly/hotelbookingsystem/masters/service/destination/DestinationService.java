@@ -131,7 +131,8 @@ public class DestinationService implements DestinationServiceInterface {
 		Page<MasterPlace> placePage;
 
 	    if (StringUtils.hasText(search)) {
-	    	placePage = masterPlaceRepository.findByNameContainingIgnoreCase(search, pageable);
+	    	//placePage = masterPlaceRepository.findByNameContainingIgnoreCase(search, pageable);
+	    	placePage = masterPlaceRepository.findByNameStartingWithIgnoreCase(search, pageable);
 	    } else {
 	    	placePage = masterPlaceRepository.findAll(pageable);
 	    }
@@ -153,7 +154,7 @@ public class DestinationService implements DestinationServiceInterface {
 	        return dto;
 	    });
 	}
-
+	
 	@Override
 	public List<MasterPlaceDTO> getplacesByPassingStateId(Long stateId) {
 		// TODO Auto-generated method stub

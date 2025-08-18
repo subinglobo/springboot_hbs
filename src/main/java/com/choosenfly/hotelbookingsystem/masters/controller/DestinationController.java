@@ -61,31 +61,16 @@ public class DestinationController {
 	}
 	
 	@GetMapping
-	public ResponseEntity<List<MasterPlaceDTO>> getAllDestination(@RequestParam(defaultValue = "0") int page,
+	public ResponseEntity<List<MasterPlaceDTO>> getAllDestination(
+			@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "80000") int limit, // Default to 20 hotels per page
-			@RequestParam(required = false) String search) {
+			@RequestParam(required = false, name = "search") String search) {  //search -> searchTerm 
 
-		// Creates a Pageable object specifying the page number and size (limit) for
-		// pagination
 		Pageable pageable = PageRequest.of(page, limit);
-
-		// search criteria
 		Page<MasterPlaceDTO> placePage = destinationServiceInterface.getAllDestination(pageable, search);
-
-		// Wraps hotelsPage in an Optional to safely handle null cases (though rare from
-		// a repository)
 		List<MasterPlaceDTO> placeListDTO = Optional.ofNullable(placePage)
-
-				// Extracts the List<HotelDTO> from the Page object if statePage is not null
-				// (gets the content of the current page)
 				.map(p -> p.getContent())
-
-				// Returns an empty list if statePage is null or getContent() returns null
-				// (fallback for edge cases)
 				.orElse(List.of());
-
-		// Returns the list of HotelDTOs wrapped in a ResponseEntity with HTTP status
-		// 200 (OK)
 		return new ResponseEntity<>(placeListDTO, HttpStatus.OK);
 	}
 	

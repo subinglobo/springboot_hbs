@@ -21,4 +21,6 @@ public interface MasterPlaceRepository extends JpaRepository<MasterPlace, Long> 
 	@Query("SELECT m FROM MasterPlace m WHERE m.country.id = :countryId AND m.isDeleted = false")
 	List<MasterPlace> findByCountryId(Long countryId);
 
+	Page<MasterPlace> findByNameStartingWithIgnoreCase(String search, Pageable pageable);
+
 }
