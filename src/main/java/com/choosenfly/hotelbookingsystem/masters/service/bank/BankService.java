@@ -1,12 +1,17 @@
 package com.choosenfly.hotelbookingsystem.masters.service.bank;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.choosenfly.hotelbookingsystem.masters.dto.MasterBankDTO;
+import com.choosenfly.hotelbookingsystem.masters.dto.MasterPlaceDTO;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterBank;
+import com.choosenfly.hotelbookingsystem.masters.entities.MasterPlace;
 import com.choosenfly.hotelbookingsystem.masters.repository.MasterBankRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -88,6 +93,27 @@ public class BankService implements BankServiceInterface {
 		masterBankRepository.delete(existbank);
 		
 		return ResponseEntity.ok("Bank with id " + id + " deleted successfully");
+	}
+
+	@Override
+	public Page<MasterBankDTO> getAllBanks(Pageable pageable, String searchTerm) {
+		// TODO Auto-generated method stub
+		Page<MasterBank> bankPage;
+
+	    if (StringUtils.hasText(searchTerm)) {
+	    	
+	    	bankPage = masterBankRepository.findByNameStartingWithIgnoreCase(searchTerm, pageable);
+	    } else {
+	    	bankPage = masterBankRepository.findAll(pageable);
+	    }
+
+	    return bankPage.map(bank -> {
+	    	MasterBankDTO dto = new MasterBankDTO();
+	        dto.setBankId(bank.getBankId());
+	        dto.setName(bank.getName());
+	        dto.setIsDeleted(bank.getIsDeleted());
+	        return dto;
+	    });
 	}
 
 	
