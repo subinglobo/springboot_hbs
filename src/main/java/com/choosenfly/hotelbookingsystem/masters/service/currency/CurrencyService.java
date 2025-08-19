@@ -1,16 +1,21 @@
 package com.choosenfly.hotelbookingsystem.masters.service.currency;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.choosenfly.hotelbookingsystem.exceptions.DataNotFoundException;
 import com.choosenfly.hotelbookingsystem.exceptions.EntityNotFoundException;
 import com.choosenfly.hotelbookingsystem.exceptions.InvalidFeildException;
 import com.choosenfly.hotelbookingsystem.exceptions.MissingRequestBodyException;
+import com.choosenfly.hotelbookingsystem.masters.dto.MasterBankDTO;
 import com.choosenfly.hotelbookingsystem.masters.dto.MasterCurrencyDTO;
+import com.choosenfly.hotelbookingsystem.masters.entities.MasterBank;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterCurrency;
 import com.choosenfly.hotelbookingsystem.masters.repository.MasterCurrencyRepository;
 
@@ -104,6 +109,29 @@ public class CurrencyService implements CurrencyServiceInterface {
 		
 		
 	
+	}
+
+	@Override
+	public Page<MasterCurrencyDTO> getAllCurrencyList(Pageable pageable, String searchTerm) {
+		// TODO Auto-generated method stub
+		Page<MasterCurrency> currencyPage;
+
+	    if (StringUtils.hasText(searchTerm)) {
+	    	
+	    	currencyPage = masterCurrencyRepository.findByNameStartingWithIgnoreCase(searchTerm, pageable);
+	    } else {
+	    	currencyPage = masterCurrencyRepository.findAll(pageable);
+	    }
+
+	    return currencyPage.map(currency -> {
+	    MasterCurrencyDTO dto = new	MasterCurrencyDTO();
+	    dto.setCurrencyId(currency.getCurrencyId());
+	    dto.setName(currency.getName());
+	    dto.setCurrencyCode(currency.getCurrencyCode());
+	    dto.setValue(currency.getValue());
+	    dto.setIsDeleted(currency.getIsDeleted());
+	    return dto;
+	    });
 	}
 
 }

@@ -71,7 +71,7 @@ public class MarkupTypeService implements MarkupTypeServiceInterface{
 		masterMarkupTypeDTO.setMarkupType(entityData.getMarkupType());
 		masterMarkupTypeDTO.setIsType(entityData.getIsType());
 		masterMarkupTypeDTO.setIsDeleted(entityData.getIsDeleted());
-		masterMarkupTypeDTO.setId(id);
+		masterMarkupTypeDTO.setId(entityData.getId());
 		return masterMarkupTypeDTO;
 	}
 
