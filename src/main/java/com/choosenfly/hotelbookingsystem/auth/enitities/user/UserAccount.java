@@ -20,78 +20,74 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-
 @Entity
 @Table(name = "user_accounts")
 public class UserAccount extends BaseEntity implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long userId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
+	private Long id;
 
-    @Column(name = "username", nullable = false, unique = true)
-    private String username;
+	@Column(name = "user_id")
+	private Long userId;
 
-    @Column(name = "password", nullable = false)
-    private String password;
+	@Column(name = "username", nullable = false, unique = true)
+	private String username;
 
+	@Column(name = "password", nullable = false)
+	private String password;
 
-    @Column(name = "active", nullable = false)
-    private Boolean active = true;
+	@Column(name = "active", nullable = false)
+	private Boolean active = true;
 
-    // Many-to-One: UserAccount -> UserType
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_type_id", nullable = false)
-    private UserType userType;
+	// Many-to-One: UserAccount -> UserType
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_type_id", nullable = false)
+	private UserType userType;
 
-    // Many-to-Many: UserAccount -> UserRoles
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
-    @JoinTable(
-        name = "user_account_roles",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<Role> userRoles = new HashSet<>();
+	// Many-to-Many: UserAccount -> UserRoles
+	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.MERGE })
+	@JoinTable(name = "user_account_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+	private Set<Role> userRoles = new HashSet<>();
 
-    // Getters and setters
+	// Getters and setters
 
-    public Long getUserId() {
-        return userId;
-    }
+	public Long getUserId() {
+		return userId;
+	}
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
 
-    public String getUsername() {
-        return username;
-    }
+	public String getUsername() {
+		return username;
+	}
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
-    public String getPassword() {
-        return password;
-    }
+	public String getPassword() {
+		return password;
+	}
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
-    public Boolean getActive() {
-        return active;
-    }
+	public Boolean getActive() {
+		return active;
+	}
 
-    public void setActive(Boolean active) {
-        this.active = active;
-    }
+	public void setActive(Boolean active) {
+		this.active = active;
+	}
 
-   
-    public Set<Role> getUserRoles() {
+	public Set<Role> getUserRoles() {
 		return userRoles;
 	}
 
@@ -104,19 +100,27 @@ public class UserAccount extends BaseEntity implements Serializable {
 	}
 
 	public UserType getUserType() {
-        return userType;
-    }
+		return userType;
+	}
 
-    public void setUserType(UserType userType) {
-        this.userType = userType;
-    }
+	public void setUserType(UserType userType) {
+		this.userType = userType;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	@Override
 	public String toString() {
-		return "UserAccount [userId=" + userId + ", username=" + username + ", password=" + password + ", active="
-				+ active + ", userType=" + userType + ", userRoles=" + userRoles + "]";
+		return "UserAccount [id=" + id + ", userId=" + userId + ", username=" + username + ", password=" + password
+				+ ", active=" + active + ", userType=" + userType + ", userRoles=" + userRoles + "]";
 	}
 
-    // toString
+	// toString
 
 }

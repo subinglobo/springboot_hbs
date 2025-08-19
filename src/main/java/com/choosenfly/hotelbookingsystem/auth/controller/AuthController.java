@@ -2,6 +2,7 @@ package com.choosenfly.hotelbookingsystem.auth.controller;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -85,6 +86,7 @@ public class AuthController {
 
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpServletResponse response) {
+		
 		authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
@@ -95,6 +97,11 @@ public class AuthController {
 			// Need OTP verification
 			String otp = String.format("%06d", (int) (Math.random() * 1_000_000));
 			otpRedisService.storeOtp(request.getUsername(), otp);
+			
+			String[] userEmail = getUserEmail(request.getUsername());
+			
+			System.err.println("Mail Id :: "+Arrays.toString(userEmail));
+			
 			emailService.sendOtpEmail(getUserEmail(request.getUsername()), otp);
 
 			return ResponseEntity
@@ -165,6 +172,10 @@ public class AuthController {
 
 	        String typeName = userAccount.getUserType().getTypeName();
 
+	        
+	        System.err.println("Type Name: "+typeName);
+	        
+	        
 	        switch (typeName.toUpperCase()) {
 	            case "AGENT":
 	                return agentRepository.findById(userAccount.getUserId())
