@@ -1,5 +1,7 @@
 package com.choosenfly.hotelbookingsystem.masters.service.ContactType;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
 import com.choosenfly.hotelbookingsystem.masters.dto.MasterContactTypeDTO;
@@ -13,5 +15,7 @@ public interface ContactTypeServiceInterface {
 	MasterContactTypeDTO editContactType(Long id, MasterContactTypeDTO masterContactTypeDTO);
 
 	ResponseEntity<String> deleteContactType(Long id);
+
+	Page<MasterContactTypeDTO> getAllContactTypes(Pageable pageable, String searchTerm);
 
 }
