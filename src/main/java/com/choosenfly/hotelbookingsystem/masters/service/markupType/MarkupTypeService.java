@@ -1,14 +1,19 @@
 package com.choosenfly.hotelbookingsystem.masters.service.markupType;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.choosenfly.hotelbookingsystem.exceptions.EntityNotFoundException;
 import com.choosenfly.hotelbookingsystem.exceptions.InvalidFeildException;
 import com.choosenfly.hotelbookingsystem.exceptions.MissingRequestBodyException;
+import com.choosenfly.hotelbookingsystem.masters.dto.MasterContactTypeDTO;
 import com.choosenfly.hotelbookingsystem.masters.dto.MasterMarkupTypeDTO;
+import com.choosenfly.hotelbookingsystem.masters.entities.MasterContactType;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterMarkupType;
 import com.choosenfly.hotelbookingsystem.masters.repository.MasterMarkupTypeRepository;
 
@@ -106,5 +111,29 @@ public class MarkupTypeService implements MarkupTypeServiceInterface{
 		masterMarkupTypeRepository.delete(entityDatas);
 		
 		return ResponseEntity.ok("Markup Type with id " + id + " deleted successfully");
+	}
+
+	@Override
+	public Page<MasterMarkupTypeDTO> getAllMarkupTypeList(Pageable pageable, String searchTerm) {
+		// TODO Auto-generated method stub
+		Page<MasterMarkupType> markUpTypePage;
+
+		if (StringUtils.hasText(searchTerm)) {
+
+			markUpTypePage = masterMarkupTypeRepository.findByNameStartingWithIgnoreCase(searchTerm, pageable);
+		} else {
+			markUpTypePage = masterMarkupTypeRepository.findAll(pageable);
+		}
+
+		return markUpTypePage.map(markUpType -> {
+			MasterMarkupTypeDTO dto = new MasterMarkupTypeDTO();
+			dto.setId(markUpType.getId());
+			dto.setName(markUpType.getName());
+			dto.setMarkupType(markUpType.getMarkupType());
+			dto.setMarkup(markUpType.getMarkup());
+			dto.setIsType(markUpType.getIsType());
+			dto.setIsDeleted(markUpType.getIsDeleted());
+			return dto;
+		});
 	}
 }

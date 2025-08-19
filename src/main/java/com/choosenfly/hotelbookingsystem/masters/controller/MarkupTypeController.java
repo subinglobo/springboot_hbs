@@ -1,6 +1,12 @@
 package com.choosenfly.hotelbookingsystem.masters.controller;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,9 +16,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.choosenfly.hotelbookingsystem.exceptions.MissingRequestBodyException;
+import com.choosenfly.hotelbookingsystem.masters.dto.MasterBankDTO;
 import com.choosenfly.hotelbookingsystem.masters.dto.MasterMarkupTypeDTO;
 import com.choosenfly.hotelbookingsystem.masters.service.markupType.MarkupTypeServiceInterface;
 
@@ -60,6 +68,20 @@ public class MarkupTypeController {
 		
 		return markupTypeServiceInterface.deleteMarkupType(id);
 		
+	}
+	
+	@GetMapping
+	public ResponseEntity<List<MasterMarkupTypeDTO>> getAllMarkupTypeList(
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "100") int limit,
+			@RequestParam(required = false, name = "search") String searchTerm) {   
+
+		Pageable pageable = PageRequest.of(page, limit);
+		Page<MasterMarkupTypeDTO> markUpTypePage = markupTypeServiceInterface.getAllMarkupTypeList(pageable, searchTerm);
+		List<MasterMarkupTypeDTO> markUpTypeListDTO = Optional.ofNullable(markUpTypePage)
+				.map(p -> p.getContent())
+				.orElse(List.of());
+		return new ResponseEntity<>(markUpTypeListDTO, HttpStatus.OK);
 	}
 	
 
