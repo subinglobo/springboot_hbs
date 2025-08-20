@@ -29,6 +29,10 @@ public class UserAccount extends BaseEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+    
+    
     @Column(name = "user_id")
     private Long userId;
 
@@ -51,7 +55,7 @@ public class UserAccount extends BaseEntity implements Serializable {
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE})
     @JoinTable(
         name = "user_account_roles",
-        joinColumns = @JoinColumn(name = "user_id"),
+        joinColumns = @JoinColumn(name = "id"),
         inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> userRoles = new HashSet<>();
@@ -110,13 +114,23 @@ public class UserAccount extends BaseEntity implements Serializable {
     public void setUserType(UserType userType) {
         this.userType = userType;
     }
+    
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	@Override
 	public String toString() {
-		return "UserAccount [userId=" + userId + ", username=" + username + ", password=" + password + ", active="
-				+ active + ", userType=" + userType + ", userRoles=" + userRoles + "]";
+		return "UserAccount [id=" + id + ", userId=" + userId + ", username=" + username + ", password=" + password
+				+ ", active=" + active + ", userType=" + userType + ", userRoles=" + userRoles + "]";
 	}
 
+	
     // toString
 
 }
