@@ -129,8 +129,10 @@ public class CountryService implements CountryServiceInterface{
 	      dto.setName(country.getName());
 	      dto.setCountryCode(country.getCountryCode());
 	       dto.setIsDeleted(country.getIsDeleted());
-
-	       
+	       dto.setMarketTypeId(country.getMarketType().getMarketTypeId());
+	       dto.setRegionId(country.getRegion().getId());
+	       dto.setRegion(country.getRegion().getName());
+	       dto.setMarketType(country.getMarketType().getName());
 
 	        return dto;
 	    });
