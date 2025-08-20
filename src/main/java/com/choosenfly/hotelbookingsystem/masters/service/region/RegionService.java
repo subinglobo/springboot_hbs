@@ -1,11 +1,16 @@
 package com.choosenfly.hotelbookingsystem.masters.service.region;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import com.choosenfly.hotelbookingsystem.masters.dto.MasterCurrencyDTO;
 import com.choosenfly.hotelbookingsystem.masters.dto.MasterRegionDTO;
+import com.choosenfly.hotelbookingsystem.masters.entities.MasterCurrency;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterRegion;
 import com.choosenfly.hotelbookingsystem.masters.repository.MasterRegionRepository;
 
@@ -77,6 +82,27 @@ public class RegionService  implements RegionServiceInterface{
 		
 		masterRegionRepository.delete(regionEntityData);
 		return ResponseEntity.ok("Region with id " + id + " deleted successfully");
+	}
+
+	@Override
+	public Page<MasterRegionDTO> getAllRegionsList(Pageable pageable, String searchTerm) {
+		// TODO Auto-generated method stub
+		Page<MasterRegion> regionPage;
+
+	    if (StringUtils.hasText(searchTerm)) {
+	    	
+	    	regionPage = masterRegionRepository.findByNameStartingWithIgnoreCase(searchTerm, pageable);
+	    } else {
+	    	regionPage = masterRegionRepository.findAll(pageable);
+	    }
+
+	    return regionPage.map(region -> {
+	    MasterRegionDTO dto = new MasterRegionDTO();
+	    dto.setId(region.getId());
+	    dto.setName(region.getName());
+	    dto.setIsDeleted(region.getIsDeleted());
+	    return dto;
+	    });
 	}
 	
 	
