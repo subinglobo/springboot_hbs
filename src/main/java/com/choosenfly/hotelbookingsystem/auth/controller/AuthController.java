@@ -20,6 +20,8 @@ import com.choosenfly.hotelbookingsystem.agent.repository.AgentRepository;
 import com.choosenfly.hotelbookingsystem.auth.dto.login.LoginRequest;
 import com.choosenfly.hotelbookingsystem.auth.dto.login.LoginResponse;
 import com.choosenfly.hotelbookingsystem.auth.dto.login.OTPVerifyRequest;
+import com.choosenfly.hotelbookingsystem.auth.dto.otp.OtpInfo;
+import com.choosenfly.hotelbookingsystem.auth.dto.user.UserDTO;
 import com.choosenfly.hotelbookingsystem.auth.enitities.user.UserAccount;
 import com.choosenfly.hotelbookingsystem.auth.repository.user.UserAccountRepository;
 import com.choosenfly.hotelbookingsystem.auth.service.OtpRedisService;
@@ -35,6 +37,7 @@ import com.choosenfly.hotelbookingsystem.inventory.repository.HotelRepository;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/auth")
@@ -79,10 +82,11 @@ public class AuthController {
 		this.hotelRepository = hotelRepository;
 	}
 
-	@PostMapping("/register")
-	public ResponseEntity<?> registerUser(@RequestBody LoginRequest user) {
-		return ResponseEntity.ok(userAccountService.registerUser(null)); // adapt to your existing logic
-	}
+	  @PostMapping("/register")
+	    public UserDTO registerUser(@Valid @RequestBody UserDTO user) {
+	        return userAccountService.registerUser(user);
+	    }
+
 
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpServletResponse response) {
@@ -113,8 +117,11 @@ public class AuthController {
 
 	@PostMapping("/verify-otp")
 	public ResponseEntity<?> verifyOtp(@RequestBody OTPVerifyRequest request, HttpServletResponse response) {
-		var otpInfo = otpRedisService.getOtpInfo(request.getUsername());
+		OtpInfo otpInfo = otpRedisService.getOtpInfo(request.getUsername());
 
+		
+		System.err.println("OTP INFO : "+otpInfo);
+		
 		if (otpInfo == null || otpInfo.getExpiry().isBefore(Instant.now())) {
 			return ResponseEntity.badRequest().body(Map.of("error", "OTP expired or not found."));
 		}

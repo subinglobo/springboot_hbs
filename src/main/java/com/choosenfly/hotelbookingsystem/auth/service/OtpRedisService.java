@@ -3,10 +3,12 @@ package com.choosenfly.hotelbookingsystem.auth.service;
 import java.time.Duration;
 import java.time.Instant;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.choosenfly.hotelbookingsystem.auth.dto.otp.OtpInfo;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class OtpRedisService {
@@ -16,6 +18,10 @@ public class OtpRedisService {
     private static final Duration OTP_TTL = Duration.ofMinutes(5); // OTP valid for 5 mins
     private static final Duration PASSWORD_LOGIN_TTL = Duration.ofDays(7); // Password valid for 7 days
 
+    
+    @Autowired
+    private ObjectMapper objectMapper;
+    
     public OtpRedisService(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
@@ -36,11 +42,24 @@ public class OtpRedisService {
 
     // Retrieve OTP info
     public OtpInfo getOtpInfo(String username) {
-        Object val = redisTemplate.opsForValue().get(getOtpKey(username));
-        if (val instanceof OtpInfo) {
-            return (OtpInfo) val;
+        String key = getOtpKey(username);
+        Object val = redisTemplate.opsForValue().get(key);
+
+        System.out.println("OTP key: " + key);
+        System.out.println("OTP val from redis: " + val);
+        System.out.println("Value type: " + (val != null ? val.getClass().getName() : "null"));
+
+        if (val == null) {
+            return null;
         }
-        return null;
+
+        try {
+            // Convert the deserialized value (e.g., LinkedHashMap) to OtpInfo
+            return objectMapper.convertValue(val, OtpInfo.class);
+        } catch (IllegalArgumentException e) {
+            System.err.println("Failed to deserialize value to OtpInfo: " + e.getMessage());
+            return null;
+        }
     }
 
     // Delete OTP after verification or expiry

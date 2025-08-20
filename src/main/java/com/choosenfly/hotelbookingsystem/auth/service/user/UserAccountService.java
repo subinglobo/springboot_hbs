@@ -176,7 +176,7 @@ List<HotelContactDetails> contactDetails = hotel.getContactDetails();
 		
 	    UserAccount userAccount = new UserAccount();
 	    userAccount.setActive(true);
-
+	    userAccount.setUserId(user.getUserId());
 	    
 	    String encryptedPassword = passwordEncoder.encode(user.getPassword());
 	    userAccount.setPassword(encryptedPassword);

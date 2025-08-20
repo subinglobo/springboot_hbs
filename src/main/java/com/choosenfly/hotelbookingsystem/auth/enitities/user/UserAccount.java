@@ -50,7 +50,7 @@ public class UserAccount extends BaseEntity implements Serializable {
 
 	// Many-to-Many: UserAccount -> UserRoles
 	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.MERGE })
-	@JoinTable(name = "user_account_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+	@JoinTable(name = "user_account_roles", joinColumns = @JoinColumn(name = "id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> userRoles = new HashSet<>();
 
 	// Getters and setters

@@ -49,7 +49,8 @@ public class SecurityConfig {
                     "/v3/api-docs/**",
                     "/v2/api-docs/**",
                     "/webjars/**",
-                    "/auth/register").permitAll()
+                    "/auth/register",
+                    "/auth/verify-otp").permitAll()
             .anyRequest().authenticated())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
