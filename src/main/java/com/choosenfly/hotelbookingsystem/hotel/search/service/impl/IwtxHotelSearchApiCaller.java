@@ -133,13 +133,11 @@ public class IwtxHotelSearchApiCaller implements HotelSearchApiCaller {
         }
 
         executor.shutdown();
-        
-        System.err.println("");
 
         // Step 5: Map hotel details and base rates to HotelSearchResult
         for (HotelInfoIwtx hotelInfo : hotelInfos) {
             Double baseRate = baseRateMap.get(hotelInfo.getHotelCode());
-            if (baseRate != null) {  // :white_check_mark: Only add to results if baseRate is available
+            if (baseRate != null) {  // ✅ Only add to results if baseRate is available
                 HotelSearchResult result = new HotelSearchResult();
                 result.setHotelCode(hotelInfo.getHotelCode());
                 result.setHotelName(hotelInfo.getHotelName());
@@ -151,7 +149,6 @@ public class IwtxHotelSearchApiCaller implements HotelSearchApiCaller {
                 results.add(result);
             }
         }
-
         System.out.println(results);
         return results;
         
@@ -177,7 +174,6 @@ public class IwtxHotelSearchApiCaller implements HotelSearchApiCaller {
 
             
             System.out.println("Response :: "+responseXml);
-           
             // Process response
             if (responseXml != null && responseXml.getHotels() != null && responseXml.getHotels().getHotel() != null) {
                 for (HotelIwtx hotel : responseXml.getHotels().getHotel()) {
