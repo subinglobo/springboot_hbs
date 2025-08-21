@@ -140,8 +140,6 @@ public class DestinationService implements DestinationServiceInterface {
 	    return placePage.map(place -> {
 	    	MasterPlaceDTO dto = new MasterPlaceDTO();
 	        dto.setId(place.getId());
-	        dto.setCountryId(place.getCountry().getId());
-	        dto.setStateId(place.getState().getId());
 	        dto.setName(place.getName());
 	        dto.setPlaceCode(place.getPlaceCode());
 	        dto.setIsDeleted(place.getIsDeleted());
@@ -149,6 +147,11 @@ public class DestinationService implements DestinationServiceInterface {
 	        if (place.getCountry() != null) {
 	            dto.setCountryId(place.getCountry().getId());
 	            dto.setCountry(place.getCountry().getName());
+	        }
+	        
+	        if(place.getState() != null) {
+	        	  dto.setStateId(place.getState().getId());
+	        	  dto.setState(place.getState().getName());
 	        }
 
 	        return dto;
