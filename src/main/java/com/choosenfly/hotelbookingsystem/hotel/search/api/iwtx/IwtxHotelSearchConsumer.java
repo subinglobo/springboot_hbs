@@ -33,15 +33,8 @@ public class IwtxHotelSearchConsumer {
             List<HotelSearchResult> results = iwtxHotelSearchApiCaller.callApi(request);
 
             if (results != null && !results.isEmpty()) {
-                String redisKey = REDIS_KEY_PREFIX + searchId;
-                
-                System.out.println("redis key :: "+redisKey);
-                List<HotelSearchResult> subList = results.subList(0, 2);
-                redisTemplate.opsForList().rightPushAll(redisKey,subList.toArray());
-                Thread.sleep(10000);
-               List<HotelSearchResult> subList1 = results.subList(1, 11);
-
-                redisTemplate.opsForList().rightPushAll(redisKey, subList1.toArray());
+                String redisKey = REDIS_KEY_PREFIX + searchId;    
+                redisTemplate.opsForList().rightPushAll(redisKey,results.toArray());
                 redisTemplate.expire(redisKey, 10, java.util.concurrent.TimeUnit.MINUTES);
                 redisTemplate.opsForValue().increment(REDIS_KEY_PREFIX + searchId + ":finished", 1);
             }
