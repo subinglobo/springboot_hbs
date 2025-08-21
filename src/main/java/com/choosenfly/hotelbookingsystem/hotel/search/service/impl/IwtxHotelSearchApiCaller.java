@@ -136,18 +136,19 @@ public class IwtxHotelSearchApiCaller implements HotelSearchApiCaller {
 
         // Step 5: Map hotel details and base rates to HotelSearchResult
         for (HotelInfoIwtx hotelInfo : hotelInfos) {
-            HotelSearchResult result = new HotelSearchResult();
-            result.setHotelCode(hotelInfo.getHotelCode());
-            result.setHotelName(hotelInfo.getHotelName());
-            result.setHotelImage(hotelInfo.getHotelImage());
-            result.setStarRating(hotelInfo.getStarRating());
-            result.setHotelAddress(hotelInfo.getHotelAddress());
-            result.setApiType("IWTX");
-            result.setBaseRate(baseRateMap.getOrDefault(hotelInfo.getHotelCode(), null));
-           // result.setBaseRate(70.50);
-            results.add(result);
+            Double baseRate = baseRateMap.get(hotelInfo.getHotelCode());
+            if (baseRate != null) {  // ✅ Only add to results if baseRate is available
+                HotelSearchResult result = new HotelSearchResult();
+                result.setHotelCode(hotelInfo.getHotelCode());
+                result.setHotelName(hotelInfo.getHotelName());
+                result.setHotelImage(hotelInfo.getHotelImage());
+                result.setStarRating(hotelInfo.getStarRating());
+                result.setHotelAddress(hotelInfo.getHotelAddress());
+                result.setApiType("IWTX");
+                result.setBaseRate(baseRate);
+                results.add(result);
+            }
         }
-
         System.out.println(results);
         return results;
         

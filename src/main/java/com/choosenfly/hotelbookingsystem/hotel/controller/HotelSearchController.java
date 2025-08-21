@@ -56,26 +56,5 @@ public class HotelSearchController {
 	    }
 	}
 
-    /**
-     * Checks if all API responses for a search are complete.
-     * @param searchId The unique identifier for the search.
-     * @param agentId The agent identifier to determine enabled APIs.
-     * @return A response containing the searchId and completion status.
-     */
-    @GetMapping("/status/{searchId}")
-    public ResponseEntity<Map<String, Object>> getSearchStatus(
-            @PathVariable String searchId,
-            @RequestParam Long agentId) {
-        try {
-            boolean isComplete = hotelSearchService.isSearchComplete(searchId, agentId);
-            Map<String, Object> response = new HashMap<>();
-            response.put("searchId", searchId);
-            response.put("status", isComplete ? "completed" : "in_progress");
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Failed to check status: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-        }
-    }
+  
 }
