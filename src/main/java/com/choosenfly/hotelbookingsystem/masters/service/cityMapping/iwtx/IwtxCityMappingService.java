@@ -117,6 +117,8 @@ public class IwtxCityMappingService implements IwtxCityMappingServiceInterface {
 		dto.setApiCountryId(updated.getApiCountryId());
 		dto.setApiCityId(updated.getApiCityId());
 		dto.setIsDeleted(updated.getIsDeleted());
+		dto.setApiCityCode(updated.getMasterCity().getPlaceCode());
+		dto.setApiCountryCode(updated.getMasterCountry().getCountryCode());
 		return dto;
 
 	}
