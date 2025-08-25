@@ -81,9 +81,11 @@ public class DestinationController {
 	}
 	
 	@GetMapping("/getCitiesByCountryId/{countryId}")
-	private List<MasterPlaceDTO> getCitiesByPassingCountryId(@PathVariable("countryId") Long countryId) {
+	private List<MasterPlaceDTO> getCitiesByPassingCountryId(
+			@PathVariable("countryId") Long countryId , 
+			@RequestParam(required = false, name = "search") String searchTerm) {
 		
-		return destinationServiceInterface.getCitiesByPassingCountryId(countryId);
+		return destinationServiceInterface.getCitiesByPassingCountryId(countryId , searchTerm);
 	}
 
 

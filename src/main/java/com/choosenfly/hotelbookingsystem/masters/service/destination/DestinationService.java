@@ -1,5 +1,6 @@
 package com.choosenfly.hotelbookingsystem.masters.service.destination;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -182,13 +183,22 @@ public class DestinationService implements DestinationServiceInterface {
 	}
 
 	@Override
-	public List<MasterPlaceDTO> getCitiesByPassingCountryId(Long countryId) {
+	public List<MasterPlaceDTO> getCitiesByPassingCountryId(Long countryId, String searchTerm) {
 		// TODO Auto-generated method stub
 		
 		MasterCountry orElseThrow = masterCountryRepository.findById(countryId)
 				.orElseThrow(() -> new EntityNotFoundException("Country not found for id : "+ countryId));
 		
-		List<MasterPlace> placeEntity = masterPlaceRepository.findByCountryId(countryId);
+		List<MasterPlace> placeEntity = new ArrayList<>();
+		
+	    if (StringUtils.hasText(searchTerm)) {
+	    	
+	    	placeEntity = masterPlaceRepository.findByNameStartingWithIgnoreCase(searchTerm , countryId);
+	    } else {
+	    	placeEntity = masterPlaceRepository.findByCountryId(countryId);
+	    }
+		
+		
 		List<MasterPlaceDTO> collect = placeEntity.stream().map(entity -> {
 			MasterPlaceDTO dto = new MasterPlaceDTO();
 			dto.setId(entity.getId());
@@ -202,5 +212,7 @@ public class DestinationService implements DestinationServiceInterface {
 
 		return collect;
 	}
+
+
 
 }

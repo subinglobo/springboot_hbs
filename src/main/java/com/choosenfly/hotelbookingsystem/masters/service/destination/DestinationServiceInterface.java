@@ -22,6 +22,6 @@ public interface DestinationServiceInterface {
 
 	List<MasterPlaceDTO> getplacesByPassingStateId(Long stateId);
 
-	List<MasterPlaceDTO> getCitiesByPassingCountryId(Long countryId);
+	List<MasterPlaceDTO> getCitiesByPassingCountryId(Long countryId, String searchTerm);
 
 }

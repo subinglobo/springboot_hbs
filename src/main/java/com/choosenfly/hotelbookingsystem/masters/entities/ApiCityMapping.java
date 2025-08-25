@@ -17,8 +17,8 @@ public class ApiCityMapping extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "api_citymapping_id", nullable = false)
-	private Long apiCityMappingIid;
+	@Column(name = "id", nullable = false)
+	private Long id;
 
 	@Column(name = "api_provider", length = 50)
 	private String apiProvider ;		//platform
@@ -45,13 +45,16 @@ public class ApiCityMapping extends BaseEntity {
 	
 	@Column(name = "api_hotel_code_list" , columnDefinition = "TEXT")
 	private String apiHotelCodeList ;
+	
+	@Column(name = "is_deleted", length = 5)
+	private Boolean isDeleted;
 
-	public Long getApiCityMappingIid() {
-		return apiCityMappingIid;
+	public Long getId() {
+		return id;
 	}
 
-	public void setApiCityMappingIid(Long apiCityMappingIid) {
-		this.apiCityMappingIid = apiCityMappingIid;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getApiProvider() {
@@ -118,13 +121,25 @@ public class ApiCityMapping extends BaseEntity {
 		this.apiHotelCodeList = apiHotelCodeList;
 	}
 
+	public Boolean getIsDeleted() {
+		return isDeleted;
+	}
+
+	public void setIsDeleted(Boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
 	@Override
 	public String toString() {
-		return "ApiCityMapping [apiCityMappingIid=" + apiCityMappingIid + ", apiProvider=" + apiProvider
-				+ ", masterCountry=" + masterCountry + ", masterCity=" + masterCity + ", apiCountryId=" + apiCountryId
-				+ ", apiCountryCode=" + apiCountryCode + ", apiCityId=" + apiCityId + ", apiCityCode=" + apiCityCode
-				+ ", apiHotelCodeList=" + apiHotelCodeList + "]";
+		return "ApiCityMapping [id=" + id + ", apiProvider=" + apiProvider + ", masterCountry=" + masterCountry
+				+ ", masterCity=" + masterCity + ", apiCountryId=" + apiCountryId + ", apiCountryCode=" + apiCountryCode
+				+ ", apiCityId=" + apiCityId + ", apiCityCode=" + apiCityCode + ", apiHotelCodeList=" + apiHotelCodeList
+				+ ", isDeleted=" + isDeleted + "]";
 	}
+
+	
+
+	
 	
 	
 
