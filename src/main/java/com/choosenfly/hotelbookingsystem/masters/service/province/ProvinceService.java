@@ -161,6 +161,7 @@ public class ProvinceService implements ProvinceServiceInterface {
 	                dto.setStateName(entity.getName());
 	                dto.setStateCode(entity.getStateCode());
 	                dto.setCountryId(entity.getCountry().getId());
+	                dto.setCountry(entity.getCountry().getName());
 	                return dto;
 	            })
 	            .collect(Collectors.toList());
