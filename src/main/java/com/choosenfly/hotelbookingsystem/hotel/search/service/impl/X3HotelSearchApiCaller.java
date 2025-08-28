@@ -61,7 +61,7 @@ public class X3HotelSearchApiCaller implements HotelSearchApiCaller {
     public List<HotelSearchResult> callApi(HotelSearchRequest request) {
         List<HotelSearchResult> x3Results = new ArrayList<>();
 
-        List<HotelInfoX3> x3HotelInfos = x3HotelsRepository.findHotelsByCityAndCountry(request.getDestinationCityId(), request.getDestinationCountryId());
+        List<HotelInfoX3> x3HotelInfos = x3HotelsRepository.findHotelsByCityAndCountry(String.valueOf(request.getDestinationCityId()), String.valueOf(request.getDestinationCountryId()));
 
         if (x3HotelInfos == null || x3HotelInfos.isEmpty()) {
             return x3Results; // Return empty list if no hotels found

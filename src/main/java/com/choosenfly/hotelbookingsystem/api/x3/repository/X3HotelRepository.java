@@ -11,34 +11,72 @@ import com.choosenfly.hotelbookingsystem.api.x3.dto.HotelInfoX3;
 import com.choosenfly.hotelbookingsystem.api.x3.entities.X3Hotel;
 
 @Repository
-public interface X3HotelRepository extends JpaRepository<X3Hotel, Integer> {
+public interface X3HotelRepository extends JpaRepository<X3Hotel, Long> {
 
     /**
-     * Find all hotels by cityId and countryId.
+     * Find all hotels by cityCode and countryCode.
      *
-     * @param cityId    city ID
-     * @param countryId country ID
+     * @param cityCode    city code
+     * @param countryCode country code
      * @return List of hotels matching the criteria
      */
-    List<X3Hotel> findByCityIdAndCountryId(Integer cityId, Integer countryId);
+    List<X3Hotel> findByCityCodeAndCountryCode(String cityCode, String countryCode);
+    
+    /**
+     * Find hotels by city code and country code, excluding deleted records.
+     *
+     * @param cityCode    city code
+     * @param countryCode country code
+     * @return List of active hotels matching the criteria
+     */
+    List<X3Hotel> findByCityCodeAndCountryCodeAndIsDeletedFalse(String cityCode, String countryCode);
     
     @Query("""
     	    SELECT new com.choosenfly.hotelbookingsystem.api.x3.dto.HotelInfoX3(
-    	        h.hotelCode,
+    	        h.id,
     	        h.hotelName,
-    	        h.imagesUrl,
-    	        CAST(h.starRating AS integer),
-    	        h.hotelAddress
+    	        h.hotelImage,
+    	        CAST(h.starCategory AS integer),
+    	        h.address
     	    )
     	    FROM X3Hotel h
-    	    WHERE h.cityId = :cityId AND h.countryId = :countryId
+    	    WHERE h.cityCode = :cityCode AND h.countryCode = :countryCode
+    	    AND (h.isDeleted IS NULL OR h.isDeleted = false)
     	""")
     	List<HotelInfoX3> findHotelsByCityAndCountry(
-    	        @Param("cityId") Integer cityId,
-    	        @Param("countryId") Integer countryId);
+    	        @Param("cityCode") String cityCode,
+    	        @Param("countryCode") String countryCode);
 
     /**
-     * If you want case-insensitive search by city name and country ID.
+     * Find hotels by supplier code.
+     *
+     * @param supplierCode supplier code
+     * @return List of hotels from the specified supplier
      */
-    List<X3Hotel> findByCityNameIgnoreCaseAndCountryId(String cityName, Integer countryId);
+    List<X3Hotel> findBySupplierCode(String supplierCode);
+
+    /**
+     * Find hotels by zone.
+     *
+     * @param zone zone
+     * @return List of hotels in the specified zone
+     */
+    List<X3Hotel> findByZone(String zone);
+
+    /**
+     * Find hotels by property type.
+     *
+     * @param propertyType property type
+     * @return List of hotels of the specified property type
+     */
+    List<X3Hotel> findByPropertyType(String propertyType);
+
+    /**
+     * Find hotels by state code and country code.
+     *
+     * @param stateCode   state code
+     * @param countryCode country code
+     * @return List of hotels matching the criteria
+     */
+    List<X3Hotel> findByStateCodeAndCountryCode(String stateCode, String countryCode);
 }

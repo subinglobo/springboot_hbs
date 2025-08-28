@@ -41,4 +41,12 @@ public interface IwtxHotelRepository extends JpaRepository<IwtxHotel, Integer> {
      * If you want case-insensitive search by city name and country ID.
      */
     List<IwtxHotel> findByCityNameIgnoreCaseAndCountryId(String cityName, Integer countryId);
+
+    /**
+     * Find hotel by hotel code
+     * 
+     * @param hotelCode hotel code
+     * @return IwtxHotel entity
+     */
+    IwtxHotel findByHotelCode(String hotelCode);
 }

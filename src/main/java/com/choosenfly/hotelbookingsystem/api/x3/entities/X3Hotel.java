@@ -6,69 +6,211 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.ZonedDateTime;
 
 @Entity
-@Table(name = "x3_hotels")
+@Table(name = "iwtx_new_hotelslist_feed")
 public class X3Hotel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @Column(name = "iwtxnewhotelfeedid")
+    private Long iwtxNewHotelFeedId;
 
-    @Column(name = "hotel_code")
-    private String hotelCode;
+    @Column(name = "iwtx_code")
+    private String iwtxCode;
+
+    @Column(name = "city_code")
+    private String cityCode;
+
+    @Column(name = "country_code")
+    private String countryCode;
+
+    @Column(name = "zone")
+    private String zone;
+
+    @Column(name = "id")
+    private String id;
+
+    @Column(name = "supplier_name")
+    private String supplierName;
+
+    @Column(name = "supplier_code")
+    private String supplierCode;
+
+    @Column(name = "source_id")
+    private String sourceId;
+
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "brand_name")
+    private String brandName;
 
     @Column(name = "hotel_name")
     private String hotelName;
 
-    @Column(name = "images_url")
-    private String imagesUrl;
+    @Column(name = "longitude")
+    private String longitude;
 
-    @Column(name = "star_rating")
-    private String starRating;
+    @Column(name = "latitude")
+    private String latitude;
 
-    @Column(name = "hotel_address")
-    private String hotelAddress;
+    @Column(name = "address")
+    private String address;
 
-    @Column(name = "city_id")
-    private Integer cityId;
+    @Column(name = "post_code")
+    private String postCode;
 
-    @Column(name = "country_id")
-    private Integer countryId;
+    @Column(name = "state_name")
+    private String stateName;
 
-    @Column(name = "city_name")
-    private String cityName;
+    @Column(name = "state_code")
+    private String stateCode;
+
+    @Column(name = "property_type")
+    private String propertyType;
+
+    @Column(name = "phone")
+    private String phone;
+
+    @Column(name = "website")
+    private String website;
+
+    @Column(name = "created_date")
+    private ZonedDateTime createdDate;
+
+    @Column(name = "isdeleted")
+    private Boolean isDeleted;
+
+    @Column(name = "hotelimage", length = 1000)
+    private String hotelImage;
+
+    @Column(name = "starcategory", length = 100)
+    private String starCategory;
 
     // Constructors
     public X3Hotel() {}
 
-    public X3Hotel(String hotelCode, String hotelName, String imagesUrl, String starRating, 
-                   String hotelAddress, Integer cityId, Integer countryId, String cityName) {
-        this.hotelCode = hotelCode;
+    public X3Hotel(String iwtxCode, String cityCode, String countryCode, String zone, String id,
+                   String supplierName, String supplierCode, String sourceId, String name,
+                   String brandName, String hotelName, String longitude, String latitude,
+                   String address, String postCode, String stateName, String stateCode,
+                   String propertyType, String phone, String website, ZonedDateTime createdDate,
+                   Boolean isDeleted, String hotelImage, String starCategory) {
+        this.iwtxCode = iwtxCode;
+        this.cityCode = cityCode;
+        this.countryCode = countryCode;
+        this.zone = zone;
+        this.id = id;
+        this.supplierName = supplierName;
+        this.supplierCode = supplierCode;
+        this.sourceId = sourceId;
+        this.name = name;
+        this.brandName = brandName;
         this.hotelName = hotelName;
-        this.imagesUrl = imagesUrl;
-        this.starRating = starRating;
-        this.hotelAddress = hotelAddress;
-        this.cityId = cityId;
-        this.countryId = countryId;
-        this.cityName = cityName;
+        this.longitude = longitude;
+        this.latitude = latitude;
+        this.address = address;
+        this.postCode = postCode;
+        this.stateName = stateName;
+        this.stateCode = stateCode;
+        this.propertyType = propertyType;
+        this.phone = phone;
+        this.website = website;
+        this.createdDate = createdDate;
+        this.isDeleted = isDeleted;
+        this.hotelImage = hotelImage;
+        this.starCategory = starCategory;
     }
 
     // Getters and Setters
-    public Integer getId() {
+    public Long getIwtxNewHotelFeedId() {
+        return iwtxNewHotelFeedId;
+    }
+
+    public void setIwtxNewHotelFeedId(Long iwtxNewHotelFeedId) {
+        this.iwtxNewHotelFeedId = iwtxNewHotelFeedId;
+    }
+
+    public String getIwtxCode() {
+        return iwtxCode;
+    }
+
+    public void setIwtxCode(String iwtxCode) {
+        this.iwtxCode = iwtxCode;
+    }
+
+    public String getCityCode() {
+        return cityCode;
+    }
+
+    public void setCityCode(String cityCode) {
+        this.cityCode = cityCode;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
+    }
+
+    public String getZone() {
+        return zone;
+    }
+
+    public void setZone(String zone) {
+        this.zone = zone;
+    }
+
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public String getHotelCode() {
-        return hotelCode;
+    public String getSupplierName() {
+        return supplierName;
     }
 
-    public void setHotelCode(String hotelCode) {
-        this.hotelCode = hotelCode;
+    public void setSupplierName(String supplierName) {
+        this.supplierName = supplierName;
+    }
+
+    public String getSupplierCode() {
+        return supplierCode;
+    }
+
+    public void setSupplierCode(String supplierCode) {
+        this.supplierCode = supplierCode;
+    }
+
+    public String getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(String sourceId) {
+        this.sourceId = sourceId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getBrandName() {
+        return brandName;
+    }
+
+    public void setBrandName(String brandName) {
+        this.brandName = brandName;
     }
 
     public String getHotelName() {
@@ -79,58 +221,120 @@ public class X3Hotel {
         this.hotelName = hotelName;
     }
 
-    public String getImagesUrl() {
-        return imagesUrl;
+    public String getLongitude() {
+        return longitude;
     }
 
-    public void setImagesUrl(String imagesUrl) {
-        this.imagesUrl = imagesUrl;
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
     }
 
-    public String getStarRating() {
-        return starRating;
+    public String getLatitude() {
+        return latitude;
     }
 
-    public void setStarRating(String starRating) {
-        this.starRating = starRating;
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
     }
 
-    public String getHotelAddress() {
-        return hotelAddress;
+    public String getAddress() {
+        return address;
     }
 
-    public void setHotelAddress(String hotelAddress) {
-        this.hotelAddress = hotelAddress;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
-    public Integer getCityId() {
-        return cityId;
+    public String getPostCode() {
+        return postCode;
     }
 
-    public void setCityId(Integer cityId) {
-        this.cityId = cityId;
+    public void setPostCode(String postCode) {
+        this.postCode = postCode;
     }
 
-    public Integer getCountryId() {
-        return countryId;
+    public String getStateName() {
+        return stateName;
     }
 
-    public void setCountryId(Integer countryId) {
-        this.countryId = countryId;
+    public void setStateName(String stateName) {
+        this.stateName = stateName;
     }
 
-    public String getCityName() {
-        return cityName;
+    public String getStateCode() {
+        return stateCode;
     }
 
-    public void setCityName(String cityName) {
-        this.cityName = cityName;
+    public void setStateCode(String stateCode) {
+        this.stateCode = stateCode;
+    }
+
+    public String getPropertyType() {
+        return propertyType;
+    }
+
+    public void setPropertyType(String propertyType) {
+        this.propertyType = propertyType;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
+    }
+
+    public ZonedDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(ZonedDateTime createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public Boolean getIsDeleted() {
+        return isDeleted;
+    }
+
+    public void setIsDeleted(Boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
+    public String getHotelImage() {
+        return hotelImage;
+    }
+
+    public void setHotelImage(String hotelImage) {
+        this.hotelImage = hotelImage;
+    }
+
+    public String getStarCategory() {
+        return starCategory;
+    }
+
+    public void setStarCategory(String starCategory) {
+        this.starCategory = starCategory;
     }
 
     @Override
     public String toString() {
-        return "X3Hotel [id=" + id + ", hotelCode=" + hotelCode + ", hotelName=" + hotelName + 
-               ", imagesUrl=" + imagesUrl + ", starRating=" + starRating + ", hotelAddress=" + hotelAddress + 
-               ", cityId=" + cityId + ", countryId=" + countryId + ", cityName=" + cityName + "]";
+        return "X3Hotel [iwtxNewHotelFeedId=" + iwtxNewHotelFeedId + ", iwtxCode=" + iwtxCode + 
+               ", cityCode=" + cityCode + ", countryCode=" + countryCode + ", zone=" + zone + 
+               ", id=" + id + ", supplierName=" + supplierName + ", supplierCode=" + supplierCode + 
+               ", sourceId=" + sourceId + ", name=" + name + ", brandName=" + brandName + 
+               ", hotelName=" + hotelName + ", longitude=" + longitude + ", latitude=" + latitude + 
+               ", address=" + address + ", postCode=" + postCode + ", stateName=" + stateName + 
+               ", stateCode=" + stateCode + ", propertyType=" + propertyType + ", phone=" + phone + 
+               ", website=" + website + ", createdDate=" + createdDate + ", isDeleted=" + isDeleted + 
+               ", hotelImage=" + hotelImage + ", starCategory=" + starCategory + "]";
     }
 }
