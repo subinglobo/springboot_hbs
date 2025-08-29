@@ -57,19 +57,14 @@ public class IwtxCityMappingService implements IwtxCityMappingServiceInterface {
 		String cityCode = stateEntity.getStateCode();
 		String cityName = stateEntity.getName();
 		
-		System.err.println("countryCode::: " + countryCode);
-		System.err.println("cityCode::: " + cityCode);
-		System.err.println("cityName::: " + cityName);
-		
 		List<String> hotelCodes = iwtxCityMappingRepository.fetchIwtxHotelCodes(countryCode, cityCode, cityName);
 		
-		System.err.println("hotelCodes::: " + hotelCodes);
 		ObjectMapper objectMapper = new ObjectMapper();
 		// Convert to JSON string
 		String hotelCodesJson = null;
 		try {
 			hotelCodesJson = objectMapper.writeValueAsString(hotelCodes); 
-			System.err.println("hotelCodesJson::: " + hotelCodesJson);
+			//System.err.println("hotelCodesJson::: " + hotelCodesJson);
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

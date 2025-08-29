@@ -25,12 +25,8 @@ public class CityMappingService implements CityMappingServiceInterface{
 		
 		
 		try {
-			ApiCityMappingDTO status = cityMappingRepository.checkDataExistinDb(apiProvider , apiCountryId , apiCityId );
-			if(status != null) {
-				return true;
-			}else {
-				return false;
-			}
+			boolean status = cityMappingRepository.checkDataExistinDb(apiProvider , apiCountryId , apiCityId );
+			return status;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

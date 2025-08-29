@@ -91,7 +91,8 @@ public class HotelSearchService {
     }
     
     public List<HotelSearchResult> applyFilters(List<HotelSearchResult> results, Integer starRating, String apiType) {
-        return results.stream()
+    	
+    	return results.stream()
                 .filter(r -> starRating == null || r.getStarRating() == starRating)
                 .filter(r -> apiType == null || r.getApiType().equalsIgnoreCase(apiType))
                 .collect(Collectors.toList());
