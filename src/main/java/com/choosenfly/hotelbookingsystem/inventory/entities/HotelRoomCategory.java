@@ -3,8 +3,11 @@ package com.choosenfly.hotelbookingsystem.inventory.entities;
 import java.util.List;
 
 import com.choosenfly.hotelbookingsystem.common.base.entities.BaseEntity;
+import com.choosenfly.hotelbookingsystem.inventory.entities.compulsoryevents.CompulsorySupplymentsRate;
 import com.choosenfly.hotelbookingsystem.inventory.entities.contractrate.ContractRateRoom;
+import com.choosenfly.hotelbookingsystem.inventory.entities.discount.DiscountRoom;
 import com.choosenfly.hotelbookingsystem.inventory.entities.specialrate.SpecialRateRoom;
+import com.choosenfly.hotelbookingsystem.inventory.entities.staypay.StaypayRoom;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterRoomCategory;
 
 import jakarta.persistence.CascadeType;
@@ -48,6 +51,15 @@ public class HotelRoomCategory extends BaseEntity{
     
     @OneToMany(mappedBy = "roomCategory", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
     private List<SpecialRateRoom> specialRateRooms;
+    
+    @OneToMany(mappedBy = "roomCategory", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
+    private List<DiscountRoom> discountRooms;
+    
+    @OneToMany(mappedBy = "roomCategory", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
+    private List<StaypayRoom> staypayRooms;
+    
+    @OneToMany(mappedBy = "roomCategory", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
+    private List<CompulsorySupplymentsRate> compulsorySupplymentsRates;
 
 	public long getHotel_room_category_id() {
 		return hotel_room_category_id;
@@ -110,11 +122,41 @@ public class HotelRoomCategory extends BaseEntity{
 	}
 
 	
+	public List<DiscountRoom> getDiscountRooms() {
+		return discountRooms;
+	}
+
+	public void setDiscountRooms(List<DiscountRoom> discountRooms) {
+		this.discountRooms = discountRooms;
+	}
+
+	
+	public List<StaypayRoom> getStaypayRooms() {
+		return staypayRooms;
+	}
+
+	public void setStaypayRooms(List<StaypayRoom> staypayRooms) {
+		this.staypayRooms = staypayRooms;
+	}
+
+	
+	
+	public List<CompulsorySupplymentsRate> getCompulsorySupplymentsRates() {
+		return compulsorySupplymentsRates;
+	}
+
+	public void setCompulsorySupplymentsRates(List<CompulsorySupplymentsRate> compulsorySupplymentsRates) {
+		this.compulsorySupplymentsRates = compulsorySupplymentsRates;
+	}
+
+	
 	@Override
 	public String toString() {
 		return "HotelRoomCategory [hotel_room_category_id=" + hotel_room_category_id + ", hotel=" + hotel
 				+ ", roomCategory=" + roomCategory + ", name=" + name + ", noOfRooms=" + noOfRooms
-				+ ", contractRateRooms=" + contractRateRooms + ", specialRateRooms=" + specialRateRooms + "]";
+				+ ", contractRateRooms=" + contractRateRooms + ", specialRateRooms=" + specialRateRooms
+				+ ", discountRooms=" + discountRooms + ", staypayRooms=" + staypayRooms
+				+ ", compulsorySupplymentsRates=" + compulsorySupplymentsRates + "]";
 	}
 	
 	

@@ -6,8 +6,11 @@ import java.util.List;
 
 import com.choosenfly.hotelbookingsystem.common.base.entities.BaseEntity;
 import com.choosenfly.hotelbookingsystem.inventory.entities.LinkedHotelAmenity;
+import com.choosenfly.hotelbookingsystem.inventory.entities.compulsoryevents.CompulsorySupplyMarketType;
 import com.choosenfly.hotelbookingsystem.inventory.entities.contractrate.ContractRateMarketType;
+import com.choosenfly.hotelbookingsystem.inventory.entities.discount.DiscountMarketType;
 import com.choosenfly.hotelbookingsystem.inventory.entities.specialrate.SpecialRateMarketType;
+import com.choosenfly.hotelbookingsystem.inventory.entities.staypay.StaypayMarketType;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -40,8 +43,16 @@ public class MasterMarketType extends BaseEntity {
     
     @OneToMany(mappedBy = "marketType", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<SpecialRateMarketType>specialRateMarketTypes ;
+    
+    @OneToMany(mappedBy = "marketType", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<DiscountMarketType>discountMarketTypes ;
 
-
+    @OneToMany(mappedBy = "marketType", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<StaypayMarketType>staypayMarketTypes ;
+    
+    @OneToMany(mappedBy = "marketType", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<CompulsorySupplyMarketType>compulsorySupplyMarketTypes ;
+    
 	public Long getMarketTypeId() {
 		return marketTypeId;
 	}
@@ -81,6 +92,30 @@ public class MasterMarketType extends BaseEntity {
 
 	public void setContractRateMarketTypes(List<ContractRateMarketType> contractRateMarketTypes) {
 		this.contractRateMarketTypes = contractRateMarketTypes;
+	}
+
+	public List<DiscountMarketType> getDiscountMarketTypes() {
+		return discountMarketTypes;
+	}
+
+	public void setDiscountMarketTypes(List<DiscountMarketType> discountMarketTypes) {
+		this.discountMarketTypes = discountMarketTypes;
+	}
+
+	public List<StaypayMarketType> getStaypayMarketTypes() {
+		return staypayMarketTypes;
+	}
+
+	public void setStaypayMarketTypes(List<StaypayMarketType> staypayMarketTypes) {
+		this.staypayMarketTypes = staypayMarketTypes;
+	}
+
+	public List<CompulsorySupplyMarketType> getCompulsorySupplyMarketTypes() {
+		return compulsorySupplyMarketTypes;
+	}
+
+	public void setCompulsorySupplyMarketTypes(List<CompulsorySupplyMarketType> compulsorySupplyMarketTypes) {
+		this.compulsorySupplyMarketTypes = compulsorySupplyMarketTypes;
 	}
 
    

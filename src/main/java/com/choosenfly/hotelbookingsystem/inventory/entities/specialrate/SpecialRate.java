@@ -16,6 +16,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -81,6 +82,12 @@ public class SpecialRate extends BaseEntity{
 	
 	@OneToMany(mappedBy = "specialRate",cascade = CascadeType.ALL,orphanRemoval = true,fetch = FetchType.LAZY)
 	private List<SpecialRateRoom>specialRateRooms;
+	
+    @OneToOne(mappedBy = "specialRate", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private SpecialRateCombined specialRateCombined;
+    
+	@OneToMany(mappedBy = "specialRate",cascade = CascadeType.ALL,orphanRemoval = true,fetch = FetchType.LAZY)
+	private List<SpecialRateExcludeCountry>specialRateExcludeCountries;
 
 	public Long getSpecialRateId() {
 		return specialRateId;
@@ -241,6 +248,27 @@ public class SpecialRate extends BaseEntity{
 	}
 
 	
+	
+
+	
+	public SpecialRateCombined getSpecialRateCombined() {
+		return specialRateCombined;
+	}
+
+	public void setSpecialRateCombined(SpecialRateCombined specialRateCombined) {
+		this.specialRateCombined = specialRateCombined;
+	}
+
+	
+	public List<SpecialRateExcludeCountry> getSpecialRateExcludeCountries() {
+		return specialRateExcludeCountries;
+	}
+
+	public void setSpecialRateExcludeCountries(List<SpecialRateExcludeCountry> specialRateExcludeCountries) {
+		this.specialRateExcludeCountries = specialRateExcludeCountries;
+	}
+
+	
 	@Override
 	public String toString() {
 		return "SpecialRate [specialRateId=" + specialRateId + ", hotel=" + hotel + ", seasonId=" + seasonId
@@ -249,7 +277,8 @@ public class SpecialRate extends BaseEntity{
 				+ ", lengthStay=" + lengthStay + ", remark=" + remark + ", type=" + type + ", excludeCountry="
 				+ excludeCountry + ", isValidity=" + isValidity + ", isLive=" + isLive + ", specialRateValidities="
 				+ specialRateValidities + ", specialRateMarketTypes=" + specialRateMarketTypes + ", specialRateRooms="
-				+ specialRateRooms + "]";
+				+ specialRateRooms + ", specialRateCombined=" + specialRateCombined + ", specialRateExcludeCountries="
+				+ specialRateExcludeCountries + "]";
 	}
 	
 	

@@ -3,8 +3,11 @@ package com.choosenfly.hotelbookingsystem.inventory.entities;
 import java.util.List;
 
 import com.choosenfly.hotelbookingsystem.common.base.entities.BaseEntity;
+import com.choosenfly.hotelbookingsystem.inventory.entities.compulsoryevents.CompulsorySupplyments;
 import com.choosenfly.hotelbookingsystem.inventory.entities.contractrate.ContractRate;
+import com.choosenfly.hotelbookingsystem.inventory.entities.discount.DiscountRate;
 import com.choosenfly.hotelbookingsystem.inventory.entities.specialrate.SpecialRate;
+import com.choosenfly.hotelbookingsystem.inventory.entities.staypay.StayPay;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterCountry;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterCurrency;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterHotelCategory;
@@ -148,7 +151,15 @@ public class Hotel extends BaseEntity{
     
     @OneToMany(mappedBy = "hotel" ,cascade = CascadeType.ALL ,orphanRemoval = true,fetch = FetchType.LAZY)
     private List<SpecialRate>specialRates;
+    
+	@OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	private List<DiscountRate> discountRates;
 	
+	@OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	private List<StayPay> stayPays;
+	
+	@OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	private List<CompulsorySupplyments> compulsorySupplyments;
 	
 	public List<BlockCheckInAndCheckOut> getHotelBlockedDates() {
 		return hotelBlockedDates;
@@ -434,6 +445,34 @@ public class Hotel extends BaseEntity{
 	}
 
 	
+	public List<DiscountRate> getDiscountRates() {
+		return discountRates;
+	}
+
+	public void setDiscountRates(List<DiscountRate> discountRates) {
+		this.discountRates = discountRates;
+	}
+
+	
+	
+	public List<StayPay> getStayPays() {
+		return stayPays;
+	}
+
+	public void setStayPays(List<StayPay> stayPays) {
+		this.stayPays = stayPays;
+	}
+
+	
+	public List<CompulsorySupplyments> getCompulsorySupplyments() {
+		return compulsorySupplyments;
+	}
+
+	public void setCompulsorySupplyments(List<CompulsorySupplyments> compulsorySupplyments) {
+		this.compulsorySupplyments = compulsorySupplyments;
+	}
+
+	
 	@Override
 	public String toString() {
 		return "Hotel [hotelId=" + hotelId + ", hotelName=" + hotelName + ", hotelCurrency=" + hotelCurrency
@@ -448,7 +487,8 @@ public class Hotel extends BaseEntity{
 				+ hotelAmenities + ", hotelOccupancies=" + hotelOccupancies + ", minimumLengths=" + minimumLengths
 				+ ", hotelAvailabilities=" + hotelAvailabilities + ", hotelBlockedDates=" + hotelBlockedDates
 				+ ", contractRates=" + contractRates + ", hotelRoomCategories=" + hotelRoomCategories
-				+ ", hotelRoomTypes=" + hotelRoomTypes + ", specialRates=" + specialRates + "]";
+				+ ", hotelRoomTypes=" + hotelRoomTypes + ", specialRates=" + specialRates + ", discountRates="
+				+ discountRates + ", stayPays=" + stayPays + ", compulsorySupplyments=" + compulsorySupplyments + "]";
 	}
 
 

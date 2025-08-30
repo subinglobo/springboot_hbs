@@ -5,22 +5,30 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+
 public class SpecialRateDTO {
 	
 	private Long specialRateId;
 
+
     private List<Long> marketype;
     
-    private String excludeCountry;
+//    private String excludeCountry;
     
-    private List<String> combinedPromo;
+    private List<Long>excludeCountrys;
     
-    private List<String> promotypeArray;
+    private Long combinedPromoId;
     
-    private Long hotelId;;
+    private String promotype;
+    
+    private Long hotelId;
     
     private Long seasonId;
     
+    @NotNull(message = "RateCode is required")
     private String rateCode;
     
     private Boolean weekDay;
@@ -60,28 +68,23 @@ public class SpecialRateDTO {
 		this.marketype = marketype;
 	}
 
-	public String getExcludeCountry() {
-		return excludeCountry;
+	
+
+	
+	public Long getCombinedPromoId() {
+		return combinedPromoId;
 	}
 
-	public void setExcludeCountry(String excludeCountry) {
-		this.excludeCountry = excludeCountry;
+	public void setCombinedPromoId(Long combinedPromoId) {
+		this.combinedPromoId = combinedPromoId;
 	}
 
-	public List<String> getCombinedPromo() {
-		return combinedPromo;
+	public String getPromotype() {
+		return promotype;
 	}
 
-	public void setCombinedPromo(List<String> combinedPromo) {
-		this.combinedPromo = combinedPromo;
-	}
-
-	public List<String> getPromotypeArray() {
-		return promotypeArray;
-	}
-
-	public void setPromotypeArray(List<String> promotypeArray) {
-		this.promotypeArray = promotypeArray;
+	public void setPromotype(String promotype) {
+		this.promotype = promotype;
 	}
 
 	public Long getHotelId() {
@@ -193,16 +196,27 @@ public class SpecialRateDTO {
 	}
 
 	
+	public List<Long> getExcludeCountrys() {
+		return excludeCountrys;
+	}
+
+	public void setExcludeCountrys(List<Long> excludeCountrys) {
+		this.excludeCountrys = excludeCountrys;
+	}
+
+	
 	@Override
 	public String toString() {
-		return "SpecialRateDTO [specialRateId=" + specialRateId + ", marketype=" + marketype + ", excludeCountry="
-				+ excludeCountry + ", combinedPromo=" + combinedPromo + ", promotypeArray=" + promotypeArray
-				+ ", hotelId=" + hotelId + ", seasonId=" + seasonId + ", rateCode=" + rateCode + ", weekDay=" + weekDay
-				+ ", weekEnd=" + weekEnd + ", allDays=" + allDays + ", IsRefund=" + IsRefund + ", bookDate=" + bookDate
-				+ ", bookDay=" + bookDay + ", lengthStay=" + lengthStay + ", remark=" + remark
-				+ ", specialRateValidityDTO=" + specialRateValidityDTO + ", specialRateRoomDTO=" + specialRateRoomDTO
-				+ "]";
+		return "SpecialRateDTO [specialRateId=" + specialRateId + ", marketype=" + marketype + ", excludeCountrys="
+				+ excludeCountrys + ", combinedPromoId=" + combinedPromoId + ", promotype=" + promotype + ", hotelId="
+				+ hotelId + ", seasonId=" + seasonId + ", rateCode=" + rateCode + ", weekDay=" + weekDay + ", weekEnd="
+				+ weekEnd + ", allDays=" + allDays + ", IsRefund=" + IsRefund + ", bookDate=" + bookDate + ", bookDay="
+				+ bookDay + ", lengthStay=" + lengthStay + ", remark=" + remark + ", specialRateValidityDTO="
+				+ specialRateValidityDTO + ", specialRateRoomDTO=" + specialRateRoomDTO + "]";
 	}
+
+	
+	
     
     
     

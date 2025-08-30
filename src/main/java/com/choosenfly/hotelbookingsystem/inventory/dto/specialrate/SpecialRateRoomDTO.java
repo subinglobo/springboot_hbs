@@ -12,11 +12,11 @@ public class SpecialRateRoomDTO {
     
     private Double rate;
     
-    private Integer hotelMealId;
+//    private Long hotelMealId;
     
     private Boolean extraBed;
     
-    private Boolean meal;
+//    private Boolean meal;
     
     private Double adultrate;
     
@@ -62,13 +62,7 @@ public class SpecialRateRoomDTO {
 		this.rate = rate;
 	}
 
-	public Integer getHotelMealId() {
-		return hotelMealId;
-	}
-
-	public void setHotelMealId(Integer hotelMealId) {
-		this.hotelMealId = hotelMealId;
-	}
+	
 
 	public Boolean getExtraBed() {
 		return extraBed;
@@ -76,14 +70,6 @@ public class SpecialRateRoomDTO {
 
 	public void setExtraBed(Boolean extraBed) {
 		this.extraBed = extraBed;
-	}
-
-	public Boolean getMeal() {
-		return meal;
-	}
-
-	public void setMeal(Boolean meal) {
-		this.meal = meal;
 	}
 
 	public Double getAdultrate() {
@@ -102,12 +88,13 @@ public class SpecialRateRoomDTO {
 		this.childrate = childrate;
 	}
 
+	
 	@Override
 	public String toString() {
 		return "SpecialRateRoomDTO [specialRateRoomId=" + specialRateRoomId + ", hotelRoomcategoryId="
 				+ hotelRoomcategoryId + ", hotelRoomTypeId=" + hotelRoomTypeId + ", ocuppancyTypeIid="
-				+ ocuppancyTypeIid + ", rate=" + rate + ", hotelMealId=" + hotelMealId + ", extraBed=" + extraBed
-				+ ", meal=" + meal + ", adultrate=" + adultrate + ", childrate=" + childrate + "]";
+				+ ocuppancyTypeIid + ", rate=" + rate + ", extraBed=" + extraBed + ", adultrate=" + adultrate
+				+ ", childrate=" + childrate + "]";
 	}
     
     

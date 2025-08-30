@@ -5,7 +5,9 @@ import java.util.List;
 
 import com.choosenfly.hotelbookingsystem.common.base.entities.BaseEntity;
 import com.choosenfly.hotelbookingsystem.inventory.entities.contractrate.ContractRateRoom;
+import com.choosenfly.hotelbookingsystem.inventory.entities.discount.DiscountRoom;
 import com.choosenfly.hotelbookingsystem.inventory.entities.specialrate.SpecialRateRoom;
+import com.choosenfly.hotelbookingsystem.inventory.entities.staypay.StaypayRoom;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterRoomType;
 
 import jakarta.persistence.CascadeType;
@@ -48,7 +50,11 @@ public class HotelRoomType extends BaseEntity{
     private List<SpecialRateRoom> specialRateRooms ;
 
 
+    @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
+    private List<DiscountRoom> discountRooms ;
     
+    @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
+    private List<StaypayRoom> staypayRooms ;
 
 
 	public long getHotelRoomTypeId() {
@@ -111,11 +117,34 @@ public class HotelRoomType extends BaseEntity{
 	}
 
 
+	
+	public List<DiscountRoom> getDiscountRooms() {
+		return discountRooms;
+	}
+
+
+	public void setDiscountRooms(List<DiscountRoom> discountRooms) {
+		this.discountRooms = discountRooms;
+	}
+
+	
+
+	public List<StaypayRoom> getStaypayRooms() {
+		return staypayRooms;
+	}
+
+
+	public void setStaypayRooms(List<StaypayRoom> staypayRooms) {
+		this.staypayRooms = staypayRooms;
+	}
+
+
 	@Override
 	public String toString() {
 		return "HotelRoomType [hotelRoomTypeId=" + hotelRoomTypeId + ", hotelRoomcategoryId=" + hotelRoomcategoryId
 				+ ", hotel=" + hotel + ", roomType=" + roomType + ", contractRateRooms=" + contractRateRooms
-				+ ", specialRateRooms=" + specialRateRooms + "]";
+				+ ", specialRateRooms=" + specialRateRooms + ", discountRooms=" + discountRooms + ", staypayRooms="
+				+ staypayRooms + "]";
 	}
     
     

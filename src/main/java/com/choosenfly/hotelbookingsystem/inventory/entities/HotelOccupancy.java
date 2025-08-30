@@ -3,6 +3,7 @@ package com.choosenfly.hotelbookingsystem.inventory.entities;
 import java.util.List;
 
 import com.choosenfly.hotelbookingsystem.common.base.entities.BaseEntity;
+import com.choosenfly.hotelbookingsystem.inventory.entities.compulsoryevents.CompulsorySupplymentsRate;
 import com.choosenfly.hotelbookingsystem.inventory.entities.specialrate.SpecialRateRoom;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterMarketType;
 
@@ -43,6 +44,9 @@ public class HotelOccupancy extends BaseEntity {
     
     @OneToMany(mappedBy = "hotelOccupancy", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SpecialRateRoom> specialRateRooms;
+    
+    @OneToMany(mappedBy = "hotelOccupancy", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CompulsorySupplymentsRate> compulsorySupplymentsRates;
 
 
     @Column(name = "is_deleted")
@@ -129,11 +133,22 @@ public class HotelOccupancy extends BaseEntity {
 		this.specialRateRooms = specialRateRooms;
 	}
 
+	
+	public List<CompulsorySupplymentsRate> getCompulsorySupplymentsRates() {
+		return compulsorySupplymentsRates;
+	}
+
+	public void setCompulsorySupplymentsRates(List<CompulsorySupplymentsRate> compulsorySupplymentsRates) {
+		this.compulsorySupplymentsRates = compulsorySupplymentsRates;
+	}
+
+	
 	@Override
 	public String toString() {
 		return "HotelOccupancy [id=" + id + ", hotel=" + hotel + ", marketType=" + marketType + ", validityPeriods="
 				+ validityPeriods + ", roomOccupancy=" + roomOccupancy + ", specialRateRooms=" + specialRateRooms
-				+ ", deleted=" + deleted + ", live=" + live + ", validity=" + validity + "]";
+				+ ", compulsorySupplymentsRates=" + compulsorySupplymentsRates + ", deleted=" + deleted + ", live="
+				+ live + ", validity=" + validity + "]";
 	}
     
     
