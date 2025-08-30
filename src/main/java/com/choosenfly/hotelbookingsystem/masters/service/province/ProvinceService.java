@@ -124,13 +124,13 @@ public class ProvinceService implements ProvinceServiceInterface {
 	    Page<MasterState> statePage;
 
 	    if (StringUtils.hasText(search)) {
-	        statePage = masterStateRepository.findByNameContainingIgnoreCase(search, pageable);
+	        statePage = masterStateRepository.findByNameContainingIgnoreCaseAndIsDeletedFalse(search, pageable);
 	    } else {
 	        statePage = masterStateRepository.findAll(pageable);
 	    }
 
 	    return statePage.map(state -> {
-	        MasterStateDTO dto = new MasterStateDTO();
+	        MasterStateDTO dto = new MasterStateDTO();  
 	        dto.setId(state.getId());
 	        dto.setStateName(state.getName());
 	        dto.setStateCode(state.getStateCode());
@@ -161,6 +161,7 @@ public class ProvinceService implements ProvinceServiceInterface {
 	                dto.setStateName(entity.getName());
 	                dto.setStateCode(entity.getStateCode());
 	                dto.setCountryId(entity.getCountry().getId());
+	                dto.setCountry(entity.getCountry().getName());
 	                return dto;
 	            })
 	            .collect(Collectors.toList());

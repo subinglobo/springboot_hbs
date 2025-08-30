@@ -1,5 +1,7 @@
 package com.choosenfly.hotelbookingsystem.masters.service.cityMapping.iwtx;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +17,11 @@ import com.choosenfly.hotelbookingsystem.masters.entities.MasterState;
 import com.choosenfly.hotelbookingsystem.masters.repository.IwtxCityMappingRepository;
 import com.choosenfly.hotelbookingsystem.masters.repository.MasterCountryRepository;
 import com.choosenfly.hotelbookingsystem.masters.repository.MasterPlaceRepository;
+import com.choosenfly.hotelbookingsystem.masters.repository.MasterStateRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.Valid;
 
 @Service
 public class IwtxCityMappingService implements IwtxCityMappingServiceInterface {
@@ -26,38 +30,62 @@ public class IwtxCityMappingService implements IwtxCityMappingServiceInterface {
 
 	private final MasterCountryRepository masterCountryRepository;
 
-	private final MasterPlaceRepository masterPlaceRepository;
+	private final MasterStateRepository masterStateRepository;
 
 	public IwtxCityMappingService(IwtxCityMappingRepository iwtxCityMappingRepository,
-			MasterCountryRepository masterCountryRepository, MasterPlaceRepository masterPlaceRepository) {
+			MasterCountryRepository masterCountryRepository, MasterStateRepository masterStateRepository) {
 		this.iwtxCityMappingRepository = iwtxCityMappingRepository;
 		this.masterCountryRepository = masterCountryRepository;
-		this.masterPlaceRepository = masterPlaceRepository;
+		this.masterStateRepository = masterStateRepository;
 	}
 
 	@Override
 	@Transactional
-	public Long saveIwtxCityMapping(@Valid ApiCityMappingDTO dto) {
+	public Long saveIwtxCityMapping(ApiCityMappingDTO dto) {
 		// TODO Auto-generated method stub
-
-		ApiCityMapping entity = new ApiCityMapping();
+		
+		System.err.println("dto::: " + dto);
+		
+		//if platform = Iwtx using countrycode , cityname and citycode fetch hotelcodes from iwt_hotels tables store json array of hotel_codes in mapping table
 
 		MasterCountry countryEntity = masterCountryRepository.findById(dto.getMasterCountryId()).orElseThrow(
 				() -> new EntityNotFoundException("Country not found for id : " + dto.getMasterCountryId()));
-		entity.setMasterCountry(countryEntity);
+		String countryCode = countryEntity.getCountryCode();
+		
+	   MasterState stateEntity = masterStateRepository.findById(dto.getMasterCityId()).orElseThrow(
+				() -> new EntityNotFoundException("State not found for id: " + dto.getMasterCityId()));
+		String cityCode = stateEntity.getStateCode();
+		String cityName = stateEntity.getName();
+		
+		List<String> hotelCodes = iwtxCityMappingRepository.fetchIwtxHotelCodes(countryCode, cityCode, cityName);
+		
+		ObjectMapper objectMapper = new ObjectMapper();
+		// Convert to JSON string
+		String hotelCodesJson = null;
+		try {
+			hotelCodesJson = objectMapper.writeValueAsString(hotelCodes); 
+			//System.err.println("hotelCodesJson::: " + hotelCodesJson);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-		MasterPlace placeEntity = masterPlaceRepository.findById(dto.getMasterCityId()).orElseThrow(
-				() -> new EntityNotFoundException("Place or City not found for id: " + dto.getMasterCityId()));
-		entity.setMasterCity(placeEntity);
-
+		// Save into mapping entity
+		ApiCityMapping entity = new ApiCityMapping();
 		entity.setApiProvider(dto.getApiProvider());
-		entity.setApiCountryId(dto.getApiCountryId());
-		entity.setApiCityId(dto.getApiCityId());
+		entity.setMasterCountry(countryEntity);
+		entity.setMasterState(stateEntity);
+		entity.setApiCountryId(countryEntity.getId()+"");
+		entity.setApiCountryCode(countryCode);
+		entity.setApiCityId(stateEntity.getId()+"");
+		entity.setApiCityCode(cityCode);
+		entity.setApiHotelCodeList(hotelCodesJson);  // ✅ store JSON array
 		entity.setIsDeleted(false);
 		ApiCityMapping save = iwtxCityMappingRepository.save(entity);
 		if (save.getId() != 0) {
-			return save.getId();
+			return save.getId(); 
 		}
+
 		return null;
 	}
 
@@ -74,12 +102,12 @@ public class IwtxCityMappingService implements IwtxCityMappingServiceInterface {
 			
 			dto.setId(iwtxCityaMappingEntity.getId());
 			dto.setMasterCountryId(iwtxCityaMappingEntity.getMasterCountry().getId());
-			dto.setMasterCityId(iwtxCityaMappingEntity.getMasterCity().getId());
+			dto.setMasterCityId(iwtxCityaMappingEntity.getMasterState().getId());
 			dto.setApiProvider(iwtxCityaMappingEntity.getApiProvider());
 			dto.setApiCountryId(iwtxCityaMappingEntity.getApiCountryId());
 			dto.setApiCountryCode(iwtxCityaMappingEntity.getMasterCountry().getCountryCode());
 			dto.setApiCityId(iwtxCityaMappingEntity.getApiCityId());
-			dto.setApiCityCode(iwtxCityaMappingEntity.getMasterCity().getPlaceCode());
+			dto.setApiCityCode(iwtxCityaMappingEntity.getMasterState().getStateCode());
 			dto.setIsDeleted(iwtxCityaMappingEntity.getIsDeleted());
 
 			return dto;
@@ -92,16 +120,16 @@ public class IwtxCityMappingService implements IwtxCityMappingServiceInterface {
 	@Transactional
 	public ApiCityMappingDTO editIwtxCityMapping(Long id, ApiCityMappingDTO placeDTO) {
 		// TODO Auto-generated method stub
-		ApiCityMapping iwtxCityaMappingEntity = iwtxCityMappingRepository.findById(id)
+		ApiCityMapping iwtxCityaMappingEntity = iwtxCityMappingRepository.findById(id) 
 				.orElseThrow(() -> new EntityNotFoundException());
 
 		MasterCountry countryEntity = masterCountryRepository.findById(placeDTO.getMasterCountryId()).orElseThrow(
 				() -> new EntityNotFoundException("Country not found for id : " + placeDTO.getMasterCountryId()));
 		iwtxCityaMappingEntity.setMasterCountry(countryEntity);
 
-		MasterPlace placeEntity = masterPlaceRepository.findById(placeDTO.getMasterCityId()).orElseThrow(
-				() -> new EntityNotFoundException("Place or City not found for id: " + placeDTO.getMasterCityId()));
-		iwtxCityaMappingEntity.setMasterCity(placeEntity);
+	 MasterState stateEntity = masterStateRepository.findById(placeDTO.getMasterCityId()).orElseThrow(
+				() -> new EntityNotFoundException("State not found for id: " + placeDTO.getMasterCityId()));
+		iwtxCityaMappingEntity.setMasterState(stateEntity);
 
 		iwtxCityaMappingEntity.setApiProvider(iwtxCityaMappingEntity.getApiProvider());
 		iwtxCityaMappingEntity.setApiCountryId(iwtxCityaMappingEntity.getApiCountryId());
@@ -112,12 +140,12 @@ public class IwtxCityMappingService implements IwtxCityMappingServiceInterface {
 		ApiCityMappingDTO dto = new ApiCityMappingDTO();
 
 		dto.setMasterCountryId(updated.getMasterCountry().getId());
-		dto.setMasterCityId(updated.getMasterCity().getId());
+		dto.setMasterCityId(updated.getMasterState().getId());
 		dto.setApiProvider(updated.getApiProvider());
 		dto.setApiCountryId(updated.getApiCountryId());
 		dto.setApiCityId(updated.getApiCityId());
 		dto.setIsDeleted(updated.getIsDeleted());
-		dto.setApiCityCode(updated.getMasterCity().getPlaceCode());
+		dto.setApiCityCode(updated.getMasterState().getStateCode());
 		dto.setApiCountryCode(updated.getMasterCountry().getCountryCode());
 		return dto;
 
@@ -151,7 +179,7 @@ public class IwtxCityMappingService implements IwtxCityMappingServiceInterface {
 			ApiCityMappingDTO dto = new ApiCityMappingDTO();
 
 			dto.setMasterCountryId(citymapping.getMasterCountry().getId());
-			dto.setMasterCityId(citymapping.getMasterCity().getId());
+			dto.setMasterCityId(citymapping.getMasterState().getId());
 			dto.setApiProvider(citymapping.getApiProvider());
 			dto.setApiCountryId(citymapping.getApiCountryId());
 			dto.setApiCityId(citymapping.getApiCityId());

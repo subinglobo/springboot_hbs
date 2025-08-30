@@ -29,7 +29,7 @@ public class ApiCityMapping extends BaseEntity {
 
 	@ManyToOne
 	@JoinColumn(name = "master_city_id", nullable = false)
-	private MasterPlace masterCity;
+	private MasterState masterState;
 	
 	@Column(name = "api_country_id", length = 50)
 	private String apiCountryId ;
@@ -73,12 +73,14 @@ public class ApiCityMapping extends BaseEntity {
 		this.masterCountry = masterCountry;
 	}
 
-	public MasterPlace getMasterCity() {
-		return masterCity;
+	
+
+	public MasterState getMasterState() {
+		return masterState;
 	}
 
-	public void setMasterCity(MasterPlace masterCity) {
-		this.masterCity = masterCity;
+	public void setMasterState(MasterState masterState) {
+		this.masterState = masterState;
 	}
 
 	public String getApiCountryId() {
@@ -132,9 +134,9 @@ public class ApiCityMapping extends BaseEntity {
 	@Override
 	public String toString() {
 		return "ApiCityMapping [id=" + id + ", apiProvider=" + apiProvider + ", masterCountry=" + masterCountry
-				+ ", masterCity=" + masterCity + ", apiCountryId=" + apiCountryId + ", apiCountryCode=" + apiCountryCode
-				+ ", apiCityId=" + apiCityId + ", apiCityCode=" + apiCityCode + ", apiHotelCodeList=" + apiHotelCodeList
-				+ ", isDeleted=" + isDeleted + "]";
+				+ ", masterState=" + masterState + ", apiCountryId=" + apiCountryId + ", apiCountryCode="
+				+ apiCountryCode + ", apiCityId=" + apiCityId + ", apiCityCode=" + apiCityCode + ", apiHotelCodeList="
+				+ apiHotelCodeList + ", isDeleted=" + isDeleted + "]";
 	}
 
 	
