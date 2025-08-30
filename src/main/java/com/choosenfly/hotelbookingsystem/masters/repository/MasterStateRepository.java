@@ -13,10 +13,10 @@ import com.choosenfly.hotelbookingsystem.masters.entities.MasterState;
 @Repository
 public interface MasterStateRepository extends JpaRepository<MasterState, Long> {
 
-	Page<MasterState> findByNameContainingIgnoreCase(String search, Pageable pageable);
-
 	@Query("SELECT m FROM MasterState m WHERE m.country.id = :countryId AND m.isDeleted = false")
 	List<MasterState> findByCountryId(Long countryId);
+
+	Page<MasterState> findByNameContainingIgnoreCaseAndIsDeletedFalse(String search, Pageable pageable);
 
 
 }
