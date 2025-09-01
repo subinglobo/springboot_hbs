@@ -485,6 +485,7 @@ public class IwtxApiService {
             rateOption.setRoomStatus(roomDetail.getRoomStatus());
             rateOption.setNonRefundable("Y".equalsIgnoreCase(roomDetail.getNonRefundable()));
             rateOption.setContractLabel(roomDetail.getContractLabel());
+            rateOption.setContractTokenId(roomDetail.getContractTokenId());
             
             // Convert cancellation policies
             if (roomDetail.getCancellationPolicyDetails() != null && 
