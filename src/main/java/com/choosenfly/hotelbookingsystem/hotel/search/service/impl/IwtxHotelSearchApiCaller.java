@@ -5,15 +5,15 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.stream.Collectors;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -36,6 +36,8 @@ import com.choosenfly.hotelbookingsystem.api.iwtx.dto.search.request.SearchCrite
 import com.choosenfly.hotelbookingsystem.api.iwtx.dto.search.response.HotelIwtx;
 import com.choosenfly.hotelbookingsystem.api.iwtx.dto.search.response.RoomIwtxResponse;
 import com.choosenfly.hotelbookingsystem.api.iwtx.repository.IwtxHotelRepository;
+import com.choosenfly.hotelbookingsystem.masters.repository.IwtxCityMappingRepository;
+import com.choosenfly.hotelbookingsystem.masters.entities.ApiCityMapping;
 import com.choosenfly.hotelbookingsystem.hotel.search.dto.HotelSearchRequest;
 import com.choosenfly.hotelbookingsystem.hotel.search.dto.HotelSearchResult;
 import com.choosenfly.hotelbookingsystem.hotel.search.dto.RoomConfiguration;
@@ -52,10 +54,8 @@ public class IwtxHotelSearchApiCaller implements HotelSearchApiCaller {
     @Autowired
     private IwtxHotelRepository iwtxHotelsRepository;
 
-//    @Autowired
-//    private ConCityMappingRepository conCityMappingRepository;
-//
-//    @Autowired
+    @Autowired
+    private IwtxCityMappingRepository apiCityMappingRepository;
 //    private ConCountryMappingRepository conCountryMappingRepository;
 
 
@@ -69,17 +69,59 @@ public class IwtxHotelSearchApiCaller implements HotelSearchApiCaller {
     public List<HotelSearchResult> callApi(HotelSearchRequest request) {
         List<HotelSearchResult> results = new ArrayList<>();
 
+        // Step 1: Fetch API Hotel Codes from ApiCityMapping for Iwtx provider
+        ApiCityMapping cityMapping = apiCityMappingRepository.findByMasterCountryIdAndMasterCityIdAndApiProvider(
+            Long.valueOf(request.getDestinationCountryId()), 
+            Long.valueOf(request.getDestinationCityId()), 
+            "Iwtx"
+        );
+
+        if (cityMapping == null || cityMapping.getApiHotelCodeList() == null || cityMapping.getApiHotelCodeList().trim().isEmpty()) {
+            System.err.println("No hotel codes found in ApiCityMapping for city: " + request.getDestinationCityId() + ", country: " + request.getDestinationCountryId());
+            return results; // Return empty list if no mapping found
+        }
+
+        // Step 2: Parse JSON apiHotelCodeList into list of hotel codes
+        List<String> hotelCodes;
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            hotelCodes = objectMapper.readValue(cityMapping.getApiHotelCodeList(), new TypeReference<List<String>>() {});
+        } catch (Exception e) {
+            System.err.println("Error parsing apiHotelCodeList JSON: " + e.getMessage());
+            return results; // Return empty list if JSON parsing fails
+        }
+
+        if (hotelCodes == null || hotelCodes.isEmpty()) {
+            System.err.println("No hotel codes found after parsing JSON");
+            return results;
+        }
+
+        // Step 3: Fetch hotel details using batch query for better performance
+        List<HotelInfoIwtx> hotelInfos = new ArrayList<>();
         
+        // Handle large datasets by processing in chunks to avoid database query limits
+        final int CHUNK_SIZE = 1000; // Most databases support up to 1000 items in IN clause
         
-      List<HotelInfoIwtx> hotelInfos = iwtxHotelsRepository.findHotelsByCityAndCountry(request.getDestinationCityId(), request.getDestinationCountryId());
-        
-        
-     
-        // Step 1: Fetch hotel details from the database
-//        List<HotelInfoIwtx> hotelInfos = hotelRepository.findHotelsByCityAndCountry(
-//            request.getDestinationCityId(),
-//            request.getDestinationCountryId()
-//        );
+        for (int i = 0; i < hotelCodes.size(); i += CHUNK_SIZE) {
+            int endIndex = Math.min(i + CHUNK_SIZE, hotelCodes.size());
+            List<String> chunk = hotelCodes.subList(i, endIndex);
+            
+            try {
+                // Trim hotel codes and fetch in batch
+                List<String> trimmedCodes = chunk.stream()
+                    .map(String::trim)
+                    .filter(code -> !code.isEmpty())
+                    .toList();
+                
+                if (!trimmedCodes.isEmpty()) {
+                    List<HotelInfoIwtx> chunkResults = iwtxHotelsRepository.findHotelInfoByHotelCodes(trimmedCodes);
+                    hotelInfos.addAll(chunkResults);
+                }
+            } catch (Exception e) {
+                System.err.println("Error fetching hotel details for chunk " + (i/CHUNK_SIZE + 1) + ": " + e.getMessage());
+                // Continue with next chunk
+            }
+        }
         
 
         
@@ -104,13 +146,10 @@ public class IwtxHotelSearchApiCaller implements HotelSearchApiCaller {
             return results; // Return empty list if no hotels found
         }
 
-        // Step 2: Extract hotel codes and split into batches of 50
-        List<String> hotelCodes = hotelInfos.stream()
-            .map(HotelInfoIwtx::getHotelCode)
-            .collect(Collectors.toList());
+        // Step 4: Split hotel codes into batches of 50
         List<List<String>> batches = splitIntoBatches(hotelCodes, BATCH_SIZE);
 
-        // Step 3: Make parallel API calls for each batch
+        // Step 5: Make parallel API calls for each batch
         ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
         List<Future<List<HotelBaseRate>>> futures = new ArrayList<>();
 
@@ -118,7 +157,7 @@ public class IwtxHotelSearchApiCaller implements HotelSearchApiCaller {
             futures.add(executor.submit(() -> callApiForBatch(batch, request)));
         }
 
-        // Step 4: Collect API responses
+        // Step 6: Collect API responses
         Map<String, Double> baseRateMap = new HashMap<>();
         for (Future<List<HotelBaseRate>> future : futures) {
             try {

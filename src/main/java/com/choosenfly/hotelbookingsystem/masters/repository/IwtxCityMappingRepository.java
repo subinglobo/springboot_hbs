@@ -19,5 +19,7 @@ public interface IwtxCityMappingRepository extends JpaRepository<ApiCityMapping,
             "AND city_name = :cityName", nativeQuery = true)
 	List<String> fetchIwtxHotelCodes(String countryCode, String cityCode, String cityName);
 
+	@Query("SELECT a FROM ApiCityMapping a WHERE a.masterCountry.id = :masterCountryId AND a.masterState.id = :masterCityId AND a.apiProvider = :apiProvider")
+	ApiCityMapping findByMasterCountryIdAndMasterCityIdAndApiProvider(Long masterCountryId, Long masterCityId, String apiProvider);
 
 }
