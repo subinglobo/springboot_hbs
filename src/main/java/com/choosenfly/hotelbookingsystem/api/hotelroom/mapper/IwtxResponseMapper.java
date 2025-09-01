@@ -214,6 +214,7 @@ public class IwtxResponseMapper {
                     rateResponse.setRoomStatus(rateOption.getRoomStatus());
                     rateResponse.setNonRefundable(rateOption.isNonRefundable());
                     rateResponse.setContractLabel(rateOption.getContractLabel());
+                    rateResponse.setContractTokenId(rateOption.getContractTokenId());
                     
                     // Map cancellation policies with currency conversion
                     if (rateOption.getCancellationPolicies() != null) {
@@ -291,6 +292,7 @@ public class IwtxResponseMapper {
             rateOption.setRoomStatus(room.getRoomStatus());
             rateOption.setNonRefundable(room.isNonRefundable());
             rateOption.setContractLabel(room.getContractLabel());
+            rateOption.setContractTokenId(room.getContractTokenId());
             // Convert cancellation policies to AED
             if (room.getCancellationPolicies() != null) {
                 List<CancellationPolicy> convertedPolicies = room.getCancellationPolicies().stream()
@@ -360,6 +362,7 @@ public class IwtxResponseMapper {
         roomResponse.setCurrency(iwtxRoom.getCurrCode());
         roomResponse.setRoomStatus(iwtxRoom.getRoomStatus());
         roomResponse.setContractLabel(iwtxRoom.getContractLabel());
+        roomResponse.setContractTokenId(iwtxRoom.getContractTokenId());
 
         // Map pricing information
         roomResponse.setRate(iwtxRoom.getRate());

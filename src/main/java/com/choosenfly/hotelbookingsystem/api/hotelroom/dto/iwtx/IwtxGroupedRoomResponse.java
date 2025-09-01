@@ -77,6 +77,9 @@ public class IwtxGroupedRoomResponse {
         @JsonProperty("contractLabel")
         private String contractLabel;
         
+        @JsonProperty("contractTokenId")
+        private String contractTokenId;
+        
         @JsonProperty("cancellationPolicies")
         private List<IwtxCancellationPolicy> cancellationPolicies;
         
@@ -113,6 +116,9 @@ public class IwtxGroupedRoomResponse {
         
         public String getContractLabel() { return contractLabel; }
         public void setContractLabel(String contractLabel) { this.contractLabel = contractLabel; }
+        
+        public String getContractTokenId() { return contractTokenId; }
+        public void setContractTokenId(String contractTokenId) { this.contractTokenId = contractTokenId; }
         
         public List<IwtxCancellationPolicy> getCancellationPolicies() { return cancellationPolicies; }
         public void setCancellationPolicies(List<IwtxCancellationPolicy> cancellationPolicies) { this.cancellationPolicies = cancellationPolicies; }

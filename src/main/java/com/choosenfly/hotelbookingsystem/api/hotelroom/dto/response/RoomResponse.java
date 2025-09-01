@@ -21,6 +21,7 @@ public class RoomResponse {
     private String roomStatus;
     private boolean nonRefundable;
     private String contractLabel;
+    private String contractTokenId;
     private List<CancellationPolicy> cancellationPolicies;
 
     // Constructors
@@ -29,7 +30,7 @@ public class RoomResponse {
     public RoomResponse(Integer roomNo, String roomType, String roomTypeCode, String mealPlan,
                        String mealPlanCode, String currency, BigDecimal rate, BigDecimal totalRate,
                        BigDecimal rateBeforeTax, BigDecimal recommendedRetailPrice, String roomStatus,
-                       boolean nonRefundable, String contractLabel, List<CancellationPolicy> cancellationPolicies) {
+                       boolean nonRefundable, String contractLabel, String contractTokenId, List<CancellationPolicy> cancellationPolicies) {
         this.roomNo = roomNo;
         this.roomType = roomType;
         this.roomTypeCode = roomTypeCode;
@@ -43,6 +44,7 @@ public class RoomResponse {
         this.roomStatus = roomStatus;
         this.nonRefundable = nonRefundable;
         this.contractLabel = contractLabel;
+        this.contractTokenId = contractTokenId;
         this.cancellationPolicies = cancellationPolicies;
     }
 
@@ -151,6 +153,14 @@ public class RoomResponse {
         this.contractLabel = contractLabel;
     }
 
+    public String getContractTokenId() {
+        return contractTokenId;
+    }
+
+    public void setContractTokenId(String contractTokenId) {
+        this.contractTokenId = contractTokenId;
+    }
+
     public List<CancellationPolicy> getCancellationPolicies() {
         return cancellationPolicies;
     }
@@ -175,6 +185,7 @@ public class RoomResponse {
                 ", roomStatus='" + roomStatus + '\'' +
                 ", nonRefundable=" + nonRefundable +
                 ", contractLabel='" + contractLabel + '\'' +
+                ", contractTokenId='" + contractTokenId + '\'' +
                 ", cancellationPolicies=" + cancellationPolicies +
                 '}';
     }

@@ -21,6 +21,7 @@ public class RateOptionResponse {
     private boolean nonRefundable;
     private String refundStatus;
     private String contractLabel;
+    private String contractTokenId;
     private List<CancellationPolicy> cancellationPolicies;
 
     // Constructors
@@ -29,7 +30,7 @@ public class RateOptionResponse {
     public RateOptionResponse(String mealPlan, String mealPlanCode, String currency,
                              BigDecimal rate, BigDecimal totalRate, BigDecimal rateBeforeTax,
                              BigDecimal recommendedRetailPrice, String roomStatus,
-                             boolean nonRefundable, String contractLabel,
+                             boolean nonRefundable, String contractLabel, String contractTokenId,
                              List<CancellationPolicy> cancellationPolicies) {
         this.mealPlan = mealPlan;
         this.mealPlanCode = mealPlanCode;
@@ -41,6 +42,7 @@ public class RateOptionResponse {
         this.roomStatus = roomStatus;
         this.nonRefundable = nonRefundable;
         this.contractLabel = contractLabel;
+        this.contractTokenId = contractTokenId;
         this.cancellationPolicies = cancellationPolicies;
     }
 
@@ -141,6 +143,14 @@ public class RateOptionResponse {
         this.contractLabel = contractLabel;
     }
 
+    public String getContractTokenId() {
+        return contractTokenId;
+    }
+
+    public void setContractTokenId(String contractTokenId) {
+        this.contractTokenId = contractTokenId;
+    }
+
     public List<CancellationPolicy> getCancellationPolicies() {
         return cancellationPolicies;
     }
@@ -170,6 +180,7 @@ public class RateOptionResponse {
                 ", roomStatus='" + roomStatus + '\'' +
                 ", nonRefundable=" + nonRefundable +
                 ", contractLabel='" + contractLabel + '\'' +
+                ", contractTokenId='" + contractTokenId + '\'' +
                 ", cancellationPolicies=" + cancellationPolicies +
                 '}';
     }
