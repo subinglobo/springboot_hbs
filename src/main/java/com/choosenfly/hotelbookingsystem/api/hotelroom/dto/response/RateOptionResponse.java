@@ -9,6 +9,7 @@ import java.util.List;
 public class RateOptionResponse {
 
     private String roomCategory;
+    private String roomTypeCode;
     private String roomTypeDescription;
     private String mealPlan;
     private String mealPlanCode;
@@ -27,11 +28,12 @@ public class RateOptionResponse {
     // Constructors
     public RateOptionResponse() {}
 
-    public RateOptionResponse(String mealPlan, String mealPlanCode, String currency,
+    public RateOptionResponse(String roomTypeCode, String mealPlan, String mealPlanCode, String currency,
                              BigDecimal rate, BigDecimal totalRate, BigDecimal rateBeforeTax,
                              BigDecimal recommendedRetailPrice, String roomStatus,
                              boolean nonRefundable, String contractLabel, String contractTokenId,
                              List<CancellationPolicy> cancellationPolicies) {
+        this.roomTypeCode = roomTypeCode;
         this.mealPlan = mealPlan;
         this.mealPlanCode = mealPlanCode;
         this.currency = currency;
@@ -53,6 +55,14 @@ public class RateOptionResponse {
 
     public void setRoomCategory(String roomCategory) {
         this.roomCategory = roomCategory;
+    }
+
+    public String getRoomTypeCode() {
+        return roomTypeCode;
+    }
+
+    public void setRoomTypeCode(String roomTypeCode) {
+        this.roomTypeCode = roomTypeCode;
     }
 
     public String getRoomTypeDescription() {
@@ -170,7 +180,8 @@ public class RateOptionResponse {
     @Override
     public String toString() {
         return "RateOptionResponse{" +
-                "mealPlan='" + mealPlan + '\'' +
+                "roomTypeCode='" + roomTypeCode + '\'' +
+                ", mealPlan='" + mealPlan + '\'' +
                 ", mealPlanCode='" + mealPlanCode + '\'' +
                 ", currency='" + currency + '\'' +
                 ", rate=" + rate +

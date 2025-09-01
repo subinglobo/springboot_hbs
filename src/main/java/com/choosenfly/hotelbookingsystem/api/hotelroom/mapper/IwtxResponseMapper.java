@@ -203,6 +203,7 @@ public class IwtxResponseMapper {
                     
                     // Map room category and rate information with currency conversion from USD to AED
                     rateResponse.setRoomCategory(groupedRoom.getRoomCategory());
+                    rateResponse.setRoomTypeCode(groupedRoom.getRoomTypeCode());
                     rateResponse.setRoomTypeDescription(groupedRoom.getBaseRoomType());
                     rateResponse.setMealPlan(rateOption.getMealPlan());
                     rateResponse.setMealPlanCode(rateOption.getMealPlanCode());
@@ -281,6 +282,7 @@ public class IwtxResponseMapper {
             // Convert room to rate option
             RateOptionResponse rateOption = new RateOptionResponse();
             rateOption.setRoomCategory(room.getRoomType());
+            rateOption.setRoomTypeCode(room.getRoomTypeCode());
             rateOption.setRoomTypeDescription(room.getRoomType());
             rateOption.setMealPlan(room.getMealPlan());
             rateOption.setMealPlanCode(room.getMealPlanCode());

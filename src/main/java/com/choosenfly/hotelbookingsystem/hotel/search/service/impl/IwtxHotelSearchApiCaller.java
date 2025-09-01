@@ -244,7 +244,7 @@ public class IwtxHotelSearchApiCaller implements HotelSearchApiCaller {
         criteria.setHotelCode(String.join(",", hotelCodes));
         criteria.setStartDate(request.getCheckIn().replace("-", ""));
         criteria.setEndDate(request.getCheckOut().replace("-", ""));
-        criteria.setNationality(request.getNationalityId());
+        criteria.setNationality(request.getNationalityCode());
         criteria.setGroupByRooms("Y");
         criteria.setCancellationPolicy("Y");
 
