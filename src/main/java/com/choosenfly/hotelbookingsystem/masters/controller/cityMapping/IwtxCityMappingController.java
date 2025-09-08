@@ -41,36 +41,36 @@ public class IwtxCityMappingController {
 		return iwtxCityMappingServiceInterface.saveIwtxCityMapping(dto);
 	}
 	
-	@GetMapping("/{id}")
-	private ApiCityMappingDTO getIwtxCityMappingById(@PathVariable("id") Long id) {
-		
-		return iwtxCityMappingServiceInterface.getIwtxCityMappingById(id);
-	}
-	
-	@PutMapping("/{id}")
-	private ApiCityMappingDTO editIwtxCityMapping(@PathVariable("id") Long id , @Valid @RequestBody ApiCityMappingDTO placeDTO) {
-		return iwtxCityMappingServiceInterface.editIwtxCityMapping(id , placeDTO);
-	}
-	
-	
-	@DeleteMapping("/{id}")
-	private ResponseEntity<String>  deleteIwtxCityMapping(@PathVariable("id") Long id) {
-		return iwtxCityMappingServiceInterface.deleteIwtxCityMapping(id);
-	}
-	
-	@GetMapping
-	public ResponseEntity<List<ApiCityMappingDTO>> getAllIwtxCityMappingList(
-			@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "20") int limit, 
-			@RequestParam(required = false, name = "search") String search) {  
-
-		Pageable pageable = PageRequest.of(page, limit);
-		Page<ApiCityMappingDTO> iwtxCityMappingPage = iwtxCityMappingServiceInterface.getAllIwtxCityMappingList(pageable, search);
-		List<ApiCityMappingDTO> iwtxCityMappingListDTO = Optional.ofNullable(iwtxCityMappingPage)
-				.map(p -> p.getContent())
-				.orElse(List.of());
-		return new ResponseEntity<>(iwtxCityMappingListDTO, HttpStatus.OK);
-	}
+//	@GetMapping("/{id}")
+//	private ApiCityMappingDTO getIwtxCityMappingById(@PathVariable("id") Long id) {
+//		
+//		return iwtxCityMappingServiceInterface.getIwtxCityMappingById(id);
+//	}
+//	
+//	@PutMapping("/{id}")
+//	private ApiCityMappingDTO editIwtxCityMapping(@PathVariable("id") Long id , @Valid @RequestBody ApiCityMappingDTO placeDTO) {
+//		return iwtxCityMappingServiceInterface.editIwtxCityMapping(id , placeDTO);
+//	}
+//	
+//	
+//	@DeleteMapping("/{id}")
+//	private ResponseEntity<String>  deleteIwtxCityMapping(@PathVariable("id") Long id) {
+//		return iwtxCityMappingServiceInterface.deleteIwtxCityMapping(id);
+//	}
+//	
+//	@GetMapping
+//	public ResponseEntity<List<ApiCityMappingDTO>> getAllIwtxCityMappingList(
+//			@RequestParam(defaultValue = "0") int page,
+//			@RequestParam(defaultValue = "20") int limit, 
+//			@RequestParam(required = false, name = "search") String search) {  
+//
+//		Pageable pageable = PageRequest.of(page, limit);
+//		Page<ApiCityMappingDTO> iwtxCityMappingPage = iwtxCityMappingServiceInterface.getAllIwtxCityMappingList(pageable, search);
+//		List<ApiCityMappingDTO> iwtxCityMappingListDTO = Optional.ofNullable(iwtxCityMappingPage)
+//				.map(p -> p.getContent())
+//				.orElse(List.of());
+//		return new ResponseEntity<>(iwtxCityMappingListDTO, HttpStatus.OK);
+//	}
 
 	
 	
