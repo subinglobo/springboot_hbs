@@ -10,7 +10,7 @@ import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "iwtx_new_hotelslist_feed")
-public class X3Hotel {
+public class X3Hotels {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -90,9 +90,9 @@ public class X3Hotel {
     private String starCategory;
 
     // Constructors
-    public X3Hotel() {}
+    public X3Hotels() {}
 
-    public X3Hotel(String iwtxCode, String cityCode, String countryCode, String zone, String id,
+    public X3Hotels(String iwtxCode, String cityCode, String countryCode, String zone, String id,
                    String supplierName, String supplierCode, String sourceId, String name,
                    String brandName, String hotelName, String longitude, String latitude,
                    String address, String postCode, String stateName, String stateCode,
@@ -327,7 +327,7 @@ public class X3Hotel {
 
     @Override
     public String toString() {
-        return "X3Hotel [iwtxNewHotelFeedId=" + iwtxNewHotelFeedId + ", iwtxCode=" + iwtxCode + 
+        return "X3Hotels [iwtxNewHotelFeedId=" + iwtxNewHotelFeedId + ", iwtxCode=" + iwtxCode + 
                ", cityCode=" + cityCode + ", countryCode=" + countryCode + ", zone=" + zone + 
                ", id=" + id + ", supplierName=" + supplierName + ", supplierCode=" + supplierCode + 
                ", sourceId=" + sourceId + ", name=" + name + ", brandName=" + brandName + 
