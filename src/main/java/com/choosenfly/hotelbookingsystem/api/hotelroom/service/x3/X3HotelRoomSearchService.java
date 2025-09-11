@@ -4,6 +4,9 @@ import com.choosenfly.hotelbookingsystem.api.hotelroom.dto.request.HotelRoomSear
 import com.choosenfly.hotelbookingsystem.api.hotelroom.dto.response.HotelRoomSearchResponse;
 import com.choosenfly.hotelbookingsystem.api.hotelroom.service.common.HotelRoomSearchServiceInterface;
 import com.choosenfly.hotelbookingsystem.api.hotelroom.mapper.X3ResponseMapper;
+import com.choosenfly.hotelbookingsystem.api.x3.exception.X3ApiException;
+import com.choosenfly.hotelbookingsystem.api.x3.exception.X3NoAvailabilityException;
+import com.choosenfly.hotelbookingsystem.api.x3.exception.X3ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +39,7 @@ public class X3HotelRoomSearchService implements HotelRoomSearchServiceInterface
             
             if (x3Response == null) {
                 logger.error("Received null response from X3 API");
-                return HotelRoomSearchResponse.error("No response received from X3 API");
+                throw new RuntimeException("No response received from X3 API");
             }
 
             // Map X3 response to common format using X3 mapper
@@ -50,9 +53,18 @@ public class X3HotelRoomSearchService implements HotelRoomSearchServiceInterface
             logger.info("Successfully mapped {} hotels from X3 response", hotels.size());
             return HotelRoomSearchResponse.success(hotels);
 
+        } catch (X3NoAvailabilityException e) {
+            // Re-throw X3 no availability exception without wrapping
+            throw e;
+        } catch (X3ConfigurationException e) {
+            // Re-throw X3 configuration exception without wrapping
+            throw e;
+        } catch (X3ApiException e) {
+            // Re-throw X3 API exception without wrapping
+            throw e;
         } catch (Exception e) {
             logger.error("Error calling X3 API", e);
-            return HotelRoomSearchResponse.error("X3 API call failed: " + e.getMessage());
+            throw new RuntimeException("X3 API call failed: " + e.getMessage(), e);
         }
     }
 }

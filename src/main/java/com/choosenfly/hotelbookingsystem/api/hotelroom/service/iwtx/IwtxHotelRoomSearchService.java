@@ -36,7 +36,7 @@ public class IwtxHotelRoomSearchService implements HotelRoomSearchServiceInterfa
             
             if (iwtxResponse == null) {
                 logger.error("Received null response from IWTX API");
-                return HotelRoomSearchResponse.error("No response received from IWTX API");
+                throw new RuntimeException("No response received from IWTX API");
             }
 
             // Map IWTX response to common format
@@ -52,7 +52,7 @@ public class IwtxHotelRoomSearchService implements HotelRoomSearchServiceInterfa
 
         } catch (Exception e) {
             logger.error("Error calling IWTX API", e);
-            return HotelRoomSearchResponse.error("IWTX API call failed: " + e.getMessage());
+            throw new RuntimeException("IWTX API call failed: " + e.getMessage(), e);
         }
     }
 }
