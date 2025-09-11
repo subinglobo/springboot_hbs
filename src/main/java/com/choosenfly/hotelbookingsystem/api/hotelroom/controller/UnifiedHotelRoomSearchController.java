@@ -8,7 +8,6 @@ import com.choosenfly.hotelbookingsystem.api.hotelroom.service.x3.X3HotelRoomSea
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
@@ -18,6 +17,7 @@ import jakarta.validation.Valid;
  */
 @RestController
 @RequestMapping("/api/unified/hotel-rooms")
+@CrossOrigin(origins = "*")
 public class UnifiedHotelRoomSearchController {
 
     private static final Logger logger = LoggerFactory.getLogger(UnifiedHotelRoomSearchController.class);
@@ -38,44 +38,28 @@ public class UnifiedHotelRoomSearchController {
      * @param request Hotel room search request containing search criteria and API ID
      * @return ResponseEntity containing hotel room search results
      */
-    @PostMapping("/hotel-rooms/search")
+    @PostMapping("/search")
     public ResponseEntity<HotelRoomSearchResponse> searchHotelRooms(
-            @Valid @RequestBody HotelRoomSearchRequest request) {
+            @Valid @RequestBody HotelRoomSearchRequest request) throws Exception {
         
         logger.info("Received unified hotel room search request: {}", request);
         
-        try {
-            // Validate API ID
-            if (request.getApiId() == null) {
-                logger.error("API ID is required");
-                return ResponseEntity.badRequest()
-                    .body(HotelRoomSearchResponse.error("API ID is required"));
-            }
-
-            // Get the appropriate service based on API ID
-            HotelRoomSearchServiceInterface service = getServiceByApiId(request.getApiId());
-            
-            // Perform search
-            HotelRoomSearchResponse response = service.searchHotelRooms(request);
-            
-            if (response.isSuccess()) {
-                logger.info("Hotel room search completed successfully. Found {} hotels", 
-                    response.getHotels() != null ? response.getHotels().size() : 0);
-                return ResponseEntity.ok(response);
-            } else {
-                logger.error("Hotel room search failed: {}", response.getMessage());
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-            }
-
-        } catch (IllegalArgumentException e) {
-            logger.error("Invalid API ID: {}", e.getMessage());
-            return ResponseEntity.badRequest()
-                .body(HotelRoomSearchResponse.error("Invalid API ID: " + e.getMessage()));
-        } catch (Exception e) {
-            logger.error("Unexpected error during hotel room search", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(HotelRoomSearchResponse.error("An unexpected error occurred: " + e.getMessage()));
+        // Validate API ID
+        if (request.getApiId() == null) {
+            logger.error("API ID is required");
+            throw new IllegalArgumentException("API ID is required");
         }
+
+        // Get the appropriate service based on API ID
+        HotelRoomSearchServiceInterface service = getServiceByApiId(request.getApiId());
+        
+        // Perform search - let exceptions propagate to exception handlers
+        HotelRoomSearchResponse response = service.searchHotelRooms(request);
+        
+        logger.info("Hotel room search completed successfully. Found {} hotels", 
+            response.getHotels() != null ? response.getHotels().size() : 0);
+        
+        return ResponseEntity.ok(response);
     }
 
     

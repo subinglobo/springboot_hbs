@@ -16,7 +16,8 @@ import java.util.Map;
 /**
  * Exception handler for IWTX room list API
  */
-@RestControllerAdvice
+@RestControllerAdvice(basePackages = "com.choosenfly.hotelbookingsystem.api.hotelroom")
+@org.springframework.core.annotation.Order(3)
 public class IwtxRoomListExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(IwtxRoomListExceptionHandler.class);
@@ -69,11 +70,17 @@ public class IwtxRoomListExceptionHandler {
     }
 
     /**
-     * Handle all other exceptions for hotel room search
+     * Handle runtime exceptions that are not provider-specific
      */
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<HotelRoomSearchResponse> handleGenericException(Exception ex) {
-        logger.error("Unexpected error in hotel room search", ex);
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<HotelRoomSearchResponse> handleRuntimeException(RuntimeException ex) {
+        // Skip provider-specific exceptions - let them be handled by their respective handlers
+        String message = ex.getMessage();
+        if (message != null && (message.contains("X3") || message.contains("IWTX"))) {
+            throw ex; // Re-throw to let provider-specific handlers catch it
+        }
+        
+        logger.error("Runtime error in hotel room search", ex);
         
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(HotelRoomSearchResponse.error("An unexpected error occurred. Please try again later."));

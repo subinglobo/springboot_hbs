@@ -38,25 +38,16 @@ public class HotelRoomSearchService {
      * @return Hotel room search response
      */
     @Deprecated
-    public HotelRoomSearchResponse searchHotelRooms(HotelRoomSearchRequest request) {
+    public HotelRoomSearchResponse searchHotelRooms(HotelRoomSearchRequest request) throws Exception {
         logger.warn("Using deprecated HotelRoomSearchService. Please migrate to UnifiedHotelRoomSearchController");
         logger.info("Processing hotel room search for API ID: {}", request.getApiId());
 
-        try {
-            // Validate request
-            validateSearchRequest(request);
+        // Validate request
+        validateSearchRequest(request);
 
-            // Route to appropriate service based on apiId
-            HotelRoomSearchServiceInterface service = getServiceByApiId(request.getApiId());
-            return service.searchHotelRooms(request);
-
-        } catch (IllegalArgumentException e) {
-            logger.error("Invalid API ID: {}", e.getMessage());
-            return HotelRoomSearchResponse.error("Invalid API ID: " + e.getMessage());
-        } catch (Exception e) {
-            logger.error("Error during hotel room search", e);
-            return HotelRoomSearchResponse.error("Search failed: " + e.getMessage());
-        }
+        // Route to appropriate service based on apiId - let exceptions propagate to exception handlers
+        HotelRoomSearchServiceInterface service = getServiceByApiId(request.getApiId());
+        return service.searchHotelRooms(request);
     }
 
     /**

@@ -4,6 +4,9 @@ import com.choosenfly.hotelbookingsystem.api.hotelroom.dto.request.HotelRoomSear
 import com.choosenfly.hotelbookingsystem.api.hotelroom.dto.request.RoomRequest;
 import com.choosenfly.hotelbookingsystem.api.hotelroom.dto.iwtx.IwtxHotelSearchResponse;
 import com.choosenfly.hotelbookingsystem.api.hotelroom.dto.iwtx.IwtxGroupedRoomResponse;
+import com.choosenfly.hotelbookingsystem.api.iwtx.exception.IwtxApiException;
+import com.choosenfly.hotelbookingsystem.api.iwtx.exception.IwtxNoAvailabilityException;
+import com.choosenfly.hotelbookingsystem.api.iwtx.exception.IwtxConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +18,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Service for integrating with IWTX API for hotel room search
@@ -45,6 +47,24 @@ public class IwtxApiService {
         this.restTemplate = new RestTemplate();
         logger.info("IwtxApiService initialized successfully");
     }
+    
+    /**
+     * Validate IWTX API configuration
+     */
+    private void validateConfiguration() {
+        if (iwtxApiUrl == null || iwtxApiUrl.trim().isEmpty()) {
+            throw new IwtxConfigurationException("IWTX API URL is not configured");
+        }
+        if (iwtxPassword == null || iwtxPassword.trim().isEmpty()) {
+            throw new IwtxConfigurationException("IWTX API password is not configured");
+        }
+        if (iwtxCode == null || iwtxCode.trim().isEmpty()) {
+            throw new IwtxConfigurationException("IWTX API code is not configured");
+        }
+        if (iwtxToken == null || iwtxToken.trim().isEmpty()) {
+            throw new IwtxConfigurationException("IWTX API token is not configured");
+        }
+    }
 
     /**
      * Search hotel rooms via IWTX API
@@ -55,70 +75,44 @@ public class IwtxApiService {
      */
     public IwtxHotelSearchResponse searchHotelRooms(HotelRoomSearchRequest request) throws Exception {
         logger.info("Calling IWTX API for hotel search with hotel code: {}", request.getHotelCode());
-        logger.info("IWTX API URL: {}", iwtxApiUrl);
-        logger.info("IWTX Credentials - Password: {}, Code: {}, Token: {}", 
-            iwtxPassword != null ? "***" : "NULL", 
-            iwtxCode != null ? iwtxCode : "NULL", 
-            iwtxToken != null ? "***" : "NULL");
+
+        // Validate configuration first
+        validateConfiguration();
 
         try {
             // Build XML request
             String xmlRequest = buildXmlRequest(request);
-            logger.info("IWTX XML Request: {}", xmlRequest);
+            logger.debug("IWTX XML Request: {}", xmlRequest);
 
-            // Make API call
+            // Set up headers
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_XML);
-            headers.setAccept(List.of(MediaType.APPLICATION_XML));
-            
+
             HttpEntity<String> entity = new HttpEntity<>(xmlRequest, headers);
-            String xmlResponse = restTemplate.postForObject(iwtxApiUrl, entity, String.class);
 
-            logger.debug("IWTX XML Response: {}", xmlResponse);
+            // Make API call
+            ResponseEntity<String> response = restTemplate.exchange(
+                iwtxApiUrl,
+                HttpMethod.POST,
+                entity,
+                String.class
+            );
 
-            // Parse XML response - for now return a simplified response
-            IwtxHotelSearchResponse response = parseXmlResponse(xmlResponse, request);
-            logger.info("Successfully processed IWTX API response");
-            
-            return response;
+            logger.info("IWTX API Response Status: {}", response.getStatusCode());
+            logger.debug("IWTX API Response Body: {}", response.getBody());
+
+            // Parse response
+            return parseXmlResponse(response.getBody(), request);
 
         } catch (Exception e) {
             logger.error("Error calling IWTX API: {}", e.getMessage(), e);
             logger.error("API URL: {}", iwtxApiUrl);
             logger.error("Request details - Hotel Code: {}, Check-in: {}, Check-out: {}", 
                 request.getHotelCode(), request.getCheckInDate(), request.getCheckOutDate());
-            // Fallback to mock response if API fails
-            logger.warn("Falling back to mock response due to API error: {}", e.getClass().getSimpleName());
-            return createMockResponse(request);
+            throw new IwtxApiException("Failed to call IWTX API: " + e.getMessage(), e);
         }
     }
 
-    /**
-     * Create a mock IWTX response for testing
-     */
-    private IwtxHotelSearchResponse createMockResponse(HotelRoomSearchRequest request) {
-        // Create a basic mock response structure
-        IwtxHotelSearchResponse response = new IwtxHotelSearchResponse();
-        
-        // Create mock hotels list
-        IwtxHotelSearchResponse.IwtxHotels hotels = new IwtxHotelSearchResponse.IwtxHotels();
-        List<IwtxHotelSearchResponse.IwtxHotel> hotelList = new ArrayList<>();
-        
-        // Create one mock hotel
-        IwtxHotelSearchResponse.IwtxHotel mockHotel = new IwtxHotelSearchResponse.IwtxHotel();
-        mockHotel.setHotelId(request.getHotelCode());
-        mockHotel.setHotelName("Mock Hotel " + request.getHotelCode());
-        mockHotel.setStarRating(4);
-        mockHotel.setCity("Mock City");
-        mockHotel.setPropertyType("Hotel");
-        
-        hotelList.add(mockHotel);
-        hotels.setHotelList(hotelList);
-        response.setHotels(hotels);
-        
-        logger.debug("Created mock response with {} hotels", hotelList.size());
-        return response;
-    }
 
     /**
      * Build XML request for IWTX API
@@ -208,9 +202,10 @@ public class IwtxApiService {
             logger.debug("Parsing IWTX XML response: {}", xmlResponse);
             
             // Check for error response first
-            if (xmlResponse.contains("<Error>") || xmlResponse.contains("<ErrorCode>")) {
+            if (xmlResponse.contains("<Error>") || xmlResponse.contains("<ErrorCode>") || xmlResponse.contains("<ErrorMessage>")) {
                 logger.error("IWTX API returned error response: {}", xmlResponse);
-                return createMockResponse(request);
+                String errorMessage = extractErrorMessageFromXml(xmlResponse);
+                throw new IwtxApiException(errorMessage, "IWTX_API_ERROR");
             }
             
             IwtxHotelSearchResponse.IwtxHotels hotels = new IwtxHotelSearchResponse.IwtxHotels();
@@ -241,8 +236,14 @@ public class IwtxApiService {
         } catch (Exception e) {
             logger.error("Error parsing XML response: {}", e.getMessage(), e);
             logger.debug("Failed XML content: {}", xmlResponse);
-            // Return mock response on parse error
-            return createMockResponse(request);
+            throw new IwtxApiException("Failed to parse IWTX API response: " + e.getMessage(), "IWTX_PARSE_ERROR", e);
+        }
+        
+        // Check if no hotels found
+        if (response.getHotels() == null || response.getHotels().getHotelList() == null || 
+            response.getHotels().getHotelList().isEmpty()) {
+            throw new IwtxNoAvailabilityException(request.getHotelCode(), 
+                request.getCheckInDate().toString(), request.getCheckOutDate().toString());
         }
         
         return response;
@@ -538,9 +539,46 @@ public class IwtxApiService {
         // Clean up common patterns
         baseType = baseType.replaceAll("\\d+\\s+(Bedroom|King|Twin|Queen).*", "$1");
         baseType = baseType.replaceAll("\\s+Villa.*", " Villa");
-        baseType = baseType.replaceAll("\\s+Room.*", " Room");
         
-        return baseType.isEmpty() ? "Standard Room" : baseType;
+        return baseType;
+    }
+    
+    /**
+     * Extract error message from IWTX XML error response
+     */
+    private String extractErrorMessageFromXml(String xmlResponse) {
+        try {
+            // Try to extract from <Msg> tag first (similar to X3 format)
+            String msgValue = extractXmlValue(xmlResponse, "Msg", null);
+            if (msgValue != null && !msgValue.trim().isEmpty()) {
+                return msgValue;
+            }
+            
+            // Try to extract from <ErrorMessage> tag
+            String errorMessageValue = extractXmlValue(xmlResponse, "ErrorMessage", null);
+            if (errorMessageValue != null && !errorMessageValue.trim().isEmpty()) {
+                return errorMessageValue;
+            }
+            
+            // Try to extract from <Error> tag
+            String errorValue = extractXmlValue(xmlResponse, "Error", null);
+            if (errorValue != null && !errorValue.trim().isEmpty()) {
+                return errorValue;
+            }
+            
+            // Try to extract from <ErrorCode> tag
+            String errorCodeValue = extractXmlValue(xmlResponse, "ErrorCode", null);
+            if (errorCodeValue != null && !errorCodeValue.trim().isEmpty()) {
+                return "Error Code: " + errorCodeValue;
+            }
+            
+            // If no specific error message found, return a generic message
+            return "IWTX API returned an error response";
+            
+        } catch (Exception e) {
+            logger.warn("Failed to extract error message from XML: {}", e.getMessage());
+            return "IWTX API returned an error response";
+        }
     }
     
     /**

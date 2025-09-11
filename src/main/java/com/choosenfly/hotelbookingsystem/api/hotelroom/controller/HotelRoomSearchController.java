@@ -7,7 +7,6 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,40 +39,24 @@ public class HotelRoomSearchController {
     @PostMapping("/search")
     @Deprecated
     public ResponseEntity<HotelRoomSearchResponse> searchHotelRooms(
-            @Valid @RequestBody HotelRoomSearchRequest request) {
+            @Valid @RequestBody HotelRoomSearchRequest request) throws Exception {
         
         logger.warn("Using deprecated /api/hotel-rooms/search endpoint. Please migrate to UnifiedHotelRoomSearchController");
         logger.info("Received hotel room search request: {}", request);
         
-        try {
-            // Validate API ID
-            if (request.getApiId() == null) {
-                logger.error("API ID is required");
-                return ResponseEntity.badRequest()
-                    .body(HotelRoomSearchResponse.error("API ID is required"));
-            }
-
-            // Perform search using legacy service
-            HotelRoomSearchResponse response = hotelRoomSearchService.searchHotelRooms(request);
-            
-            if (response.isSuccess()) {
-                logger.info("Hotel room search completed successfully. Found {} hotels", 
-                    response.getHotels() != null ? response.getHotels().size() : 0);
-                return ResponseEntity.ok(response);
-            } else {
-                logger.error("Hotel room search failed: {}", response.getMessage());
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-            }
-
-        } catch (IllegalArgumentException e) {
-            logger.error("Invalid request parameters: {}", e.getMessage());
-            return ResponseEntity.badRequest()
-                .body(HotelRoomSearchResponse.error("Invalid request: " + e.getMessage()));
-        } catch (Exception e) {
-            logger.error("Unexpected error during hotel room search", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(HotelRoomSearchResponse.error("An unexpected error occurred: " + e.getMessage()));
+        // Validate API ID
+        if (request.getApiId() == null) {
+            logger.error("API ID is required");
+            throw new IllegalArgumentException("API ID is required");
         }
+
+        // Perform search using legacy service - let exceptions propagate to exception handlers
+        HotelRoomSearchResponse response = hotelRoomSearchService.searchHotelRooms(request);
+        
+        logger.info("Hotel room search completed successfully. Found {} hotels", 
+            response.getHotels() != null ? response.getHotels().size() : 0);
+        
+        return ResponseEntity.ok(response);
     }
 
     /**

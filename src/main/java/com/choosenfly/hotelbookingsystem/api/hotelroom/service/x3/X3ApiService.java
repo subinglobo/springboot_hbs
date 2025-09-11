@@ -4,6 +4,9 @@ import com.choosenfly.hotelbookingsystem.api.hotelroom.dto.request.HotelRoomSear
 import com.choosenfly.hotelbookingsystem.api.hotelroom.dto.request.RoomRequest;
 import com.choosenfly.hotelbookingsystem.api.hotelroom.dto.iwtx.IwtxHotelSearchResponse;
 import com.choosenfly.hotelbookingsystem.api.hotelroom.dto.iwtx.IwtxGroupedRoomResponse;
+import com.choosenfly.hotelbookingsystem.api.x3.exception.X3ApiException;
+import com.choosenfly.hotelbookingsystem.api.x3.exception.X3NoAvailabilityException;
+import com.choosenfly.hotelbookingsystem.api.x3.exception.X3ConfigurationException;
 
 import java.math.BigDecimal;
 import org.slf4j.Logger;
@@ -45,6 +48,24 @@ public class X3ApiService {
         this.restTemplate = new RestTemplate();
         logger.info("X3ApiService initialized successfully");
     }
+    
+    /**
+     * Validate X3 API configuration
+     */
+    private void validateConfiguration() {
+        if (x3ApiUrl == null || x3ApiUrl.trim().isEmpty()) {
+            throw new X3ConfigurationException("X3 API URL is not configured");
+        }
+        if (x3Password == null || x3Password.trim().isEmpty()) {
+            throw new X3ConfigurationException("X3 API password is not configured");
+        }
+        if (x3Code == null || x3Code.trim().isEmpty()) {
+            throw new X3ConfigurationException("X3 API code is not configured");
+        }
+        if (x3Token == null || x3Token.trim().isEmpty()) {
+            throw new X3ConfigurationException("X3 API token is not configured");
+        }
+    }
 
     /**
      * Search hotel rooms via X3 API
@@ -55,70 +76,41 @@ public class X3ApiService {
      */
     public IwtxHotelSearchResponse searchHotelRooms(HotelRoomSearchRequest request) throws Exception {
         logger.info("Calling X3 API for hotel search with hotel code: {}", request.getHotelCode());
-        logger.info("X3 API URL: {}", x3ApiUrl);
-        logger.info("X3 Credentials - Password: {}, Code: {}, Token: {}", 
-            x3Password != null ? "***" : "NULL", 
-            x3Code != null ? x3Code : "NULL", 
-            x3Token != null ? "***" : "NULL");
+
+        // Validate configuration first
+        validateConfiguration();
 
         try {
             // Build XML request
             String xmlRequest = buildXmlRequest(request);
-            logger.info("X3 XML Request: {}", xmlRequest);
+            logger.debug("X3 XML Request: {}", xmlRequest);
 
-            // Make API call
+            // Set up headers
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_XML);
-            headers.setAccept(List.of(MediaType.APPLICATION_XML));
-            
+
             HttpEntity<String> entity = new HttpEntity<>(xmlRequest, headers);
-            String xmlResponse = restTemplate.postForObject(x3ApiUrl, entity, String.class);
 
-            logger.debug("X3 XML Response: {}", xmlResponse);
+            // Make API call
+            ResponseEntity<String> response = restTemplate.exchange(
+                x3ApiUrl,
+                HttpMethod.POST,
+                entity,
+                String.class
+            );
 
-            // Parse XML response - for now return a simplified response
-            IwtxHotelSearchResponse response = parseXmlResponse(xmlResponse, request);
-            logger.info("Successfully processed X3 API response");
-            
-            return response;
+            logger.info("X3 API Response Status: {}", response.getStatusCode());
+            logger.debug("X3 API Response Body: {}", response.getBody());
+
+            // Parse response
+            return parseXmlResponse(response.getBody(), request);
 
         } catch (Exception e) {
             logger.error("Error calling X3 API: {}", e.getMessage(), e);
-            logger.error("API URL: {}", x3ApiUrl);
-            logger.error("Request details - Hotel Code: {}, Check-in: {}, Check-out: {}", 
-                request.getHotelCode(), request.getCheckInDate(), request.getCheckOutDate());
-            // Fallback to mock response if API fails
-            logger.warn("Falling back to mock response due to API error: {}", e.getClass().getSimpleName());
-            return createMockResponse(request);
+            throw new X3ApiException("Failed to call X3 API: " + e.getMessage(), e);
         }
     }
 
-    /**
-     * Create a mock X3 response for testing
-     */
-    private IwtxHotelSearchResponse createMockResponse(HotelRoomSearchRequest request) {
-        // Create a basic mock response structure
-        IwtxHotelSearchResponse response = new IwtxHotelSearchResponse();
-        
-        // Create mock hotels list
-        IwtxHotelSearchResponse.IwtxHotels hotels = new IwtxHotelSearchResponse.IwtxHotels();
-        List<IwtxHotelSearchResponse.IwtxHotel> hotelList = new ArrayList<>();
-        
-        // Create one mock hotel
-        IwtxHotelSearchResponse.IwtxHotel mockHotel = new IwtxHotelSearchResponse.IwtxHotel();
-        mockHotel.setHotelId(request.getHotelCode());
-        mockHotel.setHotelName("Mock X3 Hotel " + request.getHotelCode());
-        mockHotel.setStarRating(4);
-        mockHotel.setCity("Mock X3 City");
-        mockHotel.setPropertyType("Hotel");
-        
-        hotelList.add(mockHotel);
-        hotels.setHotelList(hotelList);
-        response.setHotels(hotels);
-        
-        logger.debug("Created mock X3 response with {} hotels", hotelList.size());
-        return response;
-    }
 
     /**
      * Build XML request for X3 API (same format as IWTX but with X3 credentials)
@@ -208,9 +200,17 @@ public class X3ApiService {
             logger.debug("Parsing X3 XML response: {}", xmlResponse);
             
             // Check for error response first
-            if (xmlResponse.contains("<Error>") || xmlResponse.contains("<ErrorCode>")) {
+            if (xmlResponse.contains("<Error>") || xmlResponse.contains("<ErrorCode>") || xmlResponse.contains("<ErrorMessage>")) {
                 logger.error("X3 API returned error response: {}", xmlResponse);
-                return createMockResponse(request);
+                String errorMessage = extractErrorMessageFromXml(xmlResponse);
+                
+                // Check if it's a no availability error
+                if (errorMessage.contains("No Availability Found")) {
+                    throw new X3NoAvailabilityException(request.getHotelCode(), 
+                        request.getCheckInDate().toString(), request.getCheckOutDate().toString());
+                }
+                
+                throw new X3ApiException(errorMessage, "X3_API_ERROR");
             }
             
             IwtxHotelSearchResponse.IwtxHotels hotels = new IwtxHotelSearchResponse.IwtxHotels();
@@ -241,8 +241,14 @@ public class X3ApiService {
         } catch (Exception e) {
             logger.error("Error parsing X3 XML response: {}", e.getMessage(), e);
             logger.debug("Failed XML content: {}", xmlResponse);
-            // Return mock response on parse error
-            return createMockResponse(request);
+            throw new X3ApiException("Failed to parse X3 API response: " + e.getMessage(), "X3_PARSE_ERROR", e);
+        }
+        
+        // Check if no hotels found
+        if (response.getHotels() == null || response.getHotels().getHotelList() == null || 
+            response.getHotels().getHotelList().isEmpty()) {
+            throw new X3NoAvailabilityException(request.getHotelCode(), 
+                request.getCheckInDate().toString(), request.getCheckOutDate().toString());
         }
         
         return response;
@@ -289,6 +295,44 @@ public class X3ApiService {
         } catch (Exception e) {
             logger.error("Error parsing hotel from X3 XML block: {}", e.getMessage(), e);
             return null;
+        }
+    }
+    
+    /**
+     * Extract error message from X3 XML error response
+     */
+    private String extractErrorMessageFromXml(String xmlResponse) {
+        try {
+            // Try to extract from <Msg> tag first (X3 format)
+            String msgValue = extractXmlValue(xmlResponse, "Msg", null);
+            if (msgValue != null && !msgValue.trim().isEmpty()) {
+                return msgValue;
+            }
+            
+            // Try to extract from <ErrorMessage> tag
+            String errorMessageValue = extractXmlValue(xmlResponse, "ErrorMessage", null);
+            if (errorMessageValue != null && !errorMessageValue.trim().isEmpty()) {
+                return errorMessageValue;
+            }
+            
+            // Try to extract from <Error> tag
+            String errorValue = extractXmlValue(xmlResponse, "Error", null);
+            if (errorValue != null && !errorValue.trim().isEmpty()) {
+                return errorValue;
+            }
+            
+            // Try to extract from <ErrorCode> tag
+            String errorCodeValue = extractXmlValue(xmlResponse, "ErrorCode", null);
+            if (errorCodeValue != null && !errorCodeValue.trim().isEmpty()) {
+                return "Error Code: " + errorCodeValue;
+            }
+            
+            // If no specific error message found, return a generic message
+            return "X3 API returned an error response";
+            
+        } catch (Exception e) {
+            logger.warn("Failed to extract error message from XML: {}", e.getMessage());
+            return "X3 API returned an error response";
         }
     }
     
