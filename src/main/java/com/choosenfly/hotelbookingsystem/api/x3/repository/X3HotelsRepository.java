@@ -19,4 +19,6 @@ public interface X3HotelsRepository extends JpaRepository<X3Hotels, Long> {
     List<X3Hotels> findByCityCodeAndCountryCode(String cityCode, String countryCode);
 
     List<X3Hotels> findByCountryCodeAndStateNameContainingIgnoreCase(String countryCode, String cityName);
+    
+    X3Hotels findByIwtxCode(String iwtxCode);
 }

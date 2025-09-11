@@ -2,52 +2,57 @@ package com.choosenfly.hotelbookingsystem.api.hotelroom.service;
 
 import com.choosenfly.hotelbookingsystem.api.hotelroom.dto.request.HotelRoomSearchRequest;
 import com.choosenfly.hotelbookingsystem.api.hotelroom.dto.response.HotelRoomSearchResponse;
-import com.choosenfly.hotelbookingsystem.api.hotelroom.service.iwtx.IwtxApiService;
-import com.choosenfly.hotelbookingsystem.api.hotelroom.mapper.IwtxResponseMapper;
+import com.choosenfly.hotelbookingsystem.api.hotelroom.service.common.HotelRoomSearchServiceInterface;
+import com.choosenfly.hotelbookingsystem.api.hotelroom.service.iwtx.IwtxHotelRoomSearchService;
+import com.choosenfly.hotelbookingsystem.api.hotelroom.service.x3.X3HotelRoomSearchService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * Service for handling hotel room search operations
+ * Legacy service for handling hotel room search operations
+ * @deprecated Use UnifiedHotelRoomSearchController with provider-specific services instead
  */
 @Service
+@Deprecated
 public class HotelRoomSearchService {
 
     private static final Logger logger = LoggerFactory.getLogger(HotelRoomSearchService.class);
 
-    private final IwtxApiService iwtxApiService;
-    private final IwtxResponseMapper iwtxResponseMapper;
+    private final IwtxHotelRoomSearchService iwtxHotelRoomSearchService;
+    private final X3HotelRoomSearchService x3HotelRoomSearchService;
 
     @Autowired
-    public HotelRoomSearchService(IwtxApiService iwtxApiService, IwtxResponseMapper iwtxResponseMapper) {
-        this.iwtxApiService = iwtxApiService;
-        this.iwtxResponseMapper = iwtxResponseMapper;
+    public HotelRoomSearchService(IwtxHotelRoomSearchService iwtxHotelRoomSearchService, 
+                                 X3HotelRoomSearchService x3HotelRoomSearchService) {
+        this.iwtxHotelRoomSearchService = iwtxHotelRoomSearchService;
+        this.x3HotelRoomSearchService = x3HotelRoomSearchService;
     }
 
     /**
      * Search for hotel rooms based on the provided criteria
+     * @deprecated Use UnifiedHotelRoomSearchController instead
      * 
      * @param request Hotel room search request
      * @return Hotel room search response
      */
+    @Deprecated
     public HotelRoomSearchResponse searchHotelRooms(HotelRoomSearchRequest request) {
+        logger.warn("Using deprecated HotelRoomSearchService. Please migrate to UnifiedHotelRoomSearchController");
         logger.info("Processing hotel room search for API ID: {}", request.getApiId());
 
         try {
             // Validate request
             validateSearchRequest(request);
 
-            // Route to appropriate API based on apiId
-            switch (request.getApiId()) {
-                case 11:
-                    return searchViaIwtx(request);
-                default:
-                    logger.error("Unsupported API ID: {}", request.getApiId());
-                    return HotelRoomSearchResponse.error("API not implemented. Only API ID 11 (IWTX) is currently supported.");
-            }
+            // Route to appropriate service based on apiId
+            HotelRoomSearchServiceInterface service = getServiceByApiId(request.getApiId());
+            return service.searchHotelRooms(request);
 
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid API ID: {}", e.getMessage());
+            return HotelRoomSearchResponse.error("Invalid API ID: " + e.getMessage());
         } catch (Exception e) {
             logger.error("Error during hotel room search", e);
             return HotelRoomSearchResponse.error("Search failed: " + e.getMessage());
@@ -55,37 +60,28 @@ public class HotelRoomSearchService {
     }
 
     /**
-     * Search hotel rooms via IWTX API
+     * Get the appropriate service implementation based on API ID
      * 
-     * @param request Hotel room search request
-     * @return Hotel room search response
+     * @param apiId The API provider ID (12 = IWTX, 15 = X3)
+     * @return The corresponding service implementation
+     * @throws IllegalArgumentException if API ID is not supported
      */
-    private HotelRoomSearchResponse searchViaIwtx(HotelRoomSearchRequest request) {
-        logger.info("Searching hotel rooms via IWTX API for hotel code: {}", request.getHotelCode());
-
-        try {
-            // Call IWTX API
-            var iwtxResponse = iwtxApiService.searchHotelRooms(request);
-            
-            if (iwtxResponse == null) {
-                logger.error("Received null response from IWTX API");
-                return HotelRoomSearchResponse.error("No response received from external API");
-            }
-
-            // Map IWTX response to common format
-            var hotels = iwtxResponseMapper.mapToHotelResponses(iwtxResponse, request);
-            
-            if (hotels == null || hotels.isEmpty()) {
-                logger.info("No hotels found for the search criteria");
-                return HotelRoomSearchResponse.success(hotels);
-            }
-
-            logger.info("Successfully mapped {} hotels from IWTX response", hotels.size());
-            return HotelRoomSearchResponse.success(hotels);
-
-        } catch (Exception e) {
-            logger.error("Error calling IWTX API", e);
-            return HotelRoomSearchResponse.error("External API call failed: " + e.getMessage());
+    private HotelRoomSearchServiceInterface getServiceByApiId(Integer apiId) {
+        if (apiId == null) {
+            throw new IllegalArgumentException("API ID is required");
+        }
+        
+        switch (apiId) {
+            case 11: // Legacy IWTX API ID
+            case 12: // New IWTX API ID
+                logger.info("Routing request to IWTX service");
+                return iwtxHotelRoomSearchService;
+            case 15: // X3 API ID
+                logger.info("Routing request to X3 service");
+                return x3HotelRoomSearchService;
+            default:
+                throw new IllegalArgumentException("Unsupported API ID: " + apiId + 
+                    ". Supported values are 11/12 (IWTX) and 15 (X3)");
         }
     }
 
