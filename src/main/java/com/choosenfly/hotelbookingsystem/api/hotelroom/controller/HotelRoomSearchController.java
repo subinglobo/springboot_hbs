@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * REST Controller for hotel room search operations
+ * @deprecated Use UnifiedHotelRoomSearchController at /api/hotel-rooms/search instead
  */
 @RestController
 @RequestMapping("/api/hotel-rooms")
 @CrossOrigin(origins = "*")
+@Deprecated
 public class HotelRoomSearchController {
 
     private static final Logger logger = LoggerFactory.getLogger(HotelRoomSearchController.class);
@@ -30,14 +32,17 @@ public class HotelRoomSearchController {
 
     /**
      * Search for hotel rooms based on criteria
+     * @deprecated Use /api/hotel-rooms/search endpoint from UnifiedHotelRoomSearchController instead
      * 
      * @param request Hotel room search request containing search criteria
      * @return ResponseEntity containing hotel room search results
      */
     @PostMapping("/search")
+    @Deprecated
     public ResponseEntity<HotelRoomSearchResponse> searchHotelRooms(
             @Valid @RequestBody HotelRoomSearchRequest request) {
         
+        logger.warn("Using deprecated /api/hotel-rooms/search endpoint. Please migrate to UnifiedHotelRoomSearchController");
         logger.info("Received hotel room search request: {}", request);
         
         try {
@@ -48,14 +53,7 @@ public class HotelRoomSearchController {
                     .body(HotelRoomSearchResponse.error("API ID is required"));
             }
 
-            // Check if API is supported
-            if (!request.getApiId().equals(11)) {
-                logger.error("API ID {} is not implemented", request.getApiId());
-                return ResponseEntity.badRequest()
-                    .body(HotelRoomSearchResponse.error("API not implemented. Only API ID 11 (IWTX) is currently supported."));
-            }
-
-            // Perform search
+            // Perform search using legacy service
             HotelRoomSearchResponse response = hotelRoomSearchService.searchHotelRooms(request);
             
             if (response.isSuccess()) {
