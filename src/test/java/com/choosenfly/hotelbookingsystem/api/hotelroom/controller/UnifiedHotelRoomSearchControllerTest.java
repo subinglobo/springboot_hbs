@@ -67,7 +67,7 @@ public class UnifiedHotelRoomSearchControllerTest {
                 .thenReturn(mockResponse);
 
         // When & Then
-        mockMvc.perform(post("/api/unified/hotel-rooms/search")
+        mockMvc.perform(post("/api/hotel-rooms/search")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(validRequest)))
                 .andExpect(status().isOk())
@@ -83,7 +83,7 @@ public class UnifiedHotelRoomSearchControllerTest {
                 .thenReturn(mockResponse);
 
         // When & Then
-        mockMvc.perform(post("/api/unified/hotel-rooms/search")
+        mockMvc.perform(post("/api/hotel-rooms/search")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(validRequest)))
                 .andExpect(status().isOk())
@@ -96,7 +96,7 @@ public class UnifiedHotelRoomSearchControllerTest {
         validRequest.setApiId(99); // Invalid API ID
 
         // When & Then
-        mockMvc.perform(post("/api/unified/hotel-rooms/search")
+        mockMvc.perform(post("/api/hotel-rooms/search")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(validRequest)))
                 .andExpect(status().isBadRequest())
@@ -110,7 +110,7 @@ public class UnifiedHotelRoomSearchControllerTest {
         validRequest.setApiId(null);
 
         // When & Then
-        mockMvc.perform(post("/api/unified/hotel-rooms/search")
+        mockMvc.perform(post("/api/hotel-rooms/search")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(validRequest)))
                 .andExpect(status().isBadRequest())
@@ -125,7 +125,7 @@ public class UnifiedHotelRoomSearchControllerTest {
                 .thenThrow(new RuntimeException("Service error"));
 
         // When & Then
-        mockMvc.perform(post("/api/unified/hotel-rooms/search")
+        mockMvc.perform(post("/api/hotel-rooms/search")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(validRequest)))
                 .andExpect(status().isInternalServerError())
