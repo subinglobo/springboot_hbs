@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * Legacy service for handling hotel room search operations
- * @deprecated Use UnifiedHotelRoomSearchController with provider-specific services instead
+ * @deprecated Use /api/hotel-rooms/search endpoint with provider-specific services instead
  */
 @Service
 @Deprecated
@@ -32,14 +32,14 @@ public class HotelRoomSearchService {
 
     /**
      * Search for hotel rooms based on the provided criteria
-     * @deprecated Use UnifiedHotelRoomSearchController instead
+     * @deprecated Use /api/hotel-rooms/search endpoint instead
      * 
      * @param request Hotel room search request
      * @return Hotel room search response
      */
     @Deprecated
     public HotelRoomSearchResponse searchHotelRooms(HotelRoomSearchRequest request) throws Exception {
-        logger.warn("Using deprecated HotelRoomSearchService. Please migrate to UnifiedHotelRoomSearchController");
+        logger.warn("Using deprecated HotelRoomSearchService. Please migrate to /api/hotel-rooms/search endpoint");
         logger.info("Processing hotel room search for API ID: {}", request.getApiId());
 
         // Validate request

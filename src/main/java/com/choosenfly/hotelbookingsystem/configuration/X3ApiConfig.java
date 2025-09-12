@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 public class X3ApiConfig {
     
     private String url;
+    private Availability availability = new Availability();
     private String password;
     private String code;
     private String token;
@@ -18,6 +19,14 @@ public class X3ApiConfig {
     
     public void setUrl(String url) {
         this.url = url;
+    }
+    
+    public Availability getAvailability() {
+        return availability;
+    }
+    
+    public void setAvailability(Availability availability) {
+        this.availability = availability;
     }
     
     public String getPassword() {
@@ -42,5 +51,17 @@ public class X3ApiConfig {
     
     public void setToken(String token) {
         this.token = token;
+    }
+    
+    public static class Availability {
+        private String url;
+        
+        public String getUrl() {
+            return url;
+        }
+        
+        public void setUrl(String url) {
+            this.url = url;
+        }
     }
 }

@@ -16,7 +16,7 @@ import jakarta.validation.Valid;
  * Unified REST Controller for hotel room search operations across multiple providers
  */
 @RestController
-@RequestMapping("/api/unified/hotel-rooms")
+@RequestMapping("/api/hotel-rooms")
 @CrossOrigin(origins = "*")
 public class UnifiedHotelRoomSearchController {
 
