@@ -89,6 +89,8 @@ public class X3HotelSearchApiCaller implements HotelSearchApiCaller {
             System.err.println("Error parsing X3 apiHotelCodeList JSON: " + e.getMessage());
             return x3Results; // Return empty list if JSON parsing fails
         }
+        
+        System.err.println("x3HotelCodes:::" + x3HotelCodes);
 
         if (x3HotelCodes == null || x3HotelCodes.isEmpty()) {
             System.err.println("No X3 hotel codes found after parsing JSON");
