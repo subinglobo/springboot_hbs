@@ -21,7 +21,7 @@ public class AgentController {
     @Autowired
     private AgentService agentService;
 
-    @PostMapping("/register")
+    @PostMapping("/register") //save
     public ResponseEntity<AgentResponseDTO> registerAgent(
             @Valid @RequestBody AgentRegistrationRequestDTO request) {
         

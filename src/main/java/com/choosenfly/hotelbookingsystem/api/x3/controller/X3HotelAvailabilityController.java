@@ -38,7 +38,7 @@ public class X3HotelAvailabilityController {
         @ApiResponse(responseCode = "500", description = "Internal server error or external API failure")
     })
     public ResponseEntity<?> checkHotelAvailability(
-            @RequestBody HotelAvailabilityRequest request) {
+            @RequestBody HotelAvailabilityRequest request) { 
         
         try {
             HotelSearchResponse response = x3HotelAvailabilityService.checkHotelAvailability(request);

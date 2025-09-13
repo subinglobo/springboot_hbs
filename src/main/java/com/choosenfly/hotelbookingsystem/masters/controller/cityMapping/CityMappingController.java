@@ -55,7 +55,10 @@ public class CityMappingController {
 			throw new IllegalArgumentException("API provider is required in the request body");
 		}
 		
-		switch (apiProvider.toLowerCase()) {
+		String lowerCaseApiProvider = apiProvider.toLowerCase();
+		dto.setApiProvider(lowerCaseApiProvider);
+		
+		switch (lowerCaseApiProvider) {
 			case "iwtx":
 				return iwtxCityMappingServiceInterface.saveIwtxCityMapping(dto);
 			case "x3":

@@ -1,6 +1,7 @@
 package com.choosenfly.hotelbookingsystem.masters.service.cityMapping.x3;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -69,18 +70,35 @@ public class X3CityMappingService implements X3CityMappingServiceInterface {
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		}
+		
+		// Check if record already exists
+	    Optional<ApiCityMapping> existingMappingOpt =
+	            iwtxCityMappingRepository.findByApiProviderAndMasterCountryAndMasterStateAndApiCountryIdAndApiCityId(
+	                    dto.getApiProvider(), countryEntity, stateEntity, countryEntity.getId().toString(), stateEntity.getId().toString()
+	            );
 
-		// Save into mapping entity
-		ApiCityMapping entity = new ApiCityMapping();
-		entity.setApiProvider(dto.getApiProvider());
-		entity.setMasterCountry(countryEntity);
-		entity.setMasterState(stateEntity);
-		entity.setApiCountryId(countryEntity.getId()+"");
-		entity.setApiCountryCode(countryCode);
-		entity.setApiCityId(stateEntity.getId()+"");
-		entity.setApiCityCode(cityCode);
-		entity.setApiHotelCodeList(hotelCodesJson);  // store JSON array of X3 hotel codes
-		entity.setIsDeleted(false);
+	    ApiCityMapping entity;
+	    if (existingMappingOpt.isPresent()) {
+	        // Update existing
+	        entity = existingMappingOpt.get();
+	        entity.setApiHotelCodeList(hotelCodesJson);
+	        entity.setIsDeleted(false);
+	        System.err.println("Updating existing mapping: " + entity.getId());
+	    } else {
+	        // Create new
+	        entity = new ApiCityMapping();
+	        entity.setApiProvider(dto.getApiProvider());
+	        entity.setMasterCountry(countryEntity);
+	        entity.setMasterState(stateEntity);
+	        entity.setApiCountryId(countryEntity.getId().toString());
+	        entity.setApiCountryCode(countryCode);
+	        entity.setApiCityId(stateEntity.getId().toString());
+	        entity.setApiCityCode(cityCode);
+	        entity.setApiHotelCodeList(hotelCodesJson);
+	        entity.setIsDeleted(false);
+	        System.err.println("Creating new mapping");
+	    }
+
 		ApiCityMapping save = iwtxCityMappingRepository.save(entity);
 		if (save.getId() != 0) {
 			return save.getId(); 
