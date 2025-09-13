@@ -3,9 +3,13 @@ package com.choosenfly.hotelbookingsystem.agent.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.choosenfly.hotelbookingsystem.agent.dto.AgentGSTDetailsDTO;
 import com.choosenfly.hotelbookingsystem.agent.dto.AgentRegistrationRequestDTO;
 import com.choosenfly.hotelbookingsystem.agent.dto.AgentResponseDTO;
 import com.choosenfly.hotelbookingsystem.agent.entity.Agent;
@@ -26,6 +30,8 @@ import com.choosenfly.hotelbookingsystem.masters.entities.MasterState;
 import com.choosenfly.hotelbookingsystem.masters.repository.MasterCountryRepository;
 import com.choosenfly.hotelbookingsystem.masters.repository.MasterPlaceRepository;
 import com.choosenfly.hotelbookingsystem.masters.repository.MasterStateRepository;
+
+import jakarta.validation.Valid;
 
 @Service
 public class AgentServiceImpl implements AgentService {
@@ -52,7 +58,6 @@ public class AgentServiceImpl implements AgentService {
         this.agentRepository = agentRepository;
     }
     
-   
     @Override
     @Transactional
     public AgentResponseDTO registerAgent(AgentRegistrationRequestDTO request) {
@@ -78,10 +83,7 @@ public class AgentServiceImpl implements AgentService {
         agent.setCompanyName(request.getCompanyName());
 
         agent.setFirstName(request.getFirstName());
-        
         agent.setLastName(request.getLastName());
-        
-        // Set business type
         agent.setBusinessType(request.getBusinessType());
 
         // Set agent category
@@ -94,7 +96,6 @@ public class AgentServiceImpl implements AgentService {
                 .orElseThrow(() -> new InvalidCountryException("Invalid or deleted country ID: " + request.getCountryId()));
         agent.setCountry(country);
 
-        // Validate province belongs to the country
         MasterState state = stateRepository.findById(request.getProvinceId())
                 .orElseThrow(() -> new InvalidProvinceException("Invalid or deleted province ID: " + request.getProvinceId()));
         if (!state.getCountry().getId().equals(request.getCountryId())) {
@@ -102,7 +103,6 @@ public class AgentServiceImpl implements AgentService {
         }
         agent.setProvince(state);
 
-        // Validate place belongs to the state and country
         MasterPlace place = placeRepository.findById(request.getPlaceId())
                 .orElseThrow(() -> new InvalidPlaceException("Invalid or deleted place ID: " + request.getPlaceId()));
         if (!place.getState().getId().equals(request.getProvinceId())) {
@@ -115,23 +115,18 @@ public class AgentServiceImpl implements AgentService {
 
         // Set basic personal/contact details
         agent.setPersonalEmail(request.getPersonalEmail());
-
         if (request.getMobileNumber() == null || request.getMobileNumber().trim().isEmpty()) {
             throw new InvalidContactDetailsException("Mobile number cannot be null or empty");
         }
         agent.setMobileNumber(request.getMobileNumber());
-
         agent.setAddress(request.getAddress());
 
         // Set GST details
         if (request.getAgentGSTDetailsDTO() != null) {
             AgentGSTDetails gst = new AgentGSTDetails();
-
-            // Optional: validate individual GST fields if needed
             if (request.getAgentGSTDetailsDTO().getAgentClassification() == null) {
                 throw new InvalidGSTDetailsException("Agent classification cannot be null when GST is provided");
             }
-
             gst.setAgentClassification(request.getAgentGSTDetailsDTO().getAgentClassification());
             gst.setAgentGstIn(request.getAgentGSTDetailsDTO().getAgentGstIn());
             gst.setAgentProvisionalGstno(request.getAgentGSTDetailsDTO().getAgentProvisionalGstno());
@@ -139,10 +134,8 @@ public class AgentServiceImpl implements AgentService {
             gst.setAgentRegisterstatus(request.getAgentGSTDetailsDTO().getAgentRegisterstatus());
             gst.setAgentHsncode(request.getAgentGSTDetailsDTO().getAgentHsncode());
             gst.setAgentStatus(request.getAgentGSTDetailsDTO().getAgentStatus());
-
             agent.setGstDetails(gst);
         }
-
 
         try {
             Agent savedAgent = agentRepository.save(agent);
@@ -154,4 +147,181 @@ public class AgentServiceImpl implements AgentService {
         }
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public AgentRegistrationRequestDTO getAgentRegistrationDetailsById(Long id) {
+        Agent agent = agentRepository.findById(id)
+                .orElseThrow(() -> new AgentRegistrationException("Agent not found with ID: " + id));
+        
+        AgentRegistrationRequestDTO dto = new AgentRegistrationRequestDTO();
+        dto.setId(agent.getId());
+        dto.setCompanyName(agent.getCompanyName());
+        dto.setFirstName(agent.getFirstName());
+        dto.setLastName(agent.getLastName());
+        dto.setBusinessType(agent.getBusinessType());
+        dto.setAgentCategoryId(agent.getAgentCategoryId().getAgentCategoryId());
+        dto.setCountryId(agent.getCountry().getId());
+        dto.setProvinceId(agent.getProvince().getId());
+        dto.setPlaceId(agent.getPlace().getId());
+        dto.setPersonalEmail(agent.getPersonalEmail());
+        dto.setMobileNumber(agent.getMobileNumber());
+        dto.setAddress(agent.getAddress());
+        
+        if (agent.getGstDetails() != null) {
+            AgentGSTDetailsDTO gstDto = new AgentGSTDetailsDTO();
+            gstDto.setAgentClassification(agent.getGstDetails().getAgentClassification());
+            gstDto.setAgentGstIn(agent.getGstDetails().getAgentGstIn());
+            gstDto.setAgentProvisionalGstno(agent.getGstDetails().getAgentProvisionalGstno());
+            gstDto.setAgentCorrespondmail(agent.getGstDetails().getAgentCorrespondmail());
+            gstDto.setAgentRegisterstatus(agent.getGstDetails().getAgentRegisterstatus());
+            gstDto.setAgentHsncode(agent.getGstDetails().getAgentHsncode());
+            gstDto.setAgentStatus(agent.getGstDetails().getAgentStatus());
+            dto.setAgentGSTDetailsDTO(gstDto);
+        }
+        
+        return dto;
+    }
+
+    @Override
+    @Transactional
+    public AgentRegistrationRequestDTO editAgentRegistrationDetails(Long id, @Valid AgentRegistrationRequestDTO reqDTO) {
+        Agent agent = agentRepository.findById(id)
+                .orElseThrow(() -> new AgentRegistrationException("Agent not found with ID: " + id));
+
+        // Check for existing email conflict (excluding the current agent)
+        if (reqDTO.getPersonalEmail() != null && !reqDTO.getPersonalEmail().trim().isEmpty() 
+                && !reqDTO.getPersonalEmail().equals(agent.getPersonalEmail())) {
+            if (agentRepository.existsByPersonalEmail(reqDTO.getPersonalEmail())) {
+                throw new AgentRegistrationException("An agent with email " + reqDTO.getPersonalEmail() + " already exists");
+            }
+        }
+
+        // Validate and update company name
+        if (reqDTO.getCompanyName() == null || reqDTO.getCompanyName().trim().isEmpty()) {
+            throw new AgentRegistrationException("Company name cannot be null or empty");
+        }
+        agent.setCompanyName(reqDTO.getCompanyName());
+        agent.setFirstName(reqDTO.getFirstName());
+        agent.setLastName(reqDTO.getLastName());
+        agent.setBusinessType(reqDTO.getBusinessType());
+
+        // Update agent category
+        AgentCategory category = agentCategoryRepository.findById(reqDTO.getAgentCategoryId())
+                .orElseThrow(() -> new InvalidAgentCategoryException("Invalid or deleted agent category ID: " + reqDTO.getAgentCategoryId()));
+        agent.setAgentCategoryId(category);
+
+        // Update location entities
+        MasterCountry country = countryRepository.findById(reqDTO.getCountryId())
+                .orElseThrow(() -> new InvalidCountryException("Invalid or deleted country ID: " + reqDTO.getCountryId()));
+        agent.setCountry(country);
+
+        MasterState state = stateRepository.findById(reqDTO.getProvinceId())
+                .orElseThrow(() -> new InvalidProvinceException("Invalid or deleted province ID: " + reqDTO.getProvinceId()));
+        if (!state.getCountry().getId().equals(reqDTO.getCountryId())) {
+            throw new InvalidProvinceException("Province ID " + reqDTO.getProvinceId() + " does not belong to country ID " + reqDTO.getCountryId());
+        }
+        agent.setProvince(state);
+
+        MasterPlace place = placeRepository.findById(reqDTO.getPlaceId())
+                .orElseThrow(() -> new InvalidPlaceException("Invalid or deleted place ID: " + reqDTO.getPlaceId()));
+        if (!place.getState().getId().equals(reqDTO.getProvinceId())) {
+            throw new InvalidPlaceException("Place ID " + reqDTO.getPlaceId() + " does not belong to province ID " + reqDTO.getProvinceId());
+        }
+        if (!place.getCountry().getId().equals(reqDTO.getCountryId())) {
+            throw new InvalidPlaceException("Place ID " + reqDTO.getPlaceId() + " is associated with a country that does not match country ID " + reqDTO.getCountryId());
+        }
+        agent.setPlace(place);
+
+        // Update contact details
+        agent.setPersonalEmail(reqDTO.getPersonalEmail());
+        if (reqDTO.getMobileNumber() == null || reqDTO.getMobileNumber().trim().isEmpty()) {
+            throw new InvalidContactDetailsException("Mobile number cannot be null or empty");
+        }
+        agent.setMobileNumber(reqDTO.getMobileNumber());
+        agent.setAddress(reqDTO.getAddress());
+
+        // Update GST details
+        if (reqDTO.getAgentGSTDetailsDTO() != null) {
+            AgentGSTDetails gst = agent.getGstDetails() != null ? agent.getGstDetails() : new AgentGSTDetails();
+            if (reqDTO.getAgentGSTDetailsDTO().getAgentClassification() == null) {
+                throw new InvalidGSTDetailsException("Agent classification cannot be null when GST is provided");
+            }
+            gst.setAgentClassification(reqDTO.getAgentGSTDetailsDTO().getAgentClassification());
+            gst.setAgentGstIn(reqDTO.getAgentGSTDetailsDTO().getAgentGstIn());
+            gst.setAgentProvisionalGstno(reqDTO.getAgentGSTDetailsDTO().getAgentProvisionalGstno());
+            gst.setAgentCorrespondmail(reqDTO.getAgentGSTDetailsDTO().getAgentCorrespondmail());
+            gst.setAgentRegisterstatus(reqDTO.getAgentGSTDetailsDTO().getAgentRegisterstatus());
+            gst.setAgentHsncode(reqDTO.getAgentGSTDetailsDTO().getAgentHsncode());
+            gst.setAgentStatus(reqDTO.getAgentGSTDetailsDTO().getAgentStatus());
+            agent.setGstDetails(gst);
+        } else if (agent.getGstDetails() != null) {
+            agent.setGstDetails(null); // Remove GST details if not provided
+        }
+
+        try {
+            Agent updatedAgent = agentRepository.save(agent);
+            logger.info("Agent updated successfully with email: {}", updatedAgent.getPersonalEmail());
+            return reqDTO; // Return the updated DTO
+        } catch (Exception e) {
+            logger.error("Failed to update agent: {}", e.getMessage(), e);
+            throw new AgentRegistrationException("Failed to update agent: " + e.getMessage());
+        }
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<String> deleteAgentRegistrationDetails(Long id) {
+        if (!agentRepository.existsById(id)) {
+            throw new AgentRegistrationException("Agent not found with ID: " + id);
+        }
+
+        try {
+            agentRepository.deleteById(id);
+            logger.info("Agent deleted successfully with ID: {}", id);
+            return ResponseEntity.ok("Agent deleted successfully");
+        } catch (Exception e) {
+            logger.error("Failed to delete agent with ID {}: {}", id, e.getMessage(), e);
+            throw new AgentRegistrationException("Failed to delete agent: " + e.getMessage());
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<AgentRegistrationRequestDTO> getAllAgentRegistrationDetails(Pageable pageable, String searchTerm) {
+        Page<Agent> agentPage;
+        if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+            agentPage = agentRepository.findByCompanyNameContainingIgnoreCaseOrPersonalEmailContainingIgnoreCase(
+                    searchTerm.trim(), searchTerm.trim(), pageable);
+        } else {
+            agentPage = agentRepository.findAll(pageable);
+        }
+
+        return agentPage.map(agent -> {
+            AgentRegistrationRequestDTO dto = new AgentRegistrationRequestDTO();
+            dto.setId(agent.getId());
+            dto.setCompanyName(agent.getCompanyName());
+            dto.setFirstName(agent.getFirstName());
+            dto.setLastName(agent.getLastName());
+            dto.setBusinessType(agent.getBusinessType());
+            dto.setAgentCategoryId(agent.getAgentCategoryId().getAgentCategoryId());
+            dto.setCountryId(agent.getCountry().getId());
+            dto.setProvinceId(agent.getProvince().getId());
+            dto.setPlaceId(agent.getPlace().getId());
+            dto.setPersonalEmail(agent.getPersonalEmail());
+            dto.setMobileNumber(agent.getMobileNumber());
+            dto.setAddress(agent.getAddress());
+            if (agent.getGstDetails() != null) {
+                AgentGSTDetailsDTO gstDto = new AgentGSTDetailsDTO();
+                gstDto.setAgentClassification(agent.getGstDetails().getAgentClassification());
+                gstDto.setAgentGstIn(agent.getGstDetails().getAgentGstIn());
+                gstDto.setAgentProvisionalGstno(agent.getGstDetails().getAgentProvisionalGstno());
+                gstDto.setAgentCorrespondmail(agent.getGstDetails().getAgentCorrespondmail());
+                gstDto.setAgentRegisterstatus(agent.getGstDetails().getAgentRegisterstatus());
+                gstDto.setAgentHsncode(agent.getGstDetails().getAgentHsncode());
+                gstDto.setAgentStatus(agent.getGstDetails().getAgentStatus());
+                dto.setAgentGSTDetailsDTO(gstDto);
+            }
+            return dto;
+        });
+    }
 }

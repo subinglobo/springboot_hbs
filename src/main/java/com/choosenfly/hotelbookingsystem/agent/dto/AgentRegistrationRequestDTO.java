@@ -8,6 +8,8 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 public class AgentRegistrationRequestDTO {
+	
+	private Long id;
 
     @NotBlank(message = "Business type is required")
     private String businessType;
@@ -151,14 +153,23 @@ public class AgentRegistrationRequestDTO {
         this.agentGSTDetailsDTO = agentGSTDetailsDTO;
     }
 
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
 	@Override
 	public String toString() {
-		return "AgentRegistrationRequestDTO [businessType=" + businessType + ", agentCategoryId=" + agentCategoryId
-				+ ", companyName=" + companyName + ", firstName=" + firstName + ", lastName=" + lastName
-				+ ", countryId=" + countryId + ", provinceId=" + provinceId + ", placeId=" + placeId
+		return "AgentRegistrationRequestDTO [id=" + id + ", businessType=" + businessType + ", agentCategoryId="
+				+ agentCategoryId + ", companyName=" + companyName + ", firstName=" + firstName + ", lastName="
+				+ lastName + ", countryId=" + countryId + ", provinceId=" + provinceId + ", placeId=" + placeId
 				+ ", personalEmail=" + personalEmail + ", mobileNumber=" + mobileNumber + ", address=" + address
 				+ ", agentGSTDetailsDTO=" + agentGSTDetailsDTO + "]";
 	}
 
+	
     
 }
