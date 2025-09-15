@@ -12,10 +12,10 @@ import io.swagger.v3.oas.annotations.info.Info;
 	)
 @SpringBootApplication
 @EnableRetry
-public class ChoosenflyHotelBookingSystemApplication {
-
+public class ChoosenflyHotelBookingSystemApplication {  
+ 
 	public static void main(String[] args) {
-		SpringApplication.run(ChoosenflyHotelBookingSystemApplication.class, args); 
+		SpringApplication.run(ChoosenflyHotelBookingSystemApplication.class, args);    
 	}
 
 }

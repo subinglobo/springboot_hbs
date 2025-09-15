@@ -1,6 +1,7 @@
 package com.choosenfly.hotelbookingsystem.masters.service.province;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-
 
 import com.choosenfly.hotelbookingsystem.masters.dto.MasterStateDTO;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterCountry;
@@ -124,13 +124,13 @@ public class ProvinceService implements ProvinceServiceInterface {
 	    Page<MasterState> statePage;
 
 	    if (StringUtils.hasText(search)) {
-	        statePage = masterStateRepository.findByNameContainingIgnoreCase(search, pageable);
+	        statePage = masterStateRepository.findByNameContainingIgnoreCaseAndIsDeletedFalse(search, pageable);
 	    } else {
 	        statePage = masterStateRepository.findAll(pageable);
 	    }
 
 	    return statePage.map(state -> {
-	        MasterStateDTO dto = new MasterStateDTO();
+	        MasterStateDTO dto = new MasterStateDTO();  
 	        dto.setId(state.getId());
 	        dto.setStateName(state.getName());
 	        dto.setStateCode(state.getStateCode());
@@ -143,6 +143,30 @@ public class ProvinceService implements ProvinceServiceInterface {
 
 	        return dto;
 	    });
+	}
+
+	@Override
+	public List<MasterStateDTO> getProvinveByCountryId(Long countryId) {
+		// TODO Auto-generated method stub
+		
+		MasterCountry countryEntity =  masterCountryRepository.findById(countryId)
+        .orElseThrow(() -> new EntityNotFoundException("Country not found for id: " + countryId));
+		
+		List<MasterState> stateEntity =  masterStateRepository.findByCountryId(countryId);
+		
+		 List<MasterStateDTO> collect = stateEntity.stream()
+	            .map(entity -> {
+	                MasterStateDTO dto = new MasterStateDTO();
+	                dto.setId(entity.getId());
+	                dto.setStateName(entity.getName());
+	                dto.setStateCode(entity.getStateCode());
+	                dto.setCountryId(entity.getCountry().getId());
+	                dto.setCountry(entity.getCountry().getName());
+	                return dto;
+	            })
+	            .collect(Collectors.toList());
+		 
+		 return collect;
 	}
 
 

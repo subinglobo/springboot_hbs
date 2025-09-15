@@ -46,8 +46,20 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/login", "/auth/register").permitAll()
-                .anyRequest().authenticated())
+            .requestMatchers("/auth/login",
+            		"/api/agent/register",
+            		"/api/province/getByCountryId/*",
+            		"/api/country" ,
+            		"/api/destination/getplaces/*",
+            		"/api/agentCategory",
+            		"/auth/refresh-token",
+            		"/api/hotel-rooms/**",
+            		"/swagger-ui/**",
+                    "/swagger-ui.html",
+                    "/v3/api-docs/**",
+                    "/v2/api-docs/**",
+                    "/webjars/**").permitAll()
+            .anyRequest().authenticated())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

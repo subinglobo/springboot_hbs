@@ -16,6 +16,10 @@ public class MasterCountryDTO extends BaseEntity {
 
     private String countryCode;
     
+    private String region;
+    
+    private String marketType;
+    
     // Getters and Setters
 
 	public Long getId() {
@@ -66,11 +70,30 @@ public class MasterCountryDTO extends BaseEntity {
 		this.countryCode = countryCode;
 	}
 
+	public String getRegion() {
+		return region;
+	}
+
+	public void setRegion(String region) {
+		this.region = region;
+	}
+
+	public String getMarketType() {
+		return marketType;
+	}
+
+	public void setMarketType(String marketType) {
+		this.marketType = marketType;
+	}
+
 	@Override
 	public String toString() {
 		return "MasterCountryDTO [id=" + id + ", name=" + name + ", isDeleted=" + isDeleted + ", marketTypeId="
-				+ marketTypeId + ", regionId=" + regionId + ", countryCode=" + countryCode + "]";
+				+ marketTypeId + ", regionId=" + regionId + ", countryCode=" + countryCode + ", region=" + region
+				+ ", marketType=" + marketType + "]";
 	}
+
+	
 
     
      

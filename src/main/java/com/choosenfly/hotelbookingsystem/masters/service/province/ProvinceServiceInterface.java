@@ -1,5 +1,7 @@
 package com.choosenfly.hotelbookingsystem.masters.service.province;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -19,5 +21,7 @@ public interface ProvinceServiceInterface {
 	ResponseEntity<String> deleteProvince(Long id);
 
 	Page<MasterStateDTO> getAllProvince(Pageable pageable, String search);
+
+	List<MasterStateDTO> getProvinveByCountryId(Long countryId);
 
 }

@@ -20,6 +20,8 @@ public class MasterPlaceDTO extends BaseEntity {
     private String placeCode;
     
     private Boolean isDeleted;
+    
+    private String state;
 
 	public Long getId() {
 		return id;
@@ -77,11 +79,21 @@ public class MasterPlaceDTO extends BaseEntity {
 		this.country = country;
 	}
 
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
 	@Override
 	public String toString() {
 		return "MasterPlaceDTO [id=" + id + ", stateId=" + stateId + ", countryId=" + countryId + ", country=" + country
-				+ ", name=" + name + ", placeCode=" + placeCode + ", isDeleted=" + isDeleted + "]";
+				+ ", name=" + name + ", placeCode=" + placeCode + ", isDeleted=" + isDeleted + ", state=" + state + "]";
 	}
+
+	
 
 	
 

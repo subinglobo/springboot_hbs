@@ -37,45 +37,58 @@ public class HotelSearchController {
 	}
 
 	@GetMapping("/results/{searchId}")
-	public ResponseEntity<SearchResponse> getResults(@PathVariable String searchId, @RequestParam Long agentId) {
+	public ResponseEntity<SearchResponse> getResults(
+	        @PathVariable String searchId,
+	        @RequestParam Long agentId,
+	        @RequestParam(defaultValue = "0") int page,
+	        @RequestParam(defaultValue = "10") int size,
+	        @RequestParam(defaultValue = "baseRate") String sortBy,
+	        @RequestParam(defaultValue = "asc") String sortOrder,
+	        @RequestParam(required = false) Integer starRating,
+	        @RequestParam(required = false) String apiType
+	) {
 	    try {
+	        // Get full results from Redis
 	        List<HotelSearchResult> results = hotelSearchService.getResults(searchId);
 
+	        // Apply filtering
+	        results = hotelSearchService.applyFilters(results, starRating, apiType);
+
+	        // Apply sorting
+	        results = hotelSearchService.sortResults(results, sortBy, sortOrder);
+	        
+	        System.err.println("Results :: "+results);
+
+	        System.err.println("page :: "+page);
+	        
+	        System.err.println("size :: "+size);
+	        
+	        // Paginate
+	        int start = Math.min(page * size, results.size());
+	        int end = Math.min(start + size, results.size());
+	        
+	        System.err.println("Start and end :: "+start +"  ::  "+end);
+	        List<HotelSearchResult> paginatedResults = results.subList(start, end);
+
+	        System.err.println("paginated results :: "+paginatedResults);
+	        
+	        // Build response
 	        Map<String, String> statusMap = hotelSearchService.getSearchStatusMap(searchId, agentId);
 	        boolean isComplete = hotelSearchService.isSearchComplete(searchId, agentId);
 
 	        SearchResponse response = new SearchResponse();
-	        response.setResult(results);
+	        response.setResult(paginatedResults);
 	        response.setStatus(statusMap);
 	        response.setFinalStatus(isComplete ? "COMPLETED" : "IN_PROGRESS");
+	        response.setTotalResults(results.size());
+	        response.setPage(page);
+	        response.setSize(size);
 
 	        return ResponseEntity.ok(response);
 	    } catch (Exception e) {
-	    	e.printStackTrace();
+	        e.printStackTrace();
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 	    }
 	}
-
-    /**
-     * Checks if all API responses for a search are complete.
-     * @param searchId The unique identifier for the search.
-     * @param agentId The agent identifier to determine enabled APIs.
-     * @return A response containing the searchId and completion status.
-     */
-    @GetMapping("/status/{searchId}")
-    public ResponseEntity<Map<String, Object>> getSearchStatus(
-            @PathVariable String searchId,
-            @RequestParam Long agentId) {
-        try {
-            boolean isComplete = hotelSearchService.isSearchComplete(searchId, agentId);
-            Map<String, Object> response = new HashMap<>();
-            response.put("searchId", searchId);
-            response.put("status", isComplete ? "completed" : "in_progress");
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Failed to check status: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-        }
-    }
+  
 }

@@ -9,6 +9,7 @@ public class LoginResponse {
 	private List<String> roles;
 
 
+	
 	public String getToken() {
 		return token;
 	}
@@ -38,5 +39,4 @@ public class LoginResponse {
 		return "LoginResponse [token=" + token + ", username=" + username + ", roles=" + roles + "]";
 	}
 
-	
 }

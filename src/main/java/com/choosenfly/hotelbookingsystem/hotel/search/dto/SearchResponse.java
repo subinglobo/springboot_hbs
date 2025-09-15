@@ -9,6 +9,36 @@ public class SearchResponse {
 	private List<HotelSearchResult> result;
 	private String finalStatus;
 
+	private int page;
+	private int size;
+	private int totalResults;
+	
+	
+
+	public int getPage() {
+		return page;
+	}
+
+	public void setPage(int page) {
+		this.page = page;
+	}
+
+	public int getSize() {
+		return size;
+	}
+
+	public void setSize(int size) {
+		this.size = size;
+	}
+
+	public int getTotalResults() {
+		return totalResults;
+	}
+
+	public void setTotalResults(int totalResults) {
+		this.totalResults = totalResults;
+	}
+
 	public String getFinalStatus() {
 		return finalStatus;
 	}

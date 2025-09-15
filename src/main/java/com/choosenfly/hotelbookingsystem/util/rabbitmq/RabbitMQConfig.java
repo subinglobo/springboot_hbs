@@ -107,6 +107,14 @@ public class RabbitMQConfig {
     }
 
     @Bean
+    public Queue x3Queue() {
+        Map<String, Object> args = new HashMap<>();
+        args.put("x-dead-letter-exchange", "dl.xchange");
+        args.put("x-dead-letter-routing-key", "dl.routing-key");
+        return new Queue("hotel.api.x3.queue", true, false, false, args);
+    }
+
+    @Bean
     public Queue api2Queue() {
         Map<String, Object> args = new HashMap<>();
         args.put("x-dead-letter-exchange", "dl.xchange");
@@ -143,6 +151,12 @@ public class RabbitMQConfig {
     public Binding iwtxBinding(Queue iwtxQueue, DirectExchange hotelExchange) {
         String routingKey = hotelRabbitMQProperties.getRoutingkey().getOrDefault("iwtx", "hotel.iwtx.routingKey");
         return BindingBuilder.bind(iwtxQueue).to(hotelExchange).with(routingKey);
+    }
+
+    @Bean
+    public Binding x3Binding(Queue x3Queue, DirectExchange hotelExchange) {
+        String routingKey = hotelRabbitMQProperties.getRoutingkey().getOrDefault("x3", "hotel.x3.routingKey");
+        return BindingBuilder.bind(x3Queue).to(hotelExchange).with(routingKey);
     }
 
     @Bean

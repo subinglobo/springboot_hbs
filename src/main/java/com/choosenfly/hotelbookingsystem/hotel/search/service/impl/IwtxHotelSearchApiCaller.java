@@ -5,16 +5,15 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.stream.Collectors;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -23,7 +22,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 import com.choosenfly.hotelbookingsystem.api.iwtx.dto.BaseRateIwtx;
 import com.choosenfly.hotelbookingsystem.api.iwtx.dto.HotelBaseRate;
@@ -37,6 +35,9 @@ import com.choosenfly.hotelbookingsystem.api.iwtx.dto.search.request.RoomiwxtSea
 import com.choosenfly.hotelbookingsystem.api.iwtx.dto.search.request.SearchCriteriaIwtxSearch;
 import com.choosenfly.hotelbookingsystem.api.iwtx.dto.search.response.HotelIwtx;
 import com.choosenfly.hotelbookingsystem.api.iwtx.dto.search.response.RoomIwtxResponse;
+import com.choosenfly.hotelbookingsystem.api.iwtx.repository.IwtxHotelRepository;
+import com.choosenfly.hotelbookingsystem.masters.repository.IwtxCityMappingRepository;
+import com.choosenfly.hotelbookingsystem.masters.entities.ApiCityMapping;
 import com.choosenfly.hotelbookingsystem.hotel.search.dto.HotelSearchRequest;
 import com.choosenfly.hotelbookingsystem.hotel.search.dto.HotelSearchResult;
 import com.choosenfly.hotelbookingsystem.hotel.search.dto.RoomConfiguration;
@@ -50,13 +51,11 @@ import jakarta.xml.bind.Unmarshaller;
 @Component
 public class IwtxHotelSearchApiCaller implements HotelSearchApiCaller {
 
-//    @Autowired
-//    private IwtxHotelsRepository iwtxHotelsRepository;
+    @Autowired
+    private IwtxHotelRepository iwtxHotelsRepository;
 
-//    @Autowired
-//    private ConCityMappingRepository conCityMappingRepository;
-//
-//    @Autowired
+    @Autowired
+    private IwtxCityMappingRepository apiCityMappingRepository;
 //    private ConCountryMappingRepository conCountryMappingRepository;
 
 
@@ -70,30 +69,87 @@ public class IwtxHotelSearchApiCaller implements HotelSearchApiCaller {
     public List<HotelSearchResult> callApi(HotelSearchRequest request) {
         List<HotelSearchResult> results = new ArrayList<>();
 
-        // Step 1: Fetch hotel details from the database
-//        List<HotelInfoIwtx> hotelInfos = hotelRepository.findHotelsByCityAndCountry(
-//            request.getDestinationCityId(),
-//            request.getDestinationCountryId()
-//        );
+        // Step 1: Fetch API Hotel Codes from ApiCityMapping for Iwtx provider
+        ApiCityMapping cityMapping = apiCityMappingRepository.findByMasterCountryIdAndMasterCityIdAndApiProvider(
+            Long.valueOf(request.getDestinationCountryId()), 
+            Long.valueOf(request.getDestinationCityId()), 
+            "Iwtx"
+        );
+
+        if (cityMapping == null || cityMapping.getApiHotelCodeList() == null || cityMapping.getApiHotelCodeList().trim().isEmpty()) {
+            System.err.println("No hotel codes found in ApiCityMapping for city: " + request.getDestinationCityId() + ", country: " + request.getDestinationCountryId());
+            return results; // Return empty list if no mapping found
+        }
+
+        // Step 2: Parse JSON apiHotelCodeList into list of hotel codes
+        List<String> hotelCodes;
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            hotelCodes = objectMapper.readValue(cityMapping.getApiHotelCodeList(), new TypeReference<List<String>>() {});
+        } catch (Exception e) {
+            System.err.println("Error parsing apiHotelCodeList JSON: " + e.getMessage());
+            return results; // Return empty list if JSON parsing fails
+        }
+
+        if (hotelCodes == null || hotelCodes.isEmpty()) {
+            System.err.println("No hotel codes found after parsing JSON");
+            return results;
+        }
+
+        // Step 3: Fetch hotel details using batch query for better performance
+        List<HotelInfoIwtx> hotelInfos = new ArrayList<>();
+        
+        // Handle large datasets by processing in chunks to avoid database query limits
+        final int CHUNK_SIZE = 1000; // Most databases support up to 1000 items in IN clause
+        
+        for (int i = 0; i < hotelCodes.size(); i += CHUNK_SIZE) {
+            int endIndex = Math.min(i + CHUNK_SIZE, hotelCodes.size());
+            List<String> chunk = hotelCodes.subList(i, endIndex);
+            
+            try {
+                // Trim hotel codes and fetch in batch
+                List<String> trimmedCodes = chunk.stream()
+                    .map(String::trim)
+                    .filter(code -> !code.isEmpty())
+                    .toList();
+                
+                if (!trimmedCodes.isEmpty()) {
+                    List<HotelInfoIwtx> chunkResults = iwtxHotelsRepository.findHotelInfoByHotelCodes(trimmedCodes);
+                    hotelInfos.addAll(chunkResults);
+                }
+            } catch (Exception e) {
+                System.err.println("Error fetching hotel details for chunk " + (i/CHUNK_SIZE + 1) + ": " + e.getMessage());
+                // Continue with next chunk
+            }
+        }
         
 
         
-        List<HotelInfoIwtx> hotelInfos = Arrays.asList(
-        	    new HotelInfoIwtx("9999-19861433", "The Grand Palace", "https://example.com/images/h001.jpg", 5, "123 Palace Road, City A"),
-        	    new HotelInfoIwtx("9999-19861463", "Sunset Resort", "https://example.com/images/h002.jpg", 4, "456 Beach Avenue, City B")
-        	);
+//        List<HotelInfoIwtx> hotelInfos = Arrays.asList(
+//        	    new HotelInfoIwtx("9999-19861433", "The Grand Palace", "https://b2b.choosenfly.com/assets/details/profilepic/hotel/08_02_2024_17073725370_hotel.jpg", 5, "123 Palace Road, City A"),
+//        	    new HotelInfoIwtx("9999-19861463", "Sunset Resort", "	https://b2b.choosenfly.com/assets/details/profilepic/hotel/18_06_2023_16870742840_hotel.jpg", 4, "456 Beach Avenue, City B"),
+//        	    new HotelInfoIwtx("9999-17301412", "The Heritage Hotel, Autograph Collection", "https://b2b.choosenfly.com/assets/details/profilepic/hotel/21_06_2023_16873286470_hotel.jpg", 4, "Heritage Beach Avenue, Cit"),
+//        	    new HotelInfoIwtx(" 9999-19862479", " Renaissance Business Bay Hotel, Dubai", "	https://b2b.choosenfly.com/assets/details/profilepic/hotel/18_06_2023_16870742840_hotel.jpg", 4, "Heritage Beach Avenue, Cit"),
+//        	    new HotelInfoIwtx("9999-19861447 ", "Mövenpick Hotel Jumeirah Beach", "https://b2b.choosenfly.com/assets/details/profilepic/hotel/21_06_2023_16873286470_hotel.jpg", 4, "Heritage Beach Avenue, Cit"),
+//        	    new HotelInfoIwtx("9999-19861387", "Pullman Dubai Creek City Centre", "https://b2b.choosenfly.com/assets/details/profilepic/hotel/21_06_2023_16873286470_hotel.jpg", 4, "Heritage Beach Avenue, Cit"),
+//        	    new HotelInfoIwtx("9999-19861413", "ibis Styles Dragon Mart Dubai", "	https://b2b.choosenfly.com/assets/details/profilepic/hotel/18_06_2023_16870742840_hotel.jpg", 4, "Heritage Beach Avenue, Cit"),
+//        	    new HotelInfoIwtx("9999-17109179", "Premier Inn Dubai Silicon Oasis", "https://b2b.choosenfly.com/assets/details/profilepic/hotel/21_06_2023_16873286470_hotel.jpg", 4, "Heritage Beach Avenue, Cit"),
+//        	    new HotelInfoIwtx("9999-19594942", "DAMAC Maison Mall Street", "https://b2b.choosenfly.com/assets/details/profilepic/hotel/21_06_2023_16873286470_hotel.jpg", 4, "Heritage Beach Avenue, Cit"),
+//        	    new HotelInfoIwtx("9999-19758127", "DAMAC Maison Distinction", "	https://b2b.choosenfly.com/assets/details/profilepic/hotel/18_06_2023_16870742840_hotel.jpg", 4, "Heritage Beach Avenue, Cit"),
+//        	    new HotelInfoIwtx("9999-19597428 ", "DAMAC Maison Aykon City Dubai", "https://b2b.choosenfly.com/assets/details/profilepic/hotel/21_06_2023_16873286470_hotel.jpg", 4, "Heritage Beach Avenue, Cit"),
+//        	    new HotelInfoIwtx("9999-19859541", "The First Collection at Jumeirah Village Circle, a Tribute Portfolio Hotel", "https://b2b.choosenfly.com/assets/details/profilepic/hotel/hoteldefault.jpg", 4, "Heritage Beach Avenue, Cit")
+//        	    
+//        
+//        	);
 
         if (hotelInfos == null || hotelInfos.isEmpty()) {
             return results; // Return empty list if no hotels found
         }
 
-        // Step 2: Extract hotel codes and split into batches of 50
-        List<String> hotelCodes = hotelInfos.stream()
-            .map(HotelInfoIwtx::getHotelCode)
-            .collect(Collectors.toList());
+        // Step 4: Split hotel codes into batches of 50
         List<List<String>> batches = splitIntoBatches(hotelCodes, BATCH_SIZE);
 
-        // Step 3: Make parallel API calls for each batch
+        // Step 5: Make parallel API calls for each batch
         ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
         List<Future<List<HotelBaseRate>>> futures = new ArrayList<>();
 
@@ -101,7 +157,7 @@ public class IwtxHotelSearchApiCaller implements HotelSearchApiCaller {
             futures.add(executor.submit(() -> callApiForBatch(batch, request)));
         }
 
-        // Step 4: Collect API responses
+        // Step 6: Collect API responses
         Map<String, Double> baseRateMap = new HashMap<>();
         for (Future<List<HotelBaseRate>> future : futures) {
             try {
@@ -119,17 +175,19 @@ public class IwtxHotelSearchApiCaller implements HotelSearchApiCaller {
 
         // Step 5: Map hotel details and base rates to HotelSearchResult
         for (HotelInfoIwtx hotelInfo : hotelInfos) {
-            HotelSearchResult result = new HotelSearchResult();
-            result.setHotelCode(hotelInfo.getHotelCode());
-            result.setHotelName(hotelInfo.getHotelName());
-            result.setHotelImage(hotelInfo.getHotelImage());
-            result.setStarRating(hotelInfo.getStarRating());
-            result.setHotelAddress(hotelInfo.getHotelAddress());
-            result.setApiType("IWTX");
-            result.setBaseRate(baseRateMap.getOrDefault(hotelInfo.getHotelCode(), null));
-            results.add(result);
+            Double baseRate = baseRateMap.get(hotelInfo.getHotelCode());
+            if (baseRate != null) {  // ✅ Only add to results if baseRate is available
+                HotelSearchResult result = new HotelSearchResult();
+                result.setHotelCode(hotelInfo.getHotelCode());
+                result.setHotelName(hotelInfo.getHotelName());
+                result.setHotelImage(hotelInfo.getHotelImage());
+                result.setStarRating(hotelInfo.getStarRating());
+                result.setHotelAddress(hotelInfo.getHotelAddress());
+                result.setApiType("IWTX");
+                result.setBaseRate(baseRate);
+                results.add(result);
+            }
         }
-
         System.out.println(results);
         return results;
         
@@ -186,7 +244,7 @@ public class IwtxHotelSearchApiCaller implements HotelSearchApiCaller {
         criteria.setHotelCode(String.join(",", hotelCodes));
         criteria.setStartDate(request.getCheckIn().replace("-", ""));
         criteria.setEndDate(request.getCheckOut().replace("-", ""));
-        criteria.setNationality(request.getNationalityId());
+        criteria.setNationality(request.getNationalityCode());
         criteria.setGroupByRooms("Y");
         criteria.setCancellationPolicy("Y");
 

@@ -1,9 +1,11 @@
 package com.choosenfly.hotelbookingsystem.hotel.search.service;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,5 +88,37 @@ public class HotelSearchService {
         
         System.out.println("statusMap:: "+statusMap);
         return statusMap;
+    }
+    
+    public List<HotelSearchResult> applyFilters(List<HotelSearchResult> results, Integer starRating, String apiType) {
+    	
+    	return results.stream()
+                .filter(r -> starRating == null || r.getStarRating() == starRating)
+                .filter(r -> apiType == null || r.getApiType().equalsIgnoreCase(apiType))
+                .collect(Collectors.toList());
+    }
+
+    public List<HotelSearchResult> sortResults(List<HotelSearchResult> results, String sortBy, String sortOrder) {
+        Comparator<HotelSearchResult> comparator;
+
+        switch (sortBy) {
+            case "baseRate":
+                comparator = Comparator.comparing(HotelSearchResult::getBaseRate, Comparator.nullsLast(Double::compareTo));
+                break;
+            case "starRating":
+                comparator = Comparator.comparing(HotelSearchResult::getStarRating, Comparator.nullsLast(Integer::compareTo));
+                break;
+            case "hotelName":
+                comparator = Comparator.comparing(HotelSearchResult::getHotelName, Comparator.nullsLast(String::compareTo));
+                break;
+            default:
+                comparator = Comparator.comparing(HotelSearchResult::getBaseRate, Comparator.nullsLast(Double::compareTo));
+        }
+
+        if ("desc".equalsIgnoreCase(sortOrder)) {
+            comparator = comparator.reversed();
+        }
+
+        return results.stream().sorted(comparator).collect(Collectors.toList());
     }
 }

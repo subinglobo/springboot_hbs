@@ -1,5 +1,7 @@
 package com.choosenfly.hotelbookingsystem.masters.service.designation;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
 import com.choosenfly.hotelbookingsystem.masters.dto.MasterDesignationDTO;
@@ -15,6 +17,8 @@ public interface DesignationServiceInterface {
 	MasterDesignationDTO editDesignation(Long id, @Valid MasterDesignationDTO desigDTO);
 
 	ResponseEntity<String> deleteDesignation(Long id);
+
+	Page<MasterDesignationDTO> getAllDesignation(Pageable pageable, String search);
 
 	
 

@@ -29,20 +29,44 @@ public class IwtxHotelSearchConsumer {
             String searchId = message.getSearchId();
             HotelSearchRequest request = message.getSearchRequest();
 
-            System.out.println("Inside iwtx consumer");
+            System.out.println("Inside IWTX consumer for searchId: " + searchId);
+            
+            // Set status to processing
+            String statusKey = REDIS_KEY_PREFIX + searchId + ":iwtx:status";
+            redisTemplate.opsForValue().set(statusKey, "PROCESSING");
+            
             List<HotelSearchResult> results = iwtxHotelSearchApiCaller.callApi(request);
 
             if (results != null && !results.isEmpty()) {
-                String redisKey = REDIS_KEY_PREFIX + searchId;
-                
-                System.out.println("redis key :: "+redisKey);
-                
+                String redisKey = REDIS_KEY_PREFIX + searchId;    
                 redisTemplate.opsForList().rightPushAll(redisKey, results.toArray());
                 redisTemplate.expire(redisKey, 10, java.util.concurrent.TimeUnit.MINUTES);
+                
+                // Set status to completed
+                redisTemplate.opsForValue().set(statusKey, "COMPLETED");
+                
+                // Increment finished counter
                 redisTemplate.opsForValue().increment(REDIS_KEY_PREFIX + searchId + ":finished", 1);
+                
+                System.out.println("IWTX search completed for searchId: " + searchId + " with " + results.size() + " results");
+            } else {
+                // Set status to completed even if no results
+                redisTemplate.opsForValue().set(statusKey, "COMPLETED");
+                redisTemplate.opsForValue().increment(REDIS_KEY_PREFIX + searchId + ":finished", 1);
+                
+                System.out.println("IWTX search completed for searchId: " + searchId + " with no results");
             }
         } catch (Exception e) {
-            System.err.println("Error processing search request for searchId: " + message.getSearchId() + " - " + e.getMessage());
+            System.err.println("Error processing IWTX search request for searchId: " + message.getSearchId() + " - " + e.getMessage());
+            e.printStackTrace();
+            
+            // Set status to error
+            String statusKey = REDIS_KEY_PREFIX + message.getSearchId() + ":iwtx:status";
+            redisTemplate.opsForValue().set(statusKey, "ERROR");
+            
+            // Still increment finished counter to avoid hanging
+            redisTemplate.opsForValue().increment(REDIS_KEY_PREFIX + message.getSearchId() + ":finished", 1);
+            
             throw new RuntimeException("Failed to process IWTX search request", e); // Trigger dead-letter queue
         }
     }

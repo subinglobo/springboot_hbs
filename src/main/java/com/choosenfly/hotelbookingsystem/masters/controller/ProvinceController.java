@@ -61,7 +61,7 @@ public class ProvinceController {
 	
 	@GetMapping
 	public ResponseEntity<List<MasterStateDTO>> getAllProvince(@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "20") int limit, // Default to 20 hotels per page
+			@RequestParam(defaultValue = "80000") int limit, // Default to 20 hotels per page
 			@RequestParam(required = false) String search) {
 
 		// Creates a Pageable object specifying the page number and size (limit) for
@@ -89,10 +89,10 @@ public class ProvinceController {
 	}
 	
 	//pass country to fetch corresponsing state/province list
-//	@GetMapping
-//	private MasterStateDTO getProvinveByCountryId(@PathVariable("countryId") Long countryId) {
-//		
-//		return provinceServiceInterface.getProvinveById(countryId);
-//	}
+	@GetMapping("/getByCountryId/{countryId}")
+	private List<MasterStateDTO> getProvinveByCountryId(@PathVariable("countryId") Long countryId) {
+		
+		return provinceServiceInterface.getProvinveByCountryId(countryId);
+	}
 
 }

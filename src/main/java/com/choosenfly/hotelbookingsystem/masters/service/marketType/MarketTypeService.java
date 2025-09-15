@@ -1,11 +1,16 @@
 package com.choosenfly.hotelbookingsystem.masters.service.marketType;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import com.choosenfly.hotelbookingsystem.masters.dto.MasterCurrencyDTO;
 import com.choosenfly.hotelbookingsystem.masters.dto.MasterMarketTypeDTO;
+import com.choosenfly.hotelbookingsystem.masters.entities.MasterCurrency;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterMarketType;
 import com.choosenfly.hotelbookingsystem.masters.repository.MasterMarketTypeRepository;
 
@@ -74,6 +79,27 @@ public class MarketTypeService implements MarketTypeServiceInterface {
 		
 		masterMarketTypeRepository.delete(marketData);
 		return ResponseEntity.ok("Market Type with id " + id + " deleted successfully");
+	}
+
+	@Override
+	public Page<MasterMarketTypeDTO> getAllMarketTypeList(Pageable pageable, String searchTerm) {
+		// TODO Auto-generated method stub
+		Page<MasterMarketType> markettypePage;
+
+	    if (StringUtils.hasText(searchTerm)) {
+	    	
+	    	markettypePage = masterMarketTypeRepository.findByNameStartingWithIgnoreCase(searchTerm, pageable);
+	    } else {
+	    	markettypePage = masterMarketTypeRepository.findAll(pageable);
+	    }
+
+	    return markettypePage.map(markettype -> {
+	    MasterMarketTypeDTO dto = new MasterMarketTypeDTO();
+	   dto.setMarketTypeId(markettype.getMarketTypeId());
+	   dto.setName(markettype.getName());
+	   dto.setIsDeleted(markettype.getIsDeleted());
+	    return dto;
+	    });
 	}
 
 }
