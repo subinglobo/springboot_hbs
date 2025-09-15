@@ -65,6 +65,30 @@ public class Agent extends BaseEntity {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "gst_id", referencedColumnName = "id")
     private AgentGSTDetails gstDetails;
+    
+    @Column(name = "short_name")
+    private String shortName;
+    
+    @Column(name = "company_code")
+    private String companyCode;
+    
+    @Column(name = "agent_url")
+    private String agentUrl;
+    
+    @Column(name = "zip_code")
+    private String zipCode;
+    
+    @Column(name = "contact_person")
+    private String contactPerson;
+    
+    @Column(name = "markup")
+    private String markup;
+    
+    @Column(name = "currency_id")
+    private Integer currencyId;
+    
+    @Column(name = "status")
+    private String status;
 
 	public Long getId() {
 		return id;
@@ -171,13 +195,82 @@ public class Agent extends BaseEntity {
 		this.gstDetails = gstDetails;
 	}
 
+	public String getShortName() {
+		return shortName;
+	}
+
+	public void setShortName(String shortName) {
+		this.shortName = shortName;
+	}
+
+	public String getCompanyCode() {
+		return companyCode;
+	}
+
+	public void setCompanyCode(String companyCode) {
+		this.companyCode = companyCode;
+	}
+
+	public String getAgentUrl() {
+		return agentUrl;
+	}
+
+	public void setAgentUrl(String agentUrl) {
+		this.agentUrl = agentUrl;
+	}
+
+	public String getZipCode() {
+		return zipCode;
+	}
+
+	public void setZipCode(String zipCode) {
+		this.zipCode = zipCode;
+	}
+
+	public String getContactPerson() {
+		return contactPerson;
+	}
+
+	public void setContactPerson(String contactPerson) { 
+		this.contactPerson = contactPerson;
+	}
+
+	public String getMarkup() {
+		return markup;
+	}
+
+	public void setMarkup(String markup) {
+		this.markup = markup;
+	}
+
+	public Integer getCurrencyId() {
+		return currencyId;
+	}
+
+	public void setCurrencyId(Integer currencyId) {
+		this.currencyId = currencyId;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
 	@Override
 	public String toString() {
 		return "Agent [id=" + id + ", businessType=" + businessType + ", agentCategoryId=" + agentCategoryId
 				+ ", companyName=" + companyName + ", firstName=" + firstName + ", lastName=" + lastName + ", country="
 				+ country + ", province=" + province + ", place=" + place + ", personalEmail=" + personalEmail
-				+ ", mobileNumber=" + mobileNumber + ", address=" + address + ", gstDetails=" + gstDetails + "]";
+				+ ", mobileNumber=" + mobileNumber + ", address=" + address + ", gstDetails=" + gstDetails
+				+ ", shortName=" + shortName + ", companyCode=" + companyCode + ", agentUrl=" + agentUrl + ", zipCode="
+				+ zipCode + ", contactPerson=" + contactPerson + ", markup=" + markup + ", currencyId=" + currencyId
+				+ ", status=" + status + "]";
 	}
+
+	
 
     
 
