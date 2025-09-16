@@ -147,8 +147,8 @@ public class AgentServiceImpl implements AgentService {
 			agent.setMarkup(request.getMarkup());
 		}
 
-		if (request.getCurrencyId() != 0) {
-			agent.setCurrencyId(request.getCurrencyId());
+		if (request.getCurrency() != 0) {
+			agent.setCurrency(request.getCurrency());
 		}
 
 		if (request.getStatus() != null) {
@@ -225,8 +225,8 @@ public class AgentServiceImpl implements AgentService {
 			dto.setMarkup(agent.getMarkup());
 		}
 
-		if (agent.getCurrencyId() != 0) {
-			dto.setCurrencyId(agent.getCurrencyId());
+		if (agent.getCurrency() != 0) {
+			dto.setCurrency(agent.getCurrency());
 		}
 
 		if (agent.getStatus() != null) {
@@ -336,8 +336,8 @@ public class AgentServiceImpl implements AgentService {
 			agent.setMarkup(reqDTO.getMarkup());
 		}
 
-		if (reqDTO.getCurrencyId() != 0) {
-			agent.setCurrencyId(reqDTO.getCurrencyId());
+		if (reqDTO.getCurrency() != 0) {
+			agent.setCurrency(null);
 		}
 
 		if (reqDTO.getStatus() != null) {
@@ -420,7 +420,7 @@ public class AgentServiceImpl implements AgentService {
 			}
 
 			if (agent.getCompanyCode() != null) {
-				dto.setCompanyCode(agent.getCompanyCode()); 
+				dto.setCompanyCode(agent.getCompanyCode());  
 			}
 
 			if (agent.getAgentUrl() != null) {
@@ -439,8 +439,8 @@ public class AgentServiceImpl implements AgentService {
 				dto.setMarkup(agent.getMarkup());
 			}
 
-			if (agent.getCurrencyId() != 0) {
-				dto.setCurrencyId(agent.getCurrencyId());
+			if (agent.getCurrency() != 0) {
+				dto.setCurrency(agent.getCurrency());
 			}
 
 			if (agent.getStatus() != null) {
@@ -449,7 +449,7 @@ public class AgentServiceImpl implements AgentService {
 			
 			if (agent.getGstDetails() != null) {
 				AgentGSTDetailsDTO gstDto = new AgentGSTDetailsDTO();
-				gstDto.setAgentClassification(agent.getGstDetails().getAgentClassification());
+				gstDto.setAgentClassification(agent.getGstDetails().getAgentClassification()); 
 				gstDto.setAgentGstIn(agent.getGstDetails().getAgentGstIn());
 				gstDto.setAgentProvisionalGstno(agent.getGstDetails().getAgentProvisionalGstno());
 				gstDto.setAgentCorrespondmail(agent.getGstDetails().getAgentCorrespondmail());

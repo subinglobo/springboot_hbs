@@ -66,7 +66,7 @@ public class AgentRegistrationRequestDTO {
     
     private String markup;
     
-    private int currencyId;
+    private Integer currency;  //currencyId
     
     private String status;
     
@@ -225,12 +225,14 @@ public class AgentRegistrationRequestDTO {
 		this.markup = markup;
 	}
 
-	public int getCurrencyId() {
-		return currencyId;
+	
+
+	public Integer getCurrency() {
+		return currency;
 	}
 
-	public void setCurrencyId(int currencyId) {
-		this.currencyId = currencyId;
+	public void setCurrency(Integer currency) {
+		this.currency = currency;
 	}
 
 	public String getStatus() {
@@ -249,8 +251,12 @@ public class AgentRegistrationRequestDTO {
 				+ ", personalEmail=" + personalEmail + ", mobileNumber=" + mobileNumber + ", address=" + address
 				+ ", agentGSTDetailsDTO=" + agentGSTDetailsDTO + ", shortName=" + shortName + ", companyCode="
 				+ companyCode + ", agentUrl=" + agentUrl + ", zipCode=" + zipCode + ", contactPerson=" + contactPerson
-				+ ", markup=" + markup + ", currencyId=" + currencyId + ", status=" + status + "]";
+				+ ", markup=" + markup + ", currency=" + currency + ", status=" + status + "]";
 	}
+
+	
+
+	
 
 	
 

@@ -85,7 +85,7 @@ public class Agent extends BaseEntity {
     private String markup;
     
     @Column(name = "currency_id")
-    private Integer currencyId;
+    private Integer currency;
     
     @Column(name = "status")
     private String status;
@@ -243,12 +243,12 @@ public class Agent extends BaseEntity {
 		this.markup = markup;
 	}
 
-	public Integer getCurrencyId() {
-		return currencyId;
+	public Integer getCurrency() {
+		return currency;
 	}
 
-	public void setCurrencyId(Integer currencyId) {
-		this.currencyId = currencyId;
+	public void setCurrency(Integer currency) {
+		this.currency = currency;
 	}
 
 	public String getStatus() {
@@ -266,9 +266,11 @@ public class Agent extends BaseEntity {
 				+ country + ", province=" + province + ", place=" + place + ", personalEmail=" + personalEmail
 				+ ", mobileNumber=" + mobileNumber + ", address=" + address + ", gstDetails=" + gstDetails
 				+ ", shortName=" + shortName + ", companyCode=" + companyCode + ", agentUrl=" + agentUrl + ", zipCode="
-				+ zipCode + ", contactPerson=" + contactPerson + ", markup=" + markup + ", currencyId=" + currencyId
+				+ zipCode + ", contactPerson=" + contactPerson + ", markup=" + markup + ", currency=" + currency
 				+ ", status=" + status + "]";
 	}
+
+	
 
 	
 
