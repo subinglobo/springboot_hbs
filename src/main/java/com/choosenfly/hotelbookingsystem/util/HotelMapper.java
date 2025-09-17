@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.choosenfly.hotelbookingsystem.exceptions.EntityNotFoundException;
+import com.choosenfly.hotelbookingsystem.inventory.dto.HotelAmenityDTO;
 import com.choosenfly.hotelbookingsystem.inventory.dto.HotelBankDetailsDTO;
 import com.choosenfly.hotelbookingsystem.inventory.dto.HotelContactDetailsDTO;
 import com.choosenfly.hotelbookingsystem.inventory.dto.HotelDTO;
@@ -143,21 +144,26 @@ public class HotelMapper {
 			hotel.setPlace(placeRepository.findById(dto.getPlaceId())
 					.orElseThrow(() -> new EntityNotFoundException("Place not found with id "+dto.getPlaceId())));
 		}
-		if (dto.getAmenityIds() != null) {
-			List<MasterHotelAmenities> amenities = amenitiesRepository.findAllById(dto.getAmenityIds());
+		if (dto.getAmenities() != null) {
+		    // Extract only amenity IDs from DTO list
+		    List<Long> amenityIds = dto.getAmenities().stream()
+		            .map(HotelAmenityDTO::getAmenityId)
+		            .collect(Collectors.toList());
 
-			List<LinkedHotelAmenity> linkedAmenities = amenities.stream().map(amenity -> {
+		    // Fetch amenities by IDs
+		    List<MasterHotelAmenities> amenities = amenitiesRepository.findAllById(amenityIds);
 
-				LinkedHotelAmenity linkedAmenity = new LinkedHotelAmenity();
-				linkedAmenity.setHotel(hotel);
-				linkedAmenity.setAmenity(amenity);
+		    // Map amenities to linked entities
+		    List<LinkedHotelAmenity> linkedAmenities = amenities.stream().map(amenity -> {
+		        LinkedHotelAmenity linkedAmenity = new LinkedHotelAmenity();
+		        linkedAmenity.setHotel(hotel);
+		        linkedAmenity.setAmenity(amenity);
+		        return linkedAmenity;
+		    }).collect(Collectors.toList());
 
-				return linkedAmenity;
-			}).collect(Collectors.toList());
-
-			hotel.setHotelAmenities(linkedAmenities);
-
+		    hotel.setHotelAmenities(linkedAmenities);
 		}
+
 
 		// Map nested collections
 		if (dto.getContactDetails() != null) {
@@ -312,14 +318,18 @@ public class HotelMapper {
 			hotel.setPlace(placeRepository.findById(dto.getPlaceId())
 					.orElseThrow(() -> new EntityNotFoundException("Place not found with id "+dto.getPlaceId())));
 		}
-		if (dto.getAmenityIds() != null) {
+		if (dto.getAmenities() != null) {
 			
 			
 			List<LinkedHotelAmenity> existingHotelAmenities = hotel.getHotelAmenities();
 			
 			existingHotelAmenities.clear();
 			
-			List<MasterHotelAmenities> amenities = amenitiesRepository.findAllById(dto.getAmenityIds());
+			List<Long> amenityIds = dto.getAmenities().stream()
+		            .map(HotelAmenityDTO::getAmenityId)
+		            .collect(Collectors.toList());
+			
+			List<MasterHotelAmenities> amenities = amenitiesRepository.findAllById(amenityIds);
 
 
 			
@@ -508,13 +518,23 @@ public class HotelMapper {
 		dto.setLatitude(hotel.getLatitude());
 		dto.setLongitude(hotel.getLongitude());
 		dto.setIsDeleted(hotel.getIsDeleted());
-		dto.setAmenityIds(
-				hotel.getHotelAmenities() != null
-						? hotel.getHotelAmenities().stream().map(a -> a.getAmenity()).map(a -> a.getAmenitiesId())
-								.collect(Collectors.toList())
-						: null);
+//		dto.setAmenities(
+//				hotel.getHotelAmenities() != null
+//						? hotel.getHotelAmenities().stream().map(a -> a.getAmenity()).map(a -> a.getAmenitiesId())
+//								.collect(Collectors.toList())
+//						: null);
 
 		// Map nested collections
+		
+		if(hotel.getHotelAmenities() != null) {
+			dto.setAmenities(hotel.getHotelAmenities().stream().map(amenity ->{
+				HotelAmenityDTO hotelAmenityDTO = new HotelAmenityDTO();
+				hotelAmenityDTO.setAmenityId(amenity.getId());
+				hotelAmenityDTO.setAmenityName(amenity.getAmenity().getName());			
+				return hotelAmenityDTO;
+			}).collect(Collectors.toList()));
+		}
+		
 		if (hotel.getContactDetails() != null) {
 			dto.setContactDetails(hotel.getContactDetails().stream().map(contact -> {
 				HotelContactDetailsDTO contactDTO = new HotelContactDetailsDTO();

@@ -62,7 +62,7 @@ public class HotelDTO {
     private HotelWeekDaysDTO weekDays;
     private List<HotelRoomDTO> rooms;
     private List<HotelTermsAndConditionsDTO> termsAndConditions;
-    private List<Long> amenityIds;
+    private List<HotelAmenityDTO> amenities;
 	public Long getId() {
 		return id;
 	}
@@ -214,21 +214,18 @@ public class HotelDTO {
 	public void setTermsAndConditions(List<HotelTermsAndConditionsDTO> termsAndConditions) {
 		this.termsAndConditions = termsAndConditions;
 	}
-	public List<Long> getAmenityIds() {
-		return amenityIds;
+	public List<HotelAmenityDTO> getAmenities() {
+		return amenities;
 	}
-	public void setAmenityIds(List<Long> amenityIds) {
-		this.amenityIds = amenityIds;
+	public void setAmenities(List<HotelAmenityDTO> amenities) {
+		this.amenities = amenities;
 	}
-	
-	
 	public Long getMarkupTypeId() {
 		return markupTypeId;
 	}
 	public void setMarkupTypeId(Long markupTypeId) {
 		this.markupTypeId = markupTypeId;
 	}
-	
 	@Override
 	public String toString() {
 		return "HotelDTO [id=" + id + ", hotelName=" + hotelName + ", hotelCurrencyId=" + hotelCurrencyId
@@ -240,8 +237,10 @@ public class HotelDTO {
 				+ ", placeId=" + placeId + ", address=" + address + ", zipcode=" + zipcode + ", latitude=" + latitude
 				+ ", longitude=" + longitude + ", isDeleted=" + isDeleted + ", contactDetails=" + contactDetails
 				+ ", bankDetails=" + bankDetails + ", weekDays=" + weekDays + ", rooms=" + rooms
-				+ ", termsAndConditions=" + termsAndConditions + ", amenityIds=" + amenityIds + "]";
+				+ ", termsAndConditions=" + termsAndConditions + ", amenities=" + amenities + "]";
 	}
+	
+
 	
 	
 
