@@ -146,6 +146,14 @@ public class RabbitMQConfig {
         return new Queue("hotel.api.api5.queue", true, false, false, args);
     }
 
+    @Bean
+    public Queue inhouseQueue() {
+        Map<String, Object> args = new HashMap<>();
+        args.put("x-dead-letter-exchange", "dl.xchange");
+        args.put("x-dead-letter-routing-key", "dl.routing-key");
+        return new Queue("hotel.api.inhouse.queue", true, false, false, args);
+    }
+
     // Define individual binding beans
     @Bean
     public Binding iwtxBinding(Queue iwtxQueue, DirectExchange hotelExchange) {
@@ -181,5 +189,11 @@ public class RabbitMQConfig {
     public Binding api5Binding(Queue api5Queue, DirectExchange hotelExchange) {
         String routingKey = hotelRabbitMQProperties.getRoutingkey().getOrDefault("api5", "hotel.api5.routingKey");
         return BindingBuilder.bind(api5Queue).to(hotelExchange).with(routingKey);
+    }
+
+    @Bean
+    public Binding inhouseBinding(Queue inhouseQueue, DirectExchange hotelExchange) {
+        String routingKey = hotelRabbitMQProperties.getRoutingkey().getOrDefault("inhouse", "hotel.inhouse.routingKey");
+        return BindingBuilder.bind(inhouseQueue).to(hotelExchange).with(routingKey);
     }
 }

@@ -24,6 +24,7 @@ import com.choosenfly.hotelbookingsystem.agent.exception.InvalidPlaceException;
 import com.choosenfly.hotelbookingsystem.agent.exception.InvalidProvinceException;
 import com.choosenfly.hotelbookingsystem.agent.repository.AgentCategoryRepository;
 import com.choosenfly.hotelbookingsystem.agent.repository.AgentRepository;
+import com.choosenfly.hotelbookingsystem.agent.service.AgentCreditLimitService;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterCountry;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterPlace;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterState;
@@ -31,6 +32,7 @@ import com.choosenfly.hotelbookingsystem.masters.repository.MasterCountryReposit
 import com.choosenfly.hotelbookingsystem.masters.repository.MasterPlaceRepository;
 import com.choosenfly.hotelbookingsystem.masters.repository.MasterStateRepository;
 
+import java.math.BigDecimal;
 import jakarta.validation.Valid;
 
 @Service
@@ -43,16 +45,18 @@ public class AgentServiceImpl implements AgentService {
 	private final MasterStateRepository stateRepository;
 	private final MasterPlaceRepository placeRepository;
 	private final AgentRepository agentRepository;
+	private final AgentCreditLimitService agentCreditLimitService;
 
 	@Autowired
 	public AgentServiceImpl(AgentCategoryRepository agentCategoryRepository, MasterCountryRepository countryRepository,
 			MasterStateRepository stateRepository, MasterPlaceRepository placeRepository,
-			AgentRepository agentRepository) {
+			AgentRepository agentRepository, AgentCreditLimitService agentCreditLimitService) {
 		this.agentCategoryRepository = agentCategoryRepository;
 		this.countryRepository = countryRepository;
 		this.stateRepository = stateRepository;
 		this.placeRepository = placeRepository;
 		this.agentRepository = agentRepository;
+		this.agentCreditLimitService = agentCreditLimitService;
 	}
 
 	@Override
@@ -174,6 +178,17 @@ public class AgentServiceImpl implements AgentService {
 		try {
 			Agent savedAgent = agentRepository.save(agent);
 			logger.info("Agent registered successfully with email: {}", savedAgent.getPersonalEmail());
+			
+			// Create initial credit limit for the new agent (default: 0.00)
+			try {
+				agentCreditLimitService.createInitialCreditLimit(savedAgent.getId(), BigDecimal.ZERO);
+				logger.info("Initial credit limit created for agent ID: {}", savedAgent.getId());
+			} catch (Exception creditException) {
+				logger.warn("Failed to create initial credit limit for agent ID: {}. Error: {}", 
+						savedAgent.getId(), creditException.getMessage());
+				// Don't fail the registration if credit limit creation fails
+			}
+			
 			return new AgentResponseDTO(savedAgent.getId(), savedAgent.getPersonalEmail());
 		} catch (Exception e) {
 			logger.error("Failed to register agent: {}", e.getMessage(), e);

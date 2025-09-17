@@ -46,7 +46,13 @@ public class HotelSearchService {
     public String initiateSearch(HotelSearchRequest request) {
         String searchId = UUID.randomUUID().toString();
         List<HotelSearchApiCaller> enabledCallers = callerContext.getCallersForAgent(request.getAgentId());
-        System.out.println("enabled callers :: "+enabledCallers);
+        System.out.println("=== HOTEL SEARCH SERVICE ===");
+        System.out.println("SearchId: " + searchId);
+        System.out.println("AgentId: " + request.getAgentId());
+        System.out.println("Enabled callers count: " + enabledCallers.size());
+        for (HotelSearchApiCaller caller : enabledCallers) {
+            System.out.println("- API Caller: " + caller.getApiKey());
+        }
         
         Map<String, String> routingKeys = rabbitMQProperties.getRoutingkey() != null ? rabbitMQProperties.getRoutingkey() : Map.of();
 
@@ -56,6 +62,8 @@ public class HotelSearchService {
             String apiKey = caller.getApiKey();
             SearchMessage message = new SearchMessage(searchId, request, apiKey);
             String routingKey = routingKeys.getOrDefault(apiKey, "hotel.api." + apiKey + ".routingKey");
+            System.out.println("Sending message to exchange: " + rabbitMQProperties.getExchange() + 
+                             ", routingKey: " + routingKey + ", apiKey: " + apiKey);
             rabbitTemplate.convertAndSend(rabbitMQProperties.getExchange(), routingKey, message);
         }
         return searchId;

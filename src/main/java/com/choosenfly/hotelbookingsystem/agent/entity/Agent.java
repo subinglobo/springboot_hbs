@@ -8,6 +8,7 @@ import com.choosenfly.hotelbookingsystem.masters.entities.MasterState;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -65,6 +66,9 @@ public class Agent extends BaseEntity {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "gst_id", referencedColumnName = "id")
     private AgentGSTDetails gstDetails;
+    
+    @OneToOne(mappedBy = "agent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private AgentCreditLimit creditLimit;
     
     @Column(name = "short_name")
     private String shortName;
@@ -257,6 +261,14 @@ public class Agent extends BaseEntity {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public AgentCreditLimit getCreditLimit() {
+		return creditLimit;
+	}
+
+	public void setCreditLimit(AgentCreditLimit creditLimit) {
+		this.creditLimit = creditLimit;
 	}
 
 	@Override

@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.choosenfly.hotelbookingsystem.auth.exceptions.MissingRequestBodyException;
 import com.choosenfly.hotelbookingsystem.common.error.dto.ErrorResponse;
-import com.choosenfly.hotelbookingsystem.inventory.exceptions.EntityNotFoundException;
 import com.choosenfly.hotelbookingsystem.inventory.exceptions.InvalidDataException;
 import com.choosenfly.hotelbookingsystem.inventory.exceptions.SpecialRatePersistException;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
@@ -42,15 +41,7 @@ public class InventoryExceptionHandler {
 		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
 	}
 	
-	@ExceptionHandler(EntityNotFoundException.class)
-	public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException ex) {
-		// Extract the first error message
-		String errorMessage = ex.getMessage();
-		
-
-		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Bad Request", errorMessage);
-		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-	}
+	// EntityNotFoundException is handled by GlobalExceptionHandler
 	
 	
 	@ExceptionHandler(InvalidDataException.class)
