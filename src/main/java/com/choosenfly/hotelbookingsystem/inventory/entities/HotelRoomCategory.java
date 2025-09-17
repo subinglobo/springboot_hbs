@@ -27,7 +27,7 @@ import jakarta.persistence.Table;
 public class HotelRoomCategory extends BaseEntity{
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(length = 11)
 	private long hotel_room_category_id;
 

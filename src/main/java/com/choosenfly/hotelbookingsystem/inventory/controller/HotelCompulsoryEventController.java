@@ -58,6 +58,8 @@ private final HotelCompulsoryEventServiceInterface eventServiceInterface;
 	
 	@PutMapping("/{id}")
 	private CompulsorySupplymentsDTO editCompulsorySupplyment(@PathVariable("id") Long id , @Valid @RequestBody CompulsorySupplymentsDTO compulsorySupplymentsDTO) {
+		
+		System.out.println("entered:::");
 		return eventServiceInterface.editcompulsorySupplyment(id , compulsorySupplymentsDTO);
 	}
 	

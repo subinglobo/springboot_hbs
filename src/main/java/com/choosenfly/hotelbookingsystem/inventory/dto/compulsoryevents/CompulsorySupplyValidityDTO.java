@@ -2,12 +2,14 @@ package com.choosenfly.hotelbookingsystem.inventory.dto.compulsoryevents;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class CompulsorySupplyValidityDTO {
 
     private Long supplymentValidityId;
-    
+   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private Date validityFrom;
-    
+   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private Date validityTo;
 
     

@@ -18,7 +18,7 @@ public class CompulsorySupplyValidity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "supplyment_validity_id")
-	private long supplymentValidityId;
+	private Long supplymentValidityId;
 
 	@ManyToOne
 	@JoinColumn(name = "supplyment_id",nullable = false)
@@ -36,11 +36,13 @@ public class CompulsorySupplyValidity {
 	@Column(length=11)
 	private long priority = 0;
 
-	public long getSupplymentValidityId() {
+	
+
+	public Long getSupplymentValidityId() {
 		return supplymentValidityId;
 	}
 
-	public void setSupplymentValidityId(long supplymentValidityId) {
+	public void setSupplymentValidityId(Long supplymentValidityId) {
 		this.supplymentValidityId = supplymentValidityId;
 	}
 

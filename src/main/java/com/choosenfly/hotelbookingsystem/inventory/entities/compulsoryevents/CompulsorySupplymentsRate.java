@@ -20,7 +20,7 @@ public class CompulsorySupplymentsRate extends BaseEntity{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "supplymentrate_id")
-	private long supplymentrateId;
+	private Long supplymentrateId;
 
 	@ManyToOne
 	@JoinColumn(name = "supplyment_id",nullable = false)
@@ -43,64 +43,107 @@ public class CompulsorySupplymentsRate extends BaseEntity{
 	@Column(name="child_rate")
 	private Double childRate;
 
-	public long getSupplymentrateId() {
+	
+
+	
+	public Long getSupplymentrateId() {
 		return supplymentrateId;
 	}
 
-	public void setSupplymentrateId(long supplymentrateId) {
+
+
+
+	public void setSupplymentrateId(Long supplymentrateId) {
 		this.supplymentrateId = supplymentrateId;
 	}
+
+
+
 
 	public CompulsorySupplyments getCompulsorySupplyments() {
 		return compulsorySupplyments;
 	}
 
+
+
+
 	public void setCompulsorySupplyments(CompulsorySupplyments compulsorySupplyments) {
 		this.compulsorySupplyments = compulsorySupplyments;
 	}
+
+
+
 
 	public HotelRoomCategory getRoomCategory() {
 		return roomCategory;
 	}
 
+
+
+
 	public void setRoomCategory(HotelRoomCategory roomCategory) {
 		this.roomCategory = roomCategory;
 	}
+
+
+
 
 	public HotelOccupancy getHotelOccupancy() {
 		return hotelOccupancy;
 	}
 
+
+
+
 	public void setHotelOccupancy(HotelOccupancy hotelOccupancy) {
 		this.hotelOccupancy = hotelOccupancy;
 	}
+
+
+
 
 	public Double getRate() {
 		return rate;
 	}
 
+
+
+
 	public void setRate(Double rate) {
 		this.rate = rate;
 	}
 
-	
+
+
+
 	public Double getAdultRate() {
 		return adultRate;
 	}
+
+
+
 
 	public void setAdultRate(Double adultRate) {
 		this.adultRate = adultRate;
 	}
 
+
+
+
 	public Double getChildRate() {
 		return childRate;
 	}
+
+
+
 
 	public void setChildRate(Double childRate) {
 		this.childRate = childRate;
 	}
 
-	
+
+
+
 	@Override
 	public String toString() {
 		return "CompulsorySupplymentsRate [supplymentrateId=" + supplymentrateId + ", compulsorySupplyments="

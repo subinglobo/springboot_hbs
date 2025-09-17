@@ -2,11 +2,11 @@ package com.choosenfly.hotelbookingsystem.inventory.dto.compulsoryevents;
 
 public class CompulsorySupplymentsRateDTO {
 
-    private String supplymentrateId;
+    private Long supplymentrateId;
     
     private Long hotelRoomcategoryId;
     
-    private Long ocuppancytype_id;
+    private Long ocuppancytypeId;
     
     private Double rate;
     
@@ -14,15 +14,17 @@ public class CompulsorySupplymentsRateDTO {
     
     private Double rateChild;
 
-	public String getSupplymentrateId() {
+    
+
+	
+
+	public Long getSupplymentrateId() {
 		return supplymentrateId;
 	}
 
-	public void setSupplymentrateId(String supplymentrateId) {
+	public void setSupplymentrateId(Long supplymentrateId) {
 		this.supplymentrateId = supplymentrateId;
 	}
-
-	
 
 	public Long getHotelRoomcategoryId() {
 		return hotelRoomcategoryId;
@@ -32,16 +34,17 @@ public class CompulsorySupplymentsRateDTO {
 		this.hotelRoomcategoryId = hotelRoomcategoryId;
 	}
 
-	public Long getOcuppancytype_id() {
-		return ocuppancytype_id;
-	}
-
-	public void setOcuppancytype_id(Long ocuppancytype_id) {
-		this.ocuppancytype_id = ocuppancytype_id;
-	}
-
 	
 	
+	
+	public Long getOcuppancytypeId() {
+		return ocuppancytypeId;
+	}
+
+	public void setOcuppancytypeId(Long ocuppancytypeId) {
+		this.ocuppancytypeId = ocuppancytypeId;
+	}
+
 	public Double getRate() {
 		return rate;
 	}
@@ -66,10 +69,11 @@ public class CompulsorySupplymentsRateDTO {
 		this.rateChild = rateChild;
 	}
 
+	
 	@Override
 	public String toString() {
 		return "CompulsorySupplymentsRateDTO [supplymentrateId=" + supplymentrateId + ", hotelRoomcategoryId="
-				+ hotelRoomcategoryId + ", ocuppancytype_id=" + ocuppancytype_id + ", rate=" + rate + ", rateAdult="
+				+ hotelRoomcategoryId + ", ocuppancytypeId=" + ocuppancytypeId + ", rate=" + rate + ", rateAdult="
 				+ rateAdult + ", rateChild=" + rateChild + "]";
 	}
     
