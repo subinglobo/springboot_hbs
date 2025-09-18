@@ -152,11 +152,11 @@ public class HotelRoomCategory extends BaseEntity{
 	
 	@Override
 	public String toString() {
-		return "HotelRoomCategory [hotel_room_category_id=" + hotel_room_category_id + ", hotel=" + hotel
-				+ ", roomCategory=" + roomCategory + ", name=" + name + ", noOfRooms=" + noOfRooms
-				+ ", contractRateRooms=" + contractRateRooms + ", specialRateRooms=" + specialRateRooms
-				+ ", discountRooms=" + discountRooms + ", staypayRooms=" + staypayRooms
-				+ ", compulsorySupplymentsRates=" + compulsorySupplymentsRates + "]";
+		return "HotelRoomCategory [hotel_room_category_id=" + hotel_room_category_id + ", hotelId=" + (hotel != null ? hotel.getHotelId() : null)
+				+ ", roomCategoryId=" + (roomCategory != null ? roomCategory.getRoomCategoryId() : null) + ", name=" + name + ", noOfRooms=" + noOfRooms
+				+ ", contractRateRoomsCount=" + (contractRateRooms != null ? contractRateRooms.size() : 0) + ", specialRateRoomsCount=" + (specialRateRooms != null ? specialRateRooms.size() : 0)
+				+ ", discountRoomsCount=" + (discountRooms != null ? discountRooms.size() : 0) + ", staypayRoomsCount=" + (staypayRooms != null ? staypayRooms.size() : 0)
+				+ ", compulsorySupplymentsRatesCount=" + (compulsorySupplymentsRates != null ? compulsorySupplymentsRates.size() : 0) + "]";
 	}
 	
 	

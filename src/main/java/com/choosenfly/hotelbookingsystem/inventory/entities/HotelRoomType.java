@@ -142,9 +142,9 @@ public class HotelRoomType extends BaseEntity{
 	@Override
 	public String toString() {
 		return "HotelRoomType [hotelRoomTypeId=" + hotelRoomTypeId + ", hotelRoomcategoryId=" + hotelRoomcategoryId
-				+ ", hotel=" + hotel + ", roomType=" + roomType + ", contractRateRooms=" + contractRateRooms
-				+ ", specialRateRooms=" + specialRateRooms + ", discountRooms=" + discountRooms + ", staypayRooms="
-				+ staypayRooms + "]";
+				+ ", hotelId=" + (hotel != null ? hotel.getHotelId() : null) + ", roomTypeId=" + (roomType != null ? roomType.getRoomtypeId() : null) + ", contractRateRoomsCount=" + (contractRateRooms != null ? contractRateRooms.size() : 0)
+				+ ", specialRateRoomsCount=" + (specialRateRooms != null ? specialRateRooms.size() : 0) + ", discountRoomsCount=" + (discountRooms != null ? discountRooms.size() : 0) + ", staypayRoomsCount="
+				+ (staypayRooms != null ? staypayRooms.size() : 0) + "]";
 	}
     
     

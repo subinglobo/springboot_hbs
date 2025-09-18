@@ -114,7 +114,7 @@ public class RoomOccupancy {
 
 	@Override
 	public String toString() {
-		return "RoomOccupancy [id=" + id + ", hotelRoom=" + hotelRoom + ", occupancyType=" + occupancyType
+		return "RoomOccupancy [id=" + id + ", hotelRoomId=" + (hotelRoom != null ? hotelRoom.getId() : null) + ", occupancyTypeName=" + (occupancyType != null ? "OccupancyType" : null)
 				+ ", totalAdult=" + totalAdult + ", totalChild=" + totalChild + ", extraAdult=" + extraAdult
 				+ ", extraChild=" + extraChild + "]";
 	}

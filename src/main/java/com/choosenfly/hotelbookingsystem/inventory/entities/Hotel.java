@@ -482,18 +482,16 @@ public class Hotel extends BaseEntity{
 				+ childChargeableAgeMin + ", childChargeableAgeMax=" + childChargeableAgeMax + ", region=" + region
 				+ ", country=" + country + ", state=" + state + ", place=" + place + ", address=" + address
 				+ ", zipcode=" + zipcode + ", latitude=" + latitude + ", longitude=" + longitude + ", isDeleted="
-				+ isDeleted + ", contactDetails=" + contactDetails + ", bankDetails=" + bankDetails + ", weekDays="
-				+ weekDays + ", rooms=" + rooms + ", termsAndConditions=" + termsAndConditions + ", hotelAmenities="
-				+ hotelAmenities + ", hotelOccupancies=" + hotelOccupancies + ", minimumLengths=" + minimumLengths
-				+ ", hotelAvailabilities=" + hotelAvailabilities + ", hotelBlockedDates=" + hotelBlockedDates
-				+ ", contractRates=" + contractRates + ", hotelRoomCategories=" + hotelRoomCategories
-				+ ", hotelRoomTypes=" + hotelRoomTypes + ", specialRates=" + specialRates + ", discountRates="
-				+ discountRates + ", stayPays=" + stayPays + ", compulsorySupplyments=" + compulsorySupplyments + "]";
+				+ isDeleted + ", contactDetailsCount=" + (contactDetails != null ? contactDetails.size() : 0) + ", bankDetailsCount=" + (bankDetails != null ? bankDetails.size() : 0) + ", weekDays="
+				+ (weekDays != null ? "HotelWeekDays" : null) + ", roomsCount=" + (rooms != null ? rooms.size() : 0) + ", termsAndConditionsCount=" + (termsAndConditions != null ? termsAndConditions.size() : 0) + ", hotelAmenitiesCount="
+				+ (hotelAmenities != null ? hotelAmenities.size() : 0) + ", hotelOccupanciesCount=" + (hotelOccupancies != null ? hotelOccupancies.size() : 0) + ", minimumLengthsCount=" + (minimumLengths != null ? minimumLengths.size() : 0)
+				+ ", hotelAvailabilitiesCount=" + (hotelAvailabilities != null ? hotelAvailabilities.size() : 0) + ", hotelBlockedDatesCount=" + (hotelBlockedDates != null ? hotelBlockedDates.size() : 0)
+				+ ", contractRatesCount=" + (contractRates != null ? contractRates.size() : 0) + ", hotelRoomCategoriesCount=" + (hotelRoomCategories != null ? hotelRoomCategories.size() : 0)
+				+ ", hotelRoomTypesCount=" + (hotelRoomTypes != null ? hotelRoomTypes.size() : 0) + ", specialRatesCount=" + (specialRates != null ? specialRates.size() : 0) + ", discountRatesCount="
+				+ (discountRates != null ? discountRates.size() : 0) + ", stayPaysCount=" + (stayPays != null ? stayPays.size() : 0) + ", compulsorySupplementsCount=" + (compulsorySupplyments != null ? compulsorySupplyments.size() : 0) + "]";
 	}
 
 
-	
-	
 	
 	
 
