@@ -23,11 +23,11 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "hotel_roomType")
+@Table(name = "hotel_room_type")
 public class HotelRoomType extends BaseEntity{
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="hotel_roomType_id")
 	private long hotelRoomTypeId;
 
