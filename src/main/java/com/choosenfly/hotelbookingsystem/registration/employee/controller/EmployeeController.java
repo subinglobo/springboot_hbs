@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.choosenfly.hotelbookingsystem.inventory.dto.compulsoryevents.CompulsorySupplymentsDTO;
 import com.choosenfly.hotelbookingsystem.registration.employee.dto.EmployeeDTO;
@@ -35,9 +37,20 @@ public class EmployeeController {
 	private EmployeeService employeeService;
 	
     @PostMapping("/register")
-    public ResponseEntity<EmployeeResponseDTO> registerEmployee(@Valid @RequestBody EmployeeDTO request) {
+    public ResponseEntity<EmployeeResponseDTO> registerEmployee(@Valid @ModelAttribute EmployeeDTO request) {
     	
     	System.out.println("request:"+request);
+        
+    	EmployeeResponseDTO employee = employeeService.registerEmployee(request);
+        
+        return new ResponseEntity<>(employee, HttpStatus.CREATED);
+    }
+    
+    // Alternative endpoint for JSON-only registration (without file upload)
+    @PostMapping("/register-json")
+    public ResponseEntity<EmployeeResponseDTO> registerEmployeeJson(@Valid @RequestBody EmployeeDTO request) {
+    	
+    	System.out.println("JSON request:"+request);
         
     	EmployeeResponseDTO employee = employeeService.registerEmployee(request);
         
