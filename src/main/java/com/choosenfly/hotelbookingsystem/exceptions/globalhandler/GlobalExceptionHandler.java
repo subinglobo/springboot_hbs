@@ -23,7 +23,13 @@ import com.choosenfly.hotelbookingsystem.exceptions.InvalidUserTypeException;
 import com.choosenfly.hotelbookingsystem.exceptions.MissingRequestBodyException;
 import com.choosenfly.hotelbookingsystem.exceptions.StateCountryMismatchException;
 
-@RestControllerAdvice
+@RestControllerAdvice(basePackages = {
+    "com.choosenfly.hotelbookingsystem.agent",
+    "com.choosenfly.hotelbookingsystem.api",
+    "com.choosenfly.hotelbookingsystem.auth",
+    "com.choosenfly.hotelbookingsystem.inventory",
+    "com.choosenfly.hotelbookingsystem.exceptions"
+})
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class GlobalExceptionHandler {
 
