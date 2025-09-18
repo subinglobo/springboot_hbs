@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.TypeMismatchException;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -21,6 +23,7 @@ import com.choosenfly.hotelbookingsystem.registration.employee.exceptions.Employ
 import com.choosenfly.hotelbookingsystem.registration.employee.exceptions.EmployeeValidationException;
 
 @RestControllerAdvice(basePackages = "com.choosenfly.hotelbookingsystem.registration.employee")
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class EmployeeExceptionsHandler {
 	
     private static final Logger log = LoggerFactory.getLogger(EmployeeExceptionsHandler.class);
