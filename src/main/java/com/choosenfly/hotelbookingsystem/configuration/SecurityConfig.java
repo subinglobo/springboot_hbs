@@ -33,6 +33,12 @@ public class SecurityConfig {
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+    
+    @Autowired
+    private CustomAccessDeniedHandler customAccessDeniedHandler;
+    
+    @Autowired
+    private ExceptionHandlingFilter exceptionHandlingFilter;
 
     // Properly hook in CustomUserDetailsService
     @Autowired
@@ -60,7 +66,9 @@ public class SecurityConfig {
                     "/v2/api-docs/**",
                     "/webjars/**").permitAll()
             .anyRequest().authenticated())
+            .exceptionHandling(ex -> ex.accessDeniedHandler(customAccessDeniedHandler))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .addFilterBefore(exceptionHandlingFilter, UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

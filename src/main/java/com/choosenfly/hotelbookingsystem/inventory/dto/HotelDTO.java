@@ -2,6 +2,8 @@ package com.choosenfly.hotelbookingsystem.inventory.dto;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -25,6 +27,7 @@ public class HotelDTO {
     private Long markupTypeId;
   
     private String image360;
+    private MultipartFile image360File;
 
     private String hotelDescription;
 
@@ -60,7 +63,8 @@ public class HotelDTO {
     private List<HotelContactDetailsDTO> contactDetails;
     private List<HotelBankDetailsDTO> bankDetails;
     private HotelWeekDaysDTO weekDays;
-    private List<HotelRoomDTO> rooms;
+    private List<HotelRoomCategoryDTO> roomCategories;
+    private List<HotelRoomTypeDTO> roomTypes;
     private List<HotelTermsAndConditionsDTO> termsAndConditions;
     private List<HotelAmenityDTO> amenities;
 	public Long getId() {
@@ -99,6 +103,12 @@ public class HotelDTO {
 	}
 	public void setImage360(String image360) {
 		this.image360 = image360;
+	}
+	public MultipartFile getImage360File() {
+		return image360File;
+	}
+	public void setImage360File(MultipartFile image360File) {
+		this.image360File = image360File;
 	}
 	public String getHotelDescription() {
 		return hotelDescription;
@@ -202,11 +212,17 @@ public class HotelDTO {
 	public void setWeekDays(HotelWeekDaysDTO weekDays) {
 		this.weekDays = weekDays;
 	}
-	public List<HotelRoomDTO> getRooms() {
-		return rooms;
+	public List<HotelRoomCategoryDTO> getRoomCategories() {
+		return roomCategories;
 	}
-	public void setRooms(List<HotelRoomDTO> rooms) {
-		this.rooms = rooms;
+	public void setRoomCategories(List<HotelRoomCategoryDTO> roomCategories) {
+		this.roomCategories = roomCategories;
+	}
+	public List<HotelRoomTypeDTO> getRoomTypes() {
+		return roomTypes;
+	}
+	public void setRoomTypes(List<HotelRoomTypeDTO> roomTypes) {
+		this.roomTypes = roomTypes;
 	}
 	public List<HotelTermsAndConditionsDTO> getTermsAndConditions() {
 		return termsAndConditions;
@@ -230,15 +246,18 @@ public class HotelDTO {
 	public String toString() {
 		return "HotelDTO [id=" + id + ", hotelName=" + hotelName + ", hotelCurrencyId=" + hotelCurrencyId
 				+ ", hotelCategoryId=" + hotelCategoryId + ", hotelTypeId=" + hotelTypeId + ", markupTypeId="
-				+ markupTypeId + ", image360=" + image360 + ", hotelDescription=" + hotelDescription
-				+ ", childComAgeMin=" + childComAgeMin + ", childComAgeMax=" + childComAgeMax
+				+ markupTypeId + ", image360=" + image360 + ", image360File=" + image360File + ", hotelDescription="
+				+ hotelDescription + ", childComAgeMin=" + childComAgeMin + ", childComAgeMax=" + childComAgeMax
 				+ ", childChargeableAgeMin=" + childChargeableAgeMin + ", childChargeableAgeMax="
 				+ childChargeableAgeMax + ", regionId=" + regionId + ", countryId=" + countryId + ", stateId=" + stateId
 				+ ", placeId=" + placeId + ", address=" + address + ", zipcode=" + zipcode + ", latitude=" + latitude
 				+ ", longitude=" + longitude + ", isDeleted=" + isDeleted + ", contactDetails=" + contactDetails
-				+ ", bankDetails=" + bankDetails + ", weekDays=" + weekDays + ", rooms=" + rooms
-				+ ", termsAndConditions=" + termsAndConditions + ", amenities=" + amenities + "]";
+				+ ", bankDetails=" + bankDetails + ", weekDays=" + weekDays + ", roomCategories=" + roomCategories
+				+ ", roomTypes=" + roomTypes + ", termsAndConditions=" + termsAndConditions + ", amenities=" + amenities
+				+ "]";
 	}
+
+	
 	
 
 	

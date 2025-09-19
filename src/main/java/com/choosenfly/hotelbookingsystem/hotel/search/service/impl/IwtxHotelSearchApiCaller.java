@@ -188,7 +188,7 @@ public class IwtxHotelSearchApiCaller implements HotelSearchApiCaller {
                 results.add(result);
             }
         }
-        System.out.println(results);
+        // System.out.println(results);
         return results;
         
     }
@@ -212,7 +212,7 @@ public class IwtxHotelSearchApiCaller implements HotelSearchApiCaller {
             BaseRateIwtx responseXml = callExternalApi(xmlRequest);
 
             
-            System.out.println("Response :: "+responseXml);
+            // System.out.println("Response :: "+responseXml);
             // Process response
             if (responseXml != null && responseXml.getHotels() != null && responseXml.getHotels().getHotel() != null) {
                 for (HotelIwtx hotel : responseXml.getHotels().getHotel()) {
@@ -315,7 +315,7 @@ public class IwtxHotelSearchApiCaller implements HotelSearchApiCaller {
         httpPost.addHeader("Content-Type", "application/xml");
         httpPost.addHeader("Content-Encoding", "gzip");
 
-        System.out.println("request :: "+xmlRequest);
+        // System.out.println("request :: "+xmlRequest);
         
         StringEntity entity = new StringEntity(xmlRequest);
         httpPost.setEntity(entity);

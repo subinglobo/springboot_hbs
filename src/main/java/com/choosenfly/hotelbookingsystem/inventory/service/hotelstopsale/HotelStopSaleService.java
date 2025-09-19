@@ -1,6 +1,8 @@
 package com.choosenfly.hotelbookingsystem.inventory.service.hotelstopsale;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -184,28 +186,59 @@ public class HotelStopSaleService implements HotelStopSaleServiceInterface{
 	@Override
 	@Transactional
 	public Page<StopSaleDTO> getAllStopSale(Pageable pageable, String search) {
-		// TODO Auto-generated method stub
 	    Page<HotelStopSale> stopSalePage = stopSaleRepositoy.findAll(pageable);
 
 	    return stopSalePage.map(stopSale -> {
+	        if (stopSale == null) {
+	            return null; // or create an empty DTO if preferred
+	        }
+	        
 	        StopSaleDTO dto = new StopSaleDTO();
 	        dto.setStopSaleId(stopSale.getHotelStopSaleId());
-	        dto.setHotelId(stopSale.getHotel().getHotelId());
-	        dto.setMarketTypeId(stopSale.getMarketTypeId().getMarketTypeId());
-	        dto.setRoomCategoryId(stopSale.getRoomCategoryId().getRoomCategoryId());
+	        
+	        // Check for null hotel
+	        if (stopSale.getHotel() != null) {
+	            dto.setHotelId(stopSale.getHotel().getHotelId());
+	        } else {
+	            dto.setHotelId(null); // or set a default value
+	        }
+	        
+	        // Check for null marketTypeId
+	        if (stopSale.getMarketTypeId() != null) {
+	            dto.setMarketTypeId(stopSale.getMarketTypeId().getMarketTypeId());
+	        } else {
+	            dto.setMarketTypeId(null); // or set a default value
+	        }
+	        
+	        // Check for null roomCategoryId
+	        if (stopSale.getRoomCategoryId() != null) {
+	            dto.setRoomCategoryId(stopSale.getRoomCategoryId().getRoomCategoryId());
+	        } else {
+	            dto.setRoomCategoryId(null); // or set a default value
+	        }
+	        
 	        dto.setFreeSale(stopSale.getFreeSale());
 	        dto.setBlock(stopSale.getBlock());
 	        dto.setRoomAllocation(stopSale.getRoomAllocation());
 	        dto.setIsLive(stopSale.getIsLive());
-	        dto.setStopSaleValidityDTO(
-	            stopSale.getValidityList().stream().map(validity -> {
-	                StopSaleValidityDTO validityDTO = new StopSaleValidityDTO();
-	                validityDTO.setStopSaleValidityId(validity.getId());
-	                validityDTO.setValidityFrom(validity.getValidityFrom());
-	                validityDTO.setValidityTo(validity.getValidityTo());
-	                return validityDTO;
-	            }).collect(Collectors.toList())
-	        );
+	        
+	        // Check for null validityList
+	        if (stopSale.getValidityList() != null) {
+	            dto.setStopSaleValidityDTO(
+	                stopSale.getValidityList().stream()
+	                    .filter(Objects::nonNull) // filter out null validity objects
+	                    .map(validity -> {
+	                        StopSaleValidityDTO validityDTO = new StopSaleValidityDTO();
+	                        validityDTO.setStopSaleValidityId(validity.getId());
+	                        validityDTO.setValidityFrom(validity.getValidityFrom());
+	                        validityDTO.setValidityTo(validity.getValidityTo());
+	                        return validityDTO;
+	                    })
+	                    .collect(Collectors.toList())
+	            );
+	        } else {
+	            dto.setStopSaleValidityDTO(Collections.emptyList());
+	        }
 
 	        return dto;
 	    });

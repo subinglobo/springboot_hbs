@@ -1,0 +1,42 @@
+### Test Exception Handling with JWT Authentication
+
+# First, login to get JWT token
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+###
+
+# Test protected endpoint that throws EntityNotFoundException
+# Replace {{jwt_token}} with the token from login response
+POST http://localhost:8080/api/compulsoryEvent/save
+Content-Type: application/json
+Authorization: Bearer {{jwt_token}}
+
+{
+  "supplymentId": 999999,
+  "supplymentCode": "NONEXISTENT",
+  "hotelId": 999999,
+  "marketypeIds": [1, 2],
+  "rates": [],
+  "validities": []
+}
+
+###
+
+# Test without JWT token (should get 401 Unauthorized)
+POST http://localhost:8080/api/compulsoryEvent/save
+Content-Type: application/json
+
+{
+  "supplymentId": 999999,
+  "supplymentCode": "NONEXISTENT", 
+  "hotelId": 999999,
+  "marketypeIds": [1, 2],
+  "rates": [],
+  "validities": []
+}

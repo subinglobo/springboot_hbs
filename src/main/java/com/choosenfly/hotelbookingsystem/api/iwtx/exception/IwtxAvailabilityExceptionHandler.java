@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-@ControllerAdvice
+@ControllerAdvice(basePackages = "com.choosenfly.hotelbookingsystem.api.iwtx")
 public class IwtxAvailabilityExceptionHandler {
 
     @ExceptionHandler(IwtxAvailabilityException.class)
