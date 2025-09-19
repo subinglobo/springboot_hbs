@@ -151,8 +151,10 @@ public class AgentServiceImpl implements AgentService {
 			agent.setMarkup(request.getMarkup());
 		}
 
-		if (request.getCurrency() != 0) {
+		if (request.getCurrency() != 0 || request.getCurrency() != null) {
 			agent.setCurrency(request.getCurrency());
+		}else {
+			agent.setCurrency(null);
 		}
 
 		if (request.getStatus() != null) {
@@ -240,7 +242,7 @@ public class AgentServiceImpl implements AgentService {
 			dto.setMarkup(agent.getMarkup());
 		}
 
-		if (agent.getCurrency() != 0) {
+		if (agent.getCurrency() != 0 || agent.getCurrency() != null) {
 			dto.setCurrency(agent.getCurrency());
 		}
 
@@ -351,8 +353,8 @@ public class AgentServiceImpl implements AgentService {
 			agent.setMarkup(reqDTO.getMarkup());
 		}
 
-		if (reqDTO.getCurrency() != 0) {
-			agent.setCurrency(null);
+		if (reqDTO.getCurrency() != 0 || reqDTO.getCurrency() != null) {
+			agent.setCurrency(reqDTO.getCurrency());
 		}
 
 		if (reqDTO.getStatus() != null) {
@@ -454,7 +456,7 @@ public class AgentServiceImpl implements AgentService {
 				dto.setMarkup(agent.getMarkup());
 			}
 
-			if (agent.getCurrency() != 0) {
+			if (agent.getCurrency() != 0 || agent.getCurrency() != null) {
 				dto.setCurrency(agent.getCurrency());
 			}
 
