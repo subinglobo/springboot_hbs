@@ -13,6 +13,7 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.choosenfly.hotelbookingsystem.auth.dto.login.LoginRequest;
 import com.choosenfly.hotelbookingsystem.auth.dto.login.LoginResponse;
+import com.choosenfly.hotelbookingsystem.auth.dto.user.UserAccountsDTO;
 import com.choosenfly.hotelbookingsystem.auth.dto.user.UserDTO;
 import com.choosenfly.hotelbookingsystem.auth.enitities.user.UserAccount;
 import com.choosenfly.hotelbookingsystem.auth.exceptions.MissingCredentialsException;
@@ -193,5 +195,10 @@ public class AuthController {
     // lightweight stub (when HttpServletRequest not available) - you may replace or remove
     private String getClientIp() {
         return "127.0.0.1";
+    }
+    
+    @PostMapping("/checkRegisteredUserExist/{userId}")
+    public UserAccountsDTO checkRegisteredUserExist(@Valid @PathVariable Long userId) {
+        return userAccountService.checkRegisteredUserExist(userId);
     }
 }

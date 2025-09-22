@@ -12,23 +12,24 @@ import org.springframework.web.bind.annotation.RestController;
 import com.choosenfly.hotelbookingsystem.auth.dto.user.UserDTO;
 import com.choosenfly.hotelbookingsystem.roles.dto.UserRolesDTO;
 import com.choosenfly.hotelbookingsystem.roles.service.UserRolesServiceInterface;
+import com.choosenfly.hotelbookingsystem.roles.service.UserTypesServiceInterface;
 
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/roles")
-public class UserRolesController {
+@RequestMapping("/api/userTypes")
+public class UserTypeController {
 	
-	private UserRolesServiceInterface userRolesServiceInterface;
+	private UserTypesServiceInterface userTypesServiceInterface;
 	
 	@Autowired
-	public UserRolesController(UserRolesServiceInterface userRolesServiceInterface) {
-		this.userRolesServiceInterface = userRolesServiceInterface;
+	public UserTypeController(UserRolesServiceInterface userRolesServiceInterface) {
+		this.userTypesServiceInterface = userTypesServiceInterface;
 	}
 	
-	   @GetMapping
-	    public List<UserRolesDTO> getUserRoles() {
-	        return userRolesServiceInterface.getUserRoles();
-	    }
+//	   @GetMapping
+//	    public List<UserRolesDTO> getUserRoles() {
+//	        return userTypesServiceInterface.getUserRoles();
+//	    }
 
 }

@@ -16,8 +16,8 @@ import com.choosenfly.hotelbookingsystem.roles.service.UserRolesServiceInterface
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/userTypes")
-public class UserTypeController {
+@RequestMapping("/api/userRoles")
+public class UserRolesController {
 	
 	private UserRolesServiceInterface userRolesServiceInterface;
 	
