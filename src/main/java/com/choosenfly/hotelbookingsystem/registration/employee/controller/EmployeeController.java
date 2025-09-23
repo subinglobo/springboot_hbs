@@ -93,7 +93,7 @@ public class EmployeeController {
 		// a repository)
 		List<EmployeeDTO> employeesList = Optional.ofNullable(Page)
 
-				// Extracts the List<HotelDTO> from the Page object if statePage is not null
+				// Extracts the List<HotelDTO> from the Page object if statePage is not null 
 				// (gets the content of the current page)
 				.map(p -> p.getContent())
 
