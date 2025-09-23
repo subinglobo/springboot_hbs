@@ -23,7 +23,7 @@ public class AgentApiExclusion extends BaseEntity {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL)  
+    @ManyToOne  
     @JoinColumn(name = "agent_id", referencedColumnName = "id", nullable = false)
     private Agent agent;
 

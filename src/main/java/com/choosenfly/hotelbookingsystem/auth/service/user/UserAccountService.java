@@ -326,6 +326,7 @@ public class UserAccountService implements UserAccountServiceInterface {
 		UserAccountsDTO userAccountsDTO = new UserAccountsDTO();
 		userAccountsDTO.setUserId(userAccount.getUserId());
 		userAccountsDTO.setUserName(userAccount.getUsername());
+		userAccountsDTO.setUserRoles(null);
 		
 		return userAccountsDTO;
 	}

@@ -1,5 +1,8 @@
 package com.choosenfly.hotelbookingsystem.agent.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.choosenfly.hotelbookingsystem.common.base.entities.BaseEntity;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterCountry;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterPlace;
@@ -14,6 +17,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
@@ -69,6 +73,10 @@ public class Agent extends BaseEntity {
     
     @OneToOne(mappedBy = "agent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private AgentCreditLimit creditLimit;
+    
+ // ✅ New: Handle AgentApiExclusion children
+    @OneToMany(mappedBy = "agent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AgentApiExclusion> apiExclusions = new ArrayList<>();
     
     @Column(name = "short_name")
     private String shortName;
@@ -271,17 +279,27 @@ public class Agent extends BaseEntity {
 		this.creditLimit = creditLimit;
 	}
 
+	public List<AgentApiExclusion> getApiExclusions() {
+		return apiExclusions;
+	}
+
+	public void setApiExclusions(List<AgentApiExclusion> apiExclusions) {
+		this.apiExclusions = apiExclusions;
+	}
+
 	@Override
 	public String toString() {
 		return "Agent [id=" + id + ", businessType=" + businessType + ", agentCategoryId=" + agentCategoryId
 				+ ", companyName=" + companyName + ", firstName=" + firstName + ", lastName=" + lastName + ", country="
 				+ country + ", province=" + province + ", place=" + place + ", personalEmail=" + personalEmail
 				+ ", mobileNumber=" + mobileNumber + ", address=" + address + ", gstDetails=" + gstDetails
-				+ ", shortName=" + shortName + ", companyCode=" + companyCode + ", agentUrl=" + agentUrl + ", zipCode="
-				+ zipCode + ", contactPerson=" + contactPerson + ", markup=" + markup + ", currency=" + currency
-				+ ", status=" + status + "]";
+				+ ", creditLimit=" + creditLimit + ", apiExclusions=" + apiExclusions + ", shortName=" + shortName
+				+ ", companyCode=" + companyCode + ", agentUrl=" + agentUrl + ", zipCode=" + zipCode
+				+ ", contactPerson=" + contactPerson + ", markup=" + markup + ", currency=" + currency + ", status="
+				+ status + "]";
 	}
 
+	
 	
 
 	
