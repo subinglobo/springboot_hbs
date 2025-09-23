@@ -2,19 +2,15 @@ package com.choosenfly.hotelbookingsystem.auth.dto.user;
 
 public class UserAccountsDTO {
 
-	private Long id;
+//	private Long id;
 	
 	private Long userId;	
 
 	private String userName;
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
+	
+	private String password;
+	
+	
 
 	public Long getUserId() {
 		return userId;
@@ -34,8 +30,9 @@ public class UserAccountsDTO {
 
 	@Override
 	public String toString() {
-		return "UserAccountsDTO [id=" + id + ", userId=" + userId + ", userName=" + userName + "]";
+		return "UserAccountsDTO [userId=" + userId + ", userName=" + userName + "]";
 	}
+
 	
 	
 

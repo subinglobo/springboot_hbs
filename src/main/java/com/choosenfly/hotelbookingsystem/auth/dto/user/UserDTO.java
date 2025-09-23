@@ -11,7 +11,7 @@ import jakarta.validation.constraints.Size;
 public class UserDTO {
 
 	@NotNull(message = "User Id is required")
-	private Long userId;
+	private Long userId;  //corresponding agentId
 
 	@NotNull(message = "User type is required")
 	private Long userTypeId;
@@ -30,7 +30,6 @@ public class UserDTO {
 	
 	
 	private String[] userMailIds;
-	
 	
 
 	public String[] getUserMailIds() {
@@ -88,6 +87,10 @@ public class UserDTO {
 		return "UserDTO [userId=" + userId + ", userTypeId=" + userTypeId + ", userName=" + userName + ", password="
 				+ password + ", userRoleIds=" + userRoleIds + ", userMailIds=" + Arrays.toString(userMailIds) + "]";
 	}
+
+	
+
+	
 
 	
 	

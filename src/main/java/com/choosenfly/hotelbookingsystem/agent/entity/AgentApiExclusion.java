@@ -2,6 +2,7 @@ package com.choosenfly.hotelbookingsystem.agent.entity;
 
 import com.choosenfly.hotelbookingsystem.common.base.entities.BaseEntity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,7 +15,7 @@ import jakarta.persistence.UniqueConstraint;
 
 @Entity
 @Table(name = "agent_api_exclusion", 
-       uniqueConstraints = @UniqueConstraint(columnNames = {"agent_id", "external_api_id"}))
+       uniqueConstraints = @UniqueConstraint(columnNames = {"agent_id", "external_api_id"})) 
 public class AgentApiExclusion extends BaseEntity {
 
     @Id
@@ -22,7 +23,7 @@ public class AgentApiExclusion extends BaseEntity {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)  
     @JoinColumn(name = "agent_id", referencedColumnName = "id", nullable = false)
     private Agent agent;
 

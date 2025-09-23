@@ -152,88 +152,7 @@ public class UserAccountService implements UserAccountServiceInterface {
 		return null;
 	}
 	
-//	private UserDTO createAgentUser(UserDTO user) {
-//
-//		System.err.println("inside agent register");
-//		// TODO Auto-generated method stub
-//
-//		Agent agent = agentRepository.findById(user.getUserId())
-//				.orElseThrow(() -> new AgentRegistrationException("Agent not found with ID: " + user.getUserId()));
-//
-//		System.err.println("agent::" + agent);
-//
-//		String personalEmail = agent.getPersonalEmail();
-//		if (personalEmail == null || personalEmail.length() == 0) {
-//			throw new MissingEmailException("No email ID found to send credentials.");
-//		}
-//
-//		UserAccount userAccount = new UserAccount();
-//		userAccount.setActive(true);
-//		userAccount.setId(user.getUserId());
-//
-//		String encryptedPassword = passwordEncoder.encode(user.getPassword());
-//		userAccount.setPassword(encryptedPassword);
-//		// userAccount.setUserRoles(roles);
-//
-//		Optional<UserAccount> existing = userRepository.findByUsername(user.getUserName());
-//		if (existing.isPresent()) {
-//			throw new UserRegistrationException("Username already exists.");
-//		}
-//
-//		userAccount.setUsername(user.getUserName());
-//		// userAccount.setUserType("AGENT");
-//
-//		Optional<UserType> userTypeEntityOpt = userTypeRepository.findById(user.getUserTypeId());
-//		if (!userTypeEntityOpt.isPresent()) {
-//			throw new InvalidUserTypeException("Invalid userTypeId: " + user.getUserTypeId());
-//		}
-//		UserType userTypeEntity = userTypeEntityOpt.get();
-//		userAccount.setUserType(userTypeEntity);
-//
-//		List<Long> inputRoleIds = user.getUserRoleIds();
-//
-//		// If no roles provided, assign default role based on userTypeId
-//		if (inputRoleIds == null || inputRoleIds.isEmpty()) {
-//			Long defaultRoleId = user.getUserTypeId();
-//			Role defaultRole = rolerepository.findById(defaultRoleId)
-//					.orElseThrow(() -> new InvalidRoleException("No role found for userTypeId: " + defaultRoleId));
-//
-//			userAccount.setUserRoles(Set.of(defaultRole));
-//		} else {
-//			// Validate provided roles
-//			List<Role> foundRoles = rolerepository.findAllById(inputRoleIds);
-//
-//			if (foundRoles.size() != inputRoleIds.size()) {
-//				// Find missing role IDs
-//				Set<Long> foundIds = foundRoles.stream().map(Role::getId).collect(Collectors.toSet());
-//				List<Long> missingIds = inputRoleIds.stream().filter(id -> !foundIds.contains(id))
-//						.collect(Collectors.toList());
-//				throw new InvalidRoleException("Invalid role IDs: " + missingIds);
-//			}
-//
-//			Set<Role> roles = new HashSet<>(foundRoles);
-//			userAccount.setUserRoles(roles);
-//		}
-//
-//		System.err.println("userAccount:: " + userAccount);
-//		// Save user
-//		UserAccount savedUser = userRepository.save(userAccount);
-//		System.err.println("savedUser for Agent :: " + savedUser);
-//
-//		List<String> agentMailArray = new ArrayList<>();
-//		agentMailArray.add(personalEmail);
-//		System.err.println("Agent Mail Id :: " + agentMailArray);
-//		user.setUserMailIds(agentMailArray.toArray(new String[0]));
-//		user.setUserId(savedUser.getUserId());
-//
-//		System.err.println("user Agent :: " + user);
-//
-//		return user;
-//
-//	}
-
 	
-
 	private UserDTO createAgentUser(UserDTO user) {
 	    System.err.println("inside agent register");
 
@@ -257,6 +176,7 @@ public class UserAccountService implements UserAccountServiceInterface {
 	    UserAccount userAccount = new UserAccount();
 	    userAccount.setActive(true);
 	    userAccount.setUsername(user.getUserName());
+	    userAccount.setUserId(user.getUserId());
 
 	    String encryptedPassword = passwordEncoder.encode(user.getPassword());
 	    userAccount.setPassword(encryptedPassword);
@@ -298,6 +218,7 @@ public class UserAccountService implements UserAccountServiceInterface {
 	    // Prepare email list
 	    user.setUserMailIds(new String[]{personalEmail});
 	    user.setUserId(savedUser.getUserId());
+	   
 
 	    System.err.println("Final UserDTO for Agent :: " + user);
 
@@ -385,7 +306,7 @@ public class UserAccountService implements UserAccountServiceInterface {
 		System.err.println("Mail Ids :: " + Arrays.toString(mailIdArray));
 		user.setUserMailIds(mailIdArray);
 		user.setUserId(savedUser.getUserId());
-
+		
 		return user;
 	}
 
@@ -395,15 +316,17 @@ public class UserAccountService implements UserAccountServiceInterface {
 		
 		System.err.println("eneter checkRegisteredUserExist:::userId is ::" + userId);
 		
-		UserAccount userAccount = userRepository.findById(userId)
-				.orElseThrow(() -> new RegisteredUserNotFoundException("Invalid userId:" + userId));
+		Long userAccountId = userRepository.fetchUserAccountId(userId);
+		
+		UserAccount userAccount = userRepository.findById(userAccountId)
+				.orElseThrow(() -> new RegisteredUserNotFoundException("Invalid User Account id :" + userAccountId));
 		
 		System.err.println("useracc:::" + userAccount);
 
 		UserAccountsDTO userAccountsDTO = new UserAccountsDTO();
-		userAccountsDTO.setId(userAccount.getId());
 		userAccountsDTO.setUserId(userAccount.getUserId());
-		userAccountsDTO.setUserName(userAccount.getPassword());
+		userAccountsDTO.setUserName(userAccount.getUsername());
+		
 		return userAccountsDTO;
 	}
 
