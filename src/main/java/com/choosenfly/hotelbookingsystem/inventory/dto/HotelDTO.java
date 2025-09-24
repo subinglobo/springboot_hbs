@@ -66,7 +66,7 @@ public class HotelDTO {
     private List<HotelRoomCategoryDTO> roomCategories;
     private List<HotelRoomTypeDTO> roomTypes;
     private List<HotelTermsAndConditionsDTO> termsAndConditions;
-    private List<Long> amenityIds;
+    private List<HotelAmenityDTO> amenities;
 	public Long getId() {
 		return id;
 	}
@@ -230,34 +230,36 @@ public class HotelDTO {
 	public void setTermsAndConditions(List<HotelTermsAndConditionsDTO> termsAndConditions) {
 		this.termsAndConditions = termsAndConditions;
 	}
-	public List<Long> getAmenityIds() {
-		return amenityIds;
+	public List<HotelAmenityDTO> getAmenities() {
+		return amenities;
 	}
-	public void setAmenityIds(List<Long> amenityIds) {
-		this.amenityIds = amenityIds;
+	public void setAmenities(List<HotelAmenityDTO> amenities) {
+		this.amenities = amenities;
 	}
-	
-	
 	public Long getMarkupTypeId() {
 		return markupTypeId;
 	}
 	public void setMarkupTypeId(Long markupTypeId) {
 		this.markupTypeId = markupTypeId;
 	}
-	
 	@Override
 	public String toString() {
 		return "HotelDTO [id=" + id + ", hotelName=" + hotelName + ", hotelCurrencyId=" + hotelCurrencyId
 				+ ", hotelCategoryId=" + hotelCategoryId + ", hotelTypeId=" + hotelTypeId + ", markupTypeId="
-				+ markupTypeId + ", image360=" + image360 + ", hotelDescription=" + hotelDescription
-				+ ", childComAgeMin=" + childComAgeMin + ", childComAgeMax=" + childComAgeMax
+				+ markupTypeId + ", image360=" + image360 + ", image360File=" + image360File + ", hotelDescription="
+				+ hotelDescription + ", childComAgeMin=" + childComAgeMin + ", childComAgeMax=" + childComAgeMax
 				+ ", childChargeableAgeMin=" + childChargeableAgeMin + ", childChargeableAgeMax="
 				+ childChargeableAgeMax + ", regionId=" + regionId + ", countryId=" + countryId + ", stateId=" + stateId
 				+ ", placeId=" + placeId + ", address=" + address + ", zipcode=" + zipcode + ", latitude=" + latitude
 				+ ", longitude=" + longitude + ", isDeleted=" + isDeleted + ", contactDetails=" + contactDetails
 				+ ", bankDetails=" + bankDetails + ", weekDays=" + weekDays + ", roomCategories=" + roomCategories
-				+ ", roomTypes=" + roomTypes + ", termsAndConditions=" + termsAndConditions + ", amenityIds=" + amenityIds + "]";
+				+ ", roomTypes=" + roomTypes + ", termsAndConditions=" + termsAndConditions + ", amenities=" + amenities
+				+ "]";
 	}
+
+	
+	
+
 	
 	
 

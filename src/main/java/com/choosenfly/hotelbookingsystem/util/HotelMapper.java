@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.choosenfly.hotelbookingsystem.exceptions.EntityNotFoundException;
+import com.choosenfly.hotelbookingsystem.inventory.dto.HotelAmenityDTO;
 import com.choosenfly.hotelbookingsystem.inventory.dto.HotelBankDetailsDTO;
 import com.choosenfly.hotelbookingsystem.inventory.dto.HotelContactDetailsDTO;
 import com.choosenfly.hotelbookingsystem.inventory.dto.HotelDTO;
@@ -143,21 +144,26 @@ public class HotelMapper {
 			hotel.setPlace(placeRepository.findById(dto.getPlaceId())
 					.orElseThrow(() -> new EntityNotFoundException("Place not found with id "+dto.getPlaceId())));
 		}
-		if (dto.getAmenityIds() != null) {
-			List<MasterHotelAmenities> amenities = amenitiesRepository.findAllById(dto.getAmenityIds());
+		if (dto.getAmenities() != null) {
+		    // Extract only amenity IDs from DTO list
+		    List<Long> amenityIds = dto.getAmenities().stream()
+		            .map(HotelAmenityDTO::getAmenityId)
+		            .collect(Collectors.toList());
 
-			List<LinkedHotelAmenity> linkedAmenities = amenities.stream().map(amenity -> {
+		    // Fetch amenities by IDs
+		    List<MasterHotelAmenities> amenities = amenitiesRepository.findAllById(amenityIds);
 
-				LinkedHotelAmenity linkedAmenity = new LinkedHotelAmenity();
-				linkedAmenity.setHotel(hotel);
-				linkedAmenity.setAmenity(amenity);
+		    // Map amenities to linked entities
+		    List<LinkedHotelAmenity> linkedAmenities = amenities.stream().map(amenity -> {
+		        LinkedHotelAmenity linkedAmenity = new LinkedHotelAmenity();
+		        linkedAmenity.setHotel(hotel);
+		        linkedAmenity.setAmenity(amenity);
+		        return linkedAmenity;
+		    }).collect(Collectors.toList());
 
-				return linkedAmenity;
-			}).collect(Collectors.toList());
-
-			hotel.setHotelAmenities(linkedAmenities);
-
+		    hotel.setHotelAmenities(linkedAmenities);
 		}
+
 
 		// Map nested collections
 		if (dto.getContactDetails() != null) {
@@ -223,29 +229,29 @@ public class HotelMapper {
 			hotel.setWeekDays(weekDays);
 		}
 
-		if (dto.getRooms() != null) {
-			List<HotelRoom> rooms = dto.getRooms().stream().map(roomDTO -> {
-				HotelRoom room = new HotelRoom();
-				room.setHotel(hotel);
-				if (roomDTO.getRoomCategoryId() != null) {
-					room.setRoomCategory(roomCategoryRepository.findById(roomDTO.getRoomCategoryId())
-							.orElseThrow(() -> new EntityNotFoundException("Room category not found with id "+roomDTO.getRoomCategoryId())));
-				}
-				room.setRoomName(roomDTO.getRoomName());
-				if (roomDTO.getRoomTypeId() != null) {
-					room.setRoomType(roomTypeRepository.findById(roomDTO.getRoomTypeId())
-							.orElseThrow(() -> new EntityNotFoundException("Room type not found with id "+roomDTO.getRoomTypeId())));
-				}
-				room.setIsDeleted(roomDTO.getIsDeleted() != null ? roomDTO.getIsDeleted() : false);
-				if (roomDTO.getAmenityIds() != null) {
-					List<LinkedHotelRoomAmenity> amenities = roomAmenityRepository.findAllById(roomDTO.getAmenityIds())
-							.stream().peek(amenity -> amenity.setHotelRoom(room)).collect(Collectors.toList());
-					room.setAmenities(amenities);
-				}
-				return room;
-			}).collect(Collectors.toList());
-			hotel.setRooms(rooms);
-		}
+//		if (dto.getRooms() != null) {
+//			List<HotelRoom> rooms = dto.getRooms().stream().map(roomDTO -> {
+//				HotelRoom room = new HotelRoom();
+//				room.setHotel(hotel);
+//				if (roomDTO.getRoomCategoryId() != null) {
+//					room.setRoomCategory(roomCategoryRepository.findById(roomDTO.getRoomCategoryId())
+//							.orElseThrow(() -> new EntityNotFoundException("Room category not found with id "+roomDTO.getRoomCategoryId())));
+//				}
+//				room.setRoomName(roomDTO.getRoomName());
+//				if (roomDTO.getRoomTypeId() != null) {
+//					room.setRoomType(roomTypeRepository.findById(roomDTO.getRoomTypeId())
+//							.orElseThrow(() -> new EntityNotFoundException("Room type not found with id "+roomDTO.getRoomTypeId())));
+//				}
+//				room.setIsDeleted(roomDTO.getIsDeleted() != null ? roomDTO.getIsDeleted() : false);
+//				if (roomDTO.getAmenityIds() != null) {
+//					List<LinkedHotelRoomAmenity> amenities = roomAmenityRepository.findAllById(roomDTO.getAmenityIds())
+//							.stream().peek(amenity -> amenity.setHotelRoom(room)).collect(Collectors.toList());
+//					room.setAmenities(amenities);
+//				}
+//				return room;
+//			}).collect(Collectors.toList());
+//			hotel.setRooms(rooms);
+//		}
 
 		if (dto.getTermsAndConditions() != null) {
 			List<HotelTermsAndConditions> termsAndConditions = dto.getTermsAndConditions().stream().map(tcDTO -> {
@@ -312,14 +318,18 @@ public class HotelMapper {
 			hotel.setPlace(placeRepository.findById(dto.getPlaceId())
 					.orElseThrow(() -> new EntityNotFoundException("Place not found with id "+dto.getPlaceId())));
 		}
-		if (dto.getAmenityIds() != null) {
+		if (dto.getAmenities() != null) {
 			
 			
 			List<LinkedHotelAmenity> existingHotelAmenities = hotel.getHotelAmenities();
 			
 			existingHotelAmenities.clear();
 			
-			List<MasterHotelAmenities> amenities = amenitiesRepository.findAllById(dto.getAmenityIds());
+			List<Long> amenityIds = dto.getAmenities().stream()
+		            .map(HotelAmenityDTO::getAmenityId)
+		            .collect(Collectors.toList());
+			
+			List<MasterHotelAmenities> amenities = amenitiesRepository.findAllById(amenityIds);
 
 
 			
@@ -425,42 +435,42 @@ public class HotelMapper {
 			weekDays.setWedFriday(dto.getWeekDays().getWedFriday() != null ? dto.getWeekDays().getWedFriday() : false);
 			weekDays.setWedSaturday(
 					dto.getWeekDays().getWedSaturday() != null ? dto.getWeekDays().getWedSaturday() : false);
-			hotel.setWeekDays(weekDays);
+			hotel.setWeekDays(weekDays); 
 		}
 
-		if (dto.getRooms() != null) {
-			
-			List<HotelRoom> existingRooms = hotel.getRooms();
-			
-			existingRooms.clear();
-			
-			
-			
-			List<HotelRoom> newRooms = dto.getRooms().stream().map(roomDTO -> {
-				HotelRoom room = new HotelRoom();
-				room.setHotel(hotel);
-				if (roomDTO.getRoomCategoryId() != null) {
-					room.setRoomCategory(roomCategoryRepository.findById(roomDTO.getRoomCategoryId())
-							.orElseThrow(() -> new EntityNotFoundException("Room category not found with id "+roomDTO.getRoomCategoryId())));
-				}
-				room.setRoomName(roomDTO.getRoomName());
-				if (roomDTO.getRoomTypeId() != null) {
-					room.setRoomType(roomTypeRepository.findById(roomDTO.getRoomTypeId())
-							.orElseThrow(() -> new EntityNotFoundException("Room type not found with id "+roomDTO.getRoomTypeId())));
-				}
-				room.setIsDeleted(roomDTO.getIsDeleted() != null ? roomDTO.getIsDeleted() : false);
-				if (roomDTO.getAmenityIds() != null) {
-					List<LinkedHotelRoomAmenity> amenities = roomAmenityRepository.findAllById(roomDTO.getAmenityIds())
-							.stream().peek(amenity -> amenity.setHotelRoom(room)).collect(Collectors.toList());
-					room.setAmenities(amenities);
-				}
-				return room;
-			}).collect(Collectors.toList());
-			
-			existingRooms.addAll(newRooms);
-			
-			hotel.setRooms(existingRooms);
-		}
+//		if (dto.getRooms() != null) {
+//			
+//			List<HotelRoom> existingRooms = hotel.getRooms();
+//			
+//			existingRooms.clear();
+//			
+//			
+//			
+//			List<HotelRoom> newRooms = dto.getRooms().stream().map(roomDTO -> {
+//				HotelRoom room = new HotelRoom();
+//				room.setHotel(hotel);
+//				if (roomDTO.getRoomCategoryId() != null) {
+//					room.setRoomCategory(roomCategoryRepository.findById(roomDTO.getRoomCategoryId())
+//							.orElseThrow(() -> new EntityNotFoundException("Room category not found with id "+roomDTO.getRoomCategoryId())));
+//				}
+//				room.setRoomName(roomDTO.getRoomName());
+//				if (roomDTO.getRoomTypeId() != null) {
+//					room.setRoomType(roomTypeRepository.findById(roomDTO.getRoomTypeId())
+//							.orElseThrow(() -> new EntityNotFoundException("Room type not found with id "+roomDTO.getRoomTypeId())));
+//				}
+//				room.setIsDeleted(roomDTO.getIsDeleted() != null ? roomDTO.getIsDeleted() : false);
+//				if (roomDTO.getAmenityIds() != null) {
+//					List<LinkedHotelRoomAmenity> amenities = roomAmenityRepository.findAllById(roomDTO.getAmenityIds())
+//							.stream().peek(amenity -> amenity.setHotelRoom(room)).collect(Collectors.toList());
+//					room.setAmenities(amenities);
+//				}
+//				return room;
+//			}).collect(Collectors.toList());
+//			
+//			existingRooms.addAll(newRooms);
+//			
+//			hotel.setRooms(existingRooms);
+//		}
 
 		if (dto.getTermsAndConditions() != null) {
 			
@@ -508,13 +518,23 @@ public class HotelMapper {
 		dto.setLatitude(hotel.getLatitude());
 		dto.setLongitude(hotel.getLongitude());
 		dto.setIsDeleted(hotel.getIsDeleted());
-		dto.setAmenityIds(
-				hotel.getHotelAmenities() != null
-						? hotel.getHotelAmenities().stream().map(a -> a.getAmenity()).map(a -> a.getAmenitiesId())
-								.collect(Collectors.toList())
-						: null);
+//		dto.setAmenities(
+//				hotel.getHotelAmenities() != null
+//						? hotel.getHotelAmenities().stream().map(a -> a.getAmenity()).map(a -> a.getAmenitiesId())
+//								.collect(Collectors.toList())
+//						: null);
 
 		// Map nested collections
+		
+		if(hotel.getHotelAmenities() != null) {
+			dto.setAmenities(hotel.getHotelAmenities().stream().map(amenity ->{
+				HotelAmenityDTO hotelAmenityDTO = new HotelAmenityDTO();
+				hotelAmenityDTO.setAmenityId(amenity.getId());
+				hotelAmenityDTO.setAmenityName(amenity.getAmenity().getName());			
+				return hotelAmenityDTO;
+			}).collect(Collectors.toList()));
+		}
+		
 		if (hotel.getContactDetails() != null) {
 			dto.setContactDetails(hotel.getContactDetails().stream().map(contact -> {
 				HotelContactDetailsDTO contactDTO = new HotelContactDetailsDTO();
@@ -567,22 +587,22 @@ public class HotelMapper {
 			dto.setWeekDays(weekDaysDTO);
 		}
 
-		if (hotel.getRooms() != null) {
-			dto.setRooms(hotel.getRooms().stream().map(room -> {
-				HotelRoomDTO roomDTO = new HotelRoomDTO();
-				roomDTO.setId(room.getId());
-				roomDTO.setHotelId(room.getHotel().getHotelId());
-				roomDTO.setRoomCategoryId(
-						room.getRoomCategory() != null ? room.getRoomCategory().getRoomCategoryId() : null);
-				roomDTO.setRoomName(room.getRoomName());
-				roomDTO.setAmenityIds(room.getAmenities() != null
-						? room.getAmenities().stream().map(LinkedHotelRoomAmenity::getId).collect(Collectors.toList())
-						: null);
-				roomDTO.setRoomTypeId(room.getRoomType() != null ? room.getRoomType().getRoomtypeId() : null);
-				roomDTO.setIsDeleted(room.getIsDeleted());
-				return roomDTO;
-			}).collect(Collectors.toList()));
-		}
+//		if (hotel.getRooms() != null) {
+//			dto.setRooms(hotel.getRooms().stream().map(room -> {
+//				HotelRoomDTO roomDTO = new HotelRoomDTO();
+//				roomDTO.setId(room.getId());
+//				roomDTO.setHotelId(room.getHotel().getHotelId());
+//				roomDTO.setRoomCategoryId(
+//						room.getRoomCategory() != null ? room.getRoomCategory().getRoomCategoryId() : null);
+//				roomDTO.setRoomName(room.getRoomName());
+//				roomDTO.setAmenityIds(room.getAmenities() != null
+//						? room.getAmenities().stream().map(LinkedHotelRoomAmenity::getId).collect(Collectors.toList())
+//						: null);
+//				roomDTO.setRoomTypeId(room.getRoomType() != null ? room.getRoomType().getRoomtypeId() : null);
+//				roomDTO.setIsDeleted(room.getIsDeleted());
+//				return roomDTO;
+//			}).collect(Collectors.toList()));
+//		}
 
 		if (hotel.getTermsAndConditions() != null) {
 			dto.setTermsAndConditions(hotel.getTermsAndConditions().stream().map(tc -> {
