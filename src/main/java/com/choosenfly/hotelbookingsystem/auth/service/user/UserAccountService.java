@@ -35,6 +35,10 @@ import com.choosenfly.hotelbookingsystem.inventory.entities.Hotel;
 import com.choosenfly.hotelbookingsystem.inventory.entities.HotelContactDetails;
 import com.choosenfly.hotelbookingsystem.inventory.entities.LinkedHotelContactDetailsMailType;
 import com.choosenfly.hotelbookingsystem.inventory.repository.HotelRepository;
+import com.choosenfly.hotelbookingsystem.registration.employee.enitities.Employee;
+import com.choosenfly.hotelbookingsystem.registration.employee.enitities.EmployeeContactDetails;
+import com.choosenfly.hotelbookingsystem.registration.employee.exceptions.EmployeetRegistrationException;
+import com.choosenfly.hotelbookingsystem.registration.employee.repository.EmployeeRepository;
 import com.choosenfly.hotelbookingsystem.util.rabbitmq.EmailProducer;
 
 import jakarta.transaction.Transactional;
@@ -57,10 +61,12 @@ public class UserAccountService implements UserAccountServiceInterface {
 
 	private final AgentRepository agentRepository;
 
+	private final EmployeeRepository employeeRepository;
+
 	@Autowired
 	public UserAccountService(UserRepository userRepository, HotelRepository hotelRepository,
 			BCryptPasswordEncoder passwordEncoder, EmailProducer emailProducer, UserTypeRepository userTypeRepository,
-			RoleRepository rolerepository, AgentRepository agentRepository) {
+			RoleRepository rolerepository, AgentRepository agentRepository, EmployeeRepository employeeRepository) {
 		this.userRepository = userRepository;
 		this.hotelRepository = hotelRepository;
 		this.passwordEncoder = passwordEncoder;
@@ -68,6 +74,7 @@ public class UserAccountService implements UserAccountServiceInterface {
 		this.userTypeRepository = userTypeRepository;
 		this.rolerepository = rolerepository;
 		this.agentRepository = agentRepository;
+		this.employeeRepository = employeeRepository;
 	}
 
 	@Override
@@ -109,7 +116,7 @@ public class UserAccountService implements UserAccountServiceInterface {
 		case "AGENT":
 			registeredUser = createAgentUser(user);
 			break;
-		case "EMPLOYEE":
+		case "STAFF":
 			registeredUser = createEmployeeUser(user);
 			break;
 		case "SUPER_ADMIN":
@@ -149,82 +156,134 @@ public class UserAccountService implements UserAccountServiceInterface {
 
 	private UserDTO createEmployeeUser(UserDTO user) {
 		// TODO Auto-generated method stub
-		return null;
+		
+		System.err.println("inside created employee"); 
+
+		Employee employee = employeeRepository.findById(user.getUserId()).orElseThrow(
+				() -> new EmployeetRegistrationException("Employee not found with ID : " + user.getUserId()));
+
+		EmployeeContactDetails contactDetails = employee.getContactDetails();
+		String employeeEmail = contactDetails.getEmail();
+		if (employeeEmail == null || employeeEmail.isEmpty()) {
+			throw new MissingEmailException("No email ID found to send credentials.");
+		}
+
+		// 🔑 Check if username already exists
+		Optional<UserAccount> existingUserOpt = userRepository.findByUsername(user.getUserName());
+		if (existingUserOpt.isPresent()) {
+			throw new UserRegistrationException("Username already exists.");
+		}
+
+		// ✅ Create new UserAccount without setting ID (let Hibernate generate it)
+		UserAccount userAccount = new UserAccount();
+		userAccount.setActive(true);
+		userAccount.setUsername(user.getUserName());
+		userAccount.setUserId(user.getUserId());
+
+		String encryptedPassword = passwordEncoder.encode(user.getPassword());
+		userAccount.setPassword(encryptedPassword);
+
+		// Validate userType
+		UserType userTypeEntity = userTypeRepository.findById(user.getUserTypeId())
+				.orElseThrow(() -> new InvalidUserTypeException("Invalid userTypeId: " + user.getUserTypeId()));
+		userAccount.setUserType(userTypeEntity);
+
+		// Handle roles
+		List<Long> inputRoleIds = user.getUserRoleIds();
+		if (inputRoleIds == null || inputRoleIds.isEmpty()) {
+			// Assign default role = userTypeId
+			Long defaultRoleId = user.getUserTypeId();
+			Role defaultRole = rolerepository.findById(defaultRoleId)
+					.orElseThrow(() -> new InvalidRoleException("No role found for userTypeId: " + defaultRoleId));
+
+			userAccount.setUserRoles(Set.of(defaultRole));
+		} else {
+			List<Role> foundRoles = rolerepository.findAllById(inputRoleIds);
+
+			if (foundRoles.size() != inputRoleIds.size()) {
+				Set<Long> foundIds = foundRoles.stream().map(Role::getId).collect(Collectors.toSet());
+				List<Long> missingIds = inputRoleIds.stream().filter(id -> !foundIds.contains(id))
+						.collect(Collectors.toList());
+				throw new InvalidRoleException("Invalid role IDs: " + missingIds);
+			}
+
+			userAccount.setUserRoles(new HashSet<>(foundRoles));
+		}
+
+		System.err.println("userAccount before save:: " + userAccount);
+
+		// ✅ Save user
+		UserAccount savedUser = userRepository.save(userAccount);
+		System.err.println("savedUser for employee :: " + savedUser);
+
+		// Prepare email list
+		user.setUserMailIds(new String[] { employeeEmail });
+		user.setUserId(savedUser.getUserId());
+
+		System.err.println("Final UserDTO for employee :: " + user); 
+
+		return user;
+
 	}
-	
-	
+
 	private UserDTO createAgentUser(UserDTO user) {
-	    System.err.println("inside agent register");
 
-	    Agent agent = agentRepository.findById(user.getUserId())
-	            .orElseThrow(() -> new AgentRegistrationException("Agent not found with ID: " + user.getUserId()));
+		Agent agent = agentRepository.findById(user.getUserId())
+				.orElseThrow(() -> new AgentRegistrationException("Agent not found with ID: " + user.getUserId()));
+		String personalEmail = agent.getPersonalEmail();
+		if (personalEmail == null || personalEmail.isEmpty()) {
+			throw new MissingEmailException("No email ID found to send credentials.");
+		}
 
-	    System.err.println("agent::" + agent);
+		// 🔑 Check if username already exists
+		Optional<UserAccount> existingUserOpt = userRepository.findByUsername(user.getUserName());
+		if (existingUserOpt.isPresent()) {
+			throw new UserRegistrationException("Username already exists.");
+		}
 
-	    String personalEmail = agent.getPersonalEmail();
-	    if (personalEmail == null || personalEmail.isEmpty()) {
-	        throw new MissingEmailException("No email ID found to send credentials.");
-	    }
+		// ✅ Create new UserAccount without setting ID (let Hibernate generate it)
+		UserAccount userAccount = new UserAccount();
+		userAccount.setActive(true);
+		userAccount.setUsername(user.getUserName());
+		userAccount.setUserId(user.getUserId());
 
-	    // 🔑 Check if username already exists
-	    Optional<UserAccount> existingUserOpt = userRepository.findByUsername(user.getUserName());
-	    if (existingUserOpt.isPresent()) {
-	        throw new UserRegistrationException("Username already exists.");
-	    }
+		String encryptedPassword = passwordEncoder.encode(user.getPassword());
+		userAccount.setPassword(encryptedPassword);
 
-	    // ✅ Create new UserAccount without setting ID (let Hibernate generate it)
-	    UserAccount userAccount = new UserAccount();
-	    userAccount.setActive(true);
-	    userAccount.setUsername(user.getUserName());
-	    userAccount.setUserId(user.getUserId());
+		// Validate userType
+		UserType userTypeEntity = userTypeRepository.findById(user.getUserTypeId())
+				.orElseThrow(() -> new InvalidUserTypeException("Invalid userTypeId: " + user.getUserTypeId()));
+		userAccount.setUserType(userTypeEntity);
 
-	    String encryptedPassword = passwordEncoder.encode(user.getPassword());
-	    userAccount.setPassword(encryptedPassword);
+		// Handle roles
+		List<Long> inputRoleIds = user.getUserRoleIds();
+		if (inputRoleIds == null || inputRoleIds.isEmpty()) {
+			// Assign default role = userTypeId
+			Long defaultRoleId = user.getUserTypeId();
+			Role defaultRole = rolerepository.findById(defaultRoleId)
+					.orElseThrow(() -> new InvalidRoleException("No role found for userTypeId: " + defaultRoleId));
 
-	    // Validate userType
-	    UserType userTypeEntity = userTypeRepository.findById(user.getUserTypeId())
-	            .orElseThrow(() -> new InvalidUserTypeException("Invalid userTypeId: " + user.getUserTypeId()));
-	    userAccount.setUserType(userTypeEntity);
+			userAccount.setUserRoles(Set.of(defaultRole));
+		} else {
+			List<Role> foundRoles = rolerepository.findAllById(inputRoleIds);
 
-	    // Handle roles
-	    List<Long> inputRoleIds = user.getUserRoleIds();
-	    if (inputRoleIds == null || inputRoleIds.isEmpty()) {
-	        // Assign default role = userTypeId
-	        Long defaultRoleId = user.getUserTypeId();
-	        Role defaultRole = rolerepository.findById(defaultRoleId)
-	                .orElseThrow(() -> new InvalidRoleException("No role found for userTypeId: " + defaultRoleId));
+			if (foundRoles.size() != inputRoleIds.size()) {
+				Set<Long> foundIds = foundRoles.stream().map(Role::getId).collect(Collectors.toSet());
+				List<Long> missingIds = inputRoleIds.stream().filter(id -> !foundIds.contains(id))
+						.collect(Collectors.toList());
+				throw new InvalidRoleException("Invalid role IDs: " + missingIds);
+			}
 
-	        userAccount.setUserRoles(Set.of(defaultRole));
-	    } else {
-	        List<Role> foundRoles = rolerepository.findAllById(inputRoleIds);
+			userAccount.setUserRoles(new HashSet<>(foundRoles));
+		}
 
-	        if (foundRoles.size() != inputRoleIds.size()) {
-	            Set<Long> foundIds = foundRoles.stream().map(Role::getId).collect(Collectors.toSet());
-	            List<Long> missingIds = inputRoleIds.stream()
-	                    .filter(id -> !foundIds.contains(id))
-	                    .collect(Collectors.toList());
-	            throw new InvalidRoleException("Invalid role IDs: " + missingIds);
-	        }
-
-	        userAccount.setUserRoles(new HashSet<>(foundRoles));
-	    }
-
-	    System.err.println("userAccount before save:: " + userAccount);
-
-	    // ✅ Save user
-	    UserAccount savedUser = userRepository.save(userAccount);
-	    System.err.println("savedUser for Agent :: " + savedUser);
-
-	    // Prepare email list
-	    user.setUserMailIds(new String[]{personalEmail});
-	    user.setUserId(savedUser.getUserId());
-	   
-
-	    System.err.println("Final UserDTO for Agent :: " + user);
-
-	    return user;
+		// ✅ Save user
+		UserAccount savedUser = userRepository.save(userAccount);
+		// Prepare email list
+		user.setUserMailIds(new String[] { personalEmail });
+		user.setUserId(savedUser.getUserId());
+		return user;
 	}
-
 
 	private UserDTO createAdminUser(UserDTO user) {
 		// TODO Auto-generated method stub
@@ -306,28 +365,28 @@ public class UserAccountService implements UserAccountServiceInterface {
 		System.err.println("Mail Ids :: " + Arrays.toString(mailIdArray));
 		user.setUserMailIds(mailIdArray);
 		user.setUserId(savedUser.getUserId());
-		
+
 		return user;
 	}
 
 	@Override
 	public UserAccountsDTO checkRegisteredUserExist(@Valid Long userId) {
 		// TODO Auto-generated method stub
-		
+
 		System.err.println("eneter checkRegisteredUserExist:::userId is ::" + userId);
-		
+
 		Long userAccountId = userRepository.fetchUserAccountId(userId);
-		
+
 		UserAccount userAccount = userRepository.findById(userAccountId)
 				.orElseThrow(() -> new RegisteredUserNotFoundException("Invalid User Account id :" + userAccountId));
-		
+
 		System.err.println("useracc:::" + userAccount);
 
 		UserAccountsDTO userAccountsDTO = new UserAccountsDTO();
 		userAccountsDTO.setUserId(userAccount.getUserId());
 		userAccountsDTO.setUserName(userAccount.getUsername());
 		userAccountsDTO.setUserRoles(null);
-		
+
 		return userAccountsDTO;
 	}
 
