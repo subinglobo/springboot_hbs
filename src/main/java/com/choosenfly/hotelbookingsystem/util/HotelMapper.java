@@ -435,7 +435,7 @@ public class HotelMapper {
 			weekDays.setWedFriday(dto.getWeekDays().getWedFriday() != null ? dto.getWeekDays().getWedFriday() : false);
 			weekDays.setWedSaturday(
 					dto.getWeekDays().getWedSaturday() != null ? dto.getWeekDays().getWedSaturday() : false);
-			hotel.setWeekDays(weekDays);
+			hotel.setWeekDays(weekDays); 
 		}
 
 //		if (dto.getRooms() != null) {
