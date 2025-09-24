@@ -80,7 +80,7 @@ public class DestinationController {
 		return destinationServiceInterface.getplacesByPassingStateId(stateId);
 	}
 	
-	@GetMapping("/getCitiesByCountryId/{countryId}")
+	@PostMapping("/getCitiesByCountryId/{countryId}")
 	private List<MasterPlaceDTO> getCitiesByPassingCountryId(
 			@PathVariable("countryId") Long countryId , 
 			@RequestParam(required = false, name = "search") String searchTerm) {

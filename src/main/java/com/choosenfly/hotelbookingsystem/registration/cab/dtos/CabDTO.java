@@ -15,7 +15,7 @@ public class CabDTO {
     private Long placeid;
     private String providername;
     private List<CabLocationDTO> cabLocationDTOList;
-    private boolean active;
+  
 	public Long getCabId() {
 		return cabId;
 	}
@@ -82,19 +82,14 @@ public class CabDTO {
 	public void setCabLocationDTOList(List<CabLocationDTO> cabLocationDTOList) {
 		this.cabLocationDTOList = cabLocationDTOList;
 	}
-	public boolean isActive() {
-		return active;
-	}
-	public void setActive(boolean active) {
-		this.active = active;
-	}
 	@Override
 	public String toString() {
 		return "CabDTO [cabId=" + cabId + ", name=" + name + ", cabprovider=" + cabprovider + ", cabCode=" + cabCode
 				+ ", countryname=" + countryname + ", cabpic=" + cabpic + ", placename=" + placename + ", countryid="
 				+ countryid + ", placeid=" + placeid + ", providername=" + providername + ", cabLocationDTOList="
-				+ cabLocationDTOList + ", active=" + active + "]";
+				+ cabLocationDTOList + "]";
 	}
+	
     
     
 }

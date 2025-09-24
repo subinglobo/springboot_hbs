@@ -49,7 +49,6 @@ public class CabProviderServiceImpl implements CabProviderService{
 		    provider.setContactPerson(request.getContactperson());
 		    provider.setEmailId(request.getEmailid());
 		    provider.setPhoneNumber(request.getPhonenumber());
-		    provider.setIsActive(request.isActive());
 
 		    // 2️⃣ Validate & map nested Cabs
 		    if (request.getCabList() != null) {
@@ -66,7 +65,6 @@ public class CabProviderServiceImpl implements CabProviderService{
 		        	cab.setPlace(stateEntity);
 		            cab.setName(cabDTO.getName());
 		            cab.setCabCode(cabDTO.getCabCode());
-		            cab.setIsActive(cabDTO.isActive());
 
 		            // Set the relationship to provider
 		            cab.setCabProvider(provider);
@@ -108,7 +106,6 @@ public class CabProviderServiceImpl implements CabProviderService{
 		    response.setContactperson(savedProvider.getContactPerson());
 		    response.setEmailid(savedProvider.getEmailId());
 		    response.setPhonenumber(savedProvider.getPhoneNumber());
-		    response.setActive(savedProvider.getIsActive());
 
 		    if (savedProvider.getCabs() != null) {
 		        List<CabDTO> cabDTOList = savedProvider.getCabs().stream().map(cab -> {
@@ -118,7 +115,6 @@ public class CabProviderServiceImpl implements CabProviderService{
 		            cabDTO.setCabCode(cab.getCabCode());
 		            cabDTO.setCountryid(cab.getCountry().getId());
 		            cabDTO.setPlaceid(cab.getPlace().getId());
-		            cabDTO.setActive(cab.getIsActive());
 
 		            if (cab.getCabLocations() != null) {
 		                List<CabLocationDTO> locDTOList = cab.getCabLocations().stream().map(loc -> {
@@ -163,7 +159,6 @@ public class CabProviderServiceImpl implements CabProviderService{
 	    provider.setContactPerson(reqDTO.getContactperson());
 	    provider.setEmailId(reqDTO.getEmailid());
 	    provider.setPhoneNumber(reqDTO.getPhonenumber());
-	    provider.setIsActive(reqDTO.isActive());
 
 	    // Handle nested cabs
 	    if (reqDTO.getCabList() != null) {
@@ -190,7 +185,6 @@ public class CabProviderServiceImpl implements CabProviderService{
 	            cab.setPlace(state);
 	            cab.setName(cabDTO.getName());
 	            cab.setCabCode(cabDTO.getCabCode());
-	            cab.setIsActive(cabDTO.isActive());
 
 	            // Handle locations
 	            if (cabDTO.getCabLocationDTOList() != null) {
@@ -264,7 +258,6 @@ public class CabProviderServiceImpl implements CabProviderService{
 	        dto.setContactperson(provider.getContactPerson());
 	        dto.setEmailid(provider.getEmailId());
 	        dto.setPhonenumber(provider.getPhoneNumber());
-	        dto.setActive(provider.getIsActive());
 //	        dto.setDeleted(false); // optional, set as needed
 
 	        if (provider.getCabs() != null) {
@@ -275,7 +268,6 @@ public class CabProviderServiceImpl implements CabProviderService{
 	                cabDTO.setCabCode(cab.getCabCode());
 	                cabDTO.setCountryid(cab.getCountry().getId());
 	                cabDTO.setPlaceid(cab.getPlace().getId());
-	                cabDTO.setActive(cab.getIsActive());
 //	                cabDTO.setDeleted(false);
 
 	                if (cab.getCabLocations() != null) {

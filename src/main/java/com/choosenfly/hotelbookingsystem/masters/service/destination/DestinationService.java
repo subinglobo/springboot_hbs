@@ -160,6 +160,7 @@ public class DestinationService implements DestinationServiceInterface {
 	}
 	
 	@Override
+	@Transactional
 	public List<MasterPlaceDTO> getplacesByPassingStateId(Long stateId) {
 		// TODO Auto-generated method stub
 
@@ -183,19 +184,25 @@ public class DestinationService implements DestinationServiceInterface {
 	}
 
 	@Override
+	@Transactional
 	public List<MasterPlaceDTO> getCitiesByPassingCountryId(Long countryId, String searchTerm) {
 		// TODO Auto-generated method stub
 		
+		System.err.println("enetered getCitiesByPassingCountryId service");
 		MasterCountry orElseThrow = masterCountryRepository.findById(countryId)
 				.orElseThrow(() -> new EntityNotFoundException("Country not found for id : "+ countryId));
+		
+		System.err.println("Country Id::" + countryId);
 		
 		List<MasterPlace> placeEntity = new ArrayList<>();
 		
 	    if (StringUtils.hasText(searchTerm)) {
 	    	
 	    	placeEntity = masterPlaceRepository.findByNameStartingWithIgnoreCase(searchTerm , countryId);
+	    	System.err.println("search :: placeEntity::" + placeEntity);
 	    } else {
 	    	placeEntity = masterPlaceRepository.findByCountryId(countryId);
+//	    	System.err.println("placeEntity::" + placeEntity);
 	    }
 		
 		
@@ -209,6 +216,8 @@ public class DestinationService implements DestinationServiceInterface {
 			dto.setCountry(entity.getCountry().getName());
 			return dto;
 		}).collect(Collectors.toList());
+		
+		System.err.println("collect::" + collect.size());
 
 		return collect;
 	}

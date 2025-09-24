@@ -10,7 +10,7 @@ public class CabProviderDTO {
     private String emailid;
     private String contactperson;
     private List<CabDTO> cabList;
-    private boolean active;
+    
 	public Long getCabprovider() {
 		return cabprovider;
 	}
@@ -47,18 +47,13 @@ public class CabProviderDTO {
 	public void setCabList(List<CabDTO> cabList) {
 		this.cabList = cabList;
 	}
-	public boolean isActive() {
-		return active;
-	}
-	public void setActive(boolean active) {
-		this.active = active;
-	}
 	@Override
 	public String toString() {
 		return "CabProviderDTO [cabprovider=" + cabprovider + ", providername=" + providername + ", phonenumber="
 				+ phonenumber + ", emailid=" + emailid + ", contactperson=" + contactperson + ", cabList=" + cabList
-				+ ", active=" + active + "]";
+				+ "]";
 	}
+
     
     
     
