@@ -161,5 +161,7 @@ public class GlobalExceptionHandler {
 		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Bad Request", errorMessage);
 		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
 	}
+	
+	
 
 }

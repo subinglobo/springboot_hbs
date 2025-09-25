@@ -7,9 +7,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.choosenfly.hotelbookingsystem.configuration.FileStorageProperties;
+import com.choosenfly.hotelbookingsystem.masters.dto.MasterBankDTO;
+import com.choosenfly.hotelbookingsystem.masters.entities.MasterBank;
 import com.choosenfly.hotelbookingsystem.registration.employee.dto.EmployeeContactDetailsDTO;
 import com.choosenfly.hotelbookingsystem.registration.employee.dto.EmployeeDTO;
 import com.choosenfly.hotelbookingsystem.registration.employee.dto.EmployeeResponseDTO;
@@ -298,8 +301,17 @@ public class EmployeeServiceImpl implements EmployeeService{
 
         // If search is provided, filter by employeeCode, firstName, or lastName
 
-         Page<Employee>   employees = employeeRepository.findAll(pageable);
-
+         Page<Employee> employees ; 
+         
+         if (StringUtils.hasText(search)) {
+  	    	
+        	 employees = employeeRepository
+                     .findByFirstNameStartingWithIgnoreCaseOrLastNameStartingWithIgnoreCaseOrEmployeeCodeStartingWithIgnoreCase(
+                             search, search, search, pageable);
+        	 
+  	    }else {
+  	    	employees = employeeRepository.findAll(pageable);
+  	    }
 
         // Map entities to DTOs
         return employees.map(employee -> {

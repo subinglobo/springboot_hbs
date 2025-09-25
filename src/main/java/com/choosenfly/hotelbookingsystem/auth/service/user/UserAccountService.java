@@ -376,6 +376,10 @@ public class UserAccountService implements UserAccountServiceInterface {
 		System.err.println("eneter checkRegisteredUserExist:::userId is ::" + userId);
 
 		Long userAccountId = userRepository.fetchUserAccountId(userId);
+		
+		if (userAccountId == null || userAccountId == 0) {
+			throw new UserRegistrationException("User is not Registered for id : " + userId);
+		}
 
 		UserAccount userAccount = userRepository.findById(userAccountId)
 				.orElseThrow(() -> new RegisteredUserNotFoundException("Invalid User Account id :" + userAccountId));
