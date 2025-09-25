@@ -8,9 +8,7 @@ public class CabDTO {
     private String name;
     private Long cabprovider;
     private String cabCode;
-    private String countryname;
     private String cabpic;
-    private String placename;
     private Long countryid;
     private Long placeid;
     private String providername;
@@ -40,23 +38,11 @@ public class CabDTO {
 	public void setCabCode(String cabCode) {
 		this.cabCode = cabCode;
 	}
-	public String getCountryname() {
-		return countryname;
-	}
-	public void setCountryname(String countryname) {
-		this.countryname = countryname;
-	}
 	public String getCabpic() {
 		return cabpic;
 	}
 	public void setCabpic(String cabpic) {
 		this.cabpic = cabpic;
-	}
-	public String getPlacename() {
-		return placename;
-	}
-	public void setPlacename(String placename) {
-		this.placename = placename;
 	}
 	public Long getCountryid() {
 		return countryid;
@@ -85,11 +71,10 @@ public class CabDTO {
 	@Override
 	public String toString() {
 		return "CabDTO [cabId=" + cabId + ", name=" + name + ", cabprovider=" + cabprovider + ", cabCode=" + cabCode
-				+ ", countryname=" + countryname + ", cabpic=" + cabpic + ", placename=" + placename + ", countryid="
-				+ countryid + ", placeid=" + placeid + ", providername=" + providername + ", cabLocationDTOList="
-				+ cabLocationDTOList + "]";
+				+ ", cabpic=" + cabpic + ", countryid=" + countryid + ", placeid=" + placeid + ", providername="
+				+ providername + ", cabLocationDTOList=" + cabLocationDTOList + "]";
 	}
+
 	
-    
     
 }

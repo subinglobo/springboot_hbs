@@ -10,7 +10,7 @@ public class CabProviderDTO {
     private String emailid;
     private String contactperson;
     private List<CabDTO> cabList;
-    
+
 	public Long getCabprovider() {
 		return cabprovider;
 	}
@@ -54,7 +54,6 @@ public class CabProviderDTO {
 				+ "]";
 	}
 
-    
     
     
 }
