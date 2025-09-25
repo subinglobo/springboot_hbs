@@ -1,5 +1,6 @@
 package com.choosenfly.hotelbookingsystem.registration.cab.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.choosenfly.hotelbookingsystem.common.base.entities.BaseEntity;
@@ -39,10 +40,10 @@ public class CabProvider extends BaseEntity{
     private Boolean isActive;
 
     // One provider can have many cabs
-    @OneToMany(mappedBy = "cabProvider", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Cab> cabs;
+    @OneToMany(mappedBy = "cabProvider", cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Cab> cabs = new ArrayList<>();
     
-    @OneToMany(mappedBy = "cabProvider", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "cabProvider", cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
     private List<CabRates>cabRates;
 
 	public Long getCabProviderId() {

@@ -211,7 +211,9 @@ public class CabRatesServiceImpl implements CabRatesService{
 	            marketTypes.add(cabRateMarketType);
 	        }
 	    }
-	    cabRates.setMarketTypes(marketTypes);
+//	    cabRates.setMarketTypes(marketTypes);
+	    cabRates.getMarketTypes().clear();
+	    cabRates.getMarketTypes().addAll(marketTypes);
 
 	    // ---------- Update Validities ----------
 	    List<CabRateValidity> validities = new ArrayList<>();
@@ -229,7 +231,9 @@ public class CabRatesServiceImpl implements CabRatesService{
 	            validities.add(validity);
 	        }
 	    }
-	    cabRates.setCabRateValidities(validities);
+	    cabRates.getCabRateValidities().clear();
+	    cabRates.getCabRateValidities().addAll(validities);
+//	    cabRates.setCabRateValidities(validities);
 
 	    // ---------- Update Rate Details ----------
 	    List<CabRatesDetails> detailsList = new ArrayList<>();
@@ -249,16 +253,66 @@ public class CabRatesServiceImpl implements CabRatesService{
 	            detailsList.add(details);
 	        }
 	    }
-	    cabRates.setCabRatesDetails(detailsList);
-
+//	    cabRates.setCabRatesDetails(detailsList);
+	    cabRates.getCabRatesDetails().clear();
+	    cabRates.getCabRatesDetails().addAll(detailsList);
 	    // Save updated entity
 	    CabRates updated = cabRatesRepository.save(cabRates);
 
 	    // Map back to DTO
-	    CabRateDTO response = new CabRateDTO();
-	    response.setCabratesId(updated.getCabRatesId());
+	    CabRateDTO dto = mapToDTO(updated);
+//	    CabRateDTO response = new CabRateDTO();
+//	    response.setCabratesId(updated.getCabRatesId());
 
-	    return response;
+	    return dto;
+	}
+
+	private CabRateDTO mapToDTO(CabRates cabRates) {
+		// TODO Auto-generated method stub
+		  CabRateDTO response = new CabRateDTO();
+		    response.setCabratesId(cabRates.getCabRatesId());
+		    response.setRateCode(cabRates.getRateCode());
+		    response.setCabId(cabRates.getCab().getCabId());
+		    CabProvider cabProvider = cabRates.getCabProvider();
+		    response.setCabproviderId(cabProvider.getCabProviderId());
+
+		    // ---------- Market Types ----------
+		    if (cabRates.getMarketTypes() != null) {
+		        List<String> marketTypeIds = cabRates.getMarketTypes().stream().map(mt -> String.valueOf(mt.getMarketType().getMarketTypeId())).toList();
+		        response.setMarketype(marketTypeIds);
+		    }
+		    // ---------- Validities ----------
+		    if (cabRates.getCabRateValidities() != null) {
+		        List<CabRateValidityDTO> validityDTOs = cabRates.getCabRateValidities().stream().map(validity -> {
+		            CabRateValidityDTO dto = new CabRateValidityDTO();
+		            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		            dto.setCabValidityId(validity.getCabValidityId());
+		            dto.setValidityFrom(sdf.format(validity.getValidityFrom()));
+		            dto.setValidityTo(sdf.format(validity.getValidityTo()));
+		            return dto;
+		        }).toList();
+		        response.setCabRateValidityDTOList(validityDTOs);
+		    }
+
+		    // ---------- Rate Details ----------
+		    if (cabRates.getCabRatesDetails() != null) {
+		        List<CabRateDetailsDTO> detailsDTOs = cabRates.getCabRatesDetails().stream().map(details -> {
+		            CabRateDetailsDTO dto = new CabRateDetailsDTO();
+		            dto.setCabRatesdetailsId(details.getCabRatesDetailsId());
+		            dto.setLocationId(details.getLocationId());
+		            dto.setHourDetails(details.getHourDetails());
+		            dto.setLuggage(details.getLuggage() );
+		            dto.setMinpax(details.getMinPax());
+		            dto.setMaxpax(details.getMaxPax());
+		            dto.setPrivateRate(details.getPrivateRate());
+		            dto.setSicRate(details.getSicRate());
+		            dto.setTravelType(details.getTravelType());
+		            return dto;
+		        }).toList();
+		        response.setCabRateDetailsDTOList(detailsDTOs);
+		    }
+
+		    return response;
 	}
 
 	@Override

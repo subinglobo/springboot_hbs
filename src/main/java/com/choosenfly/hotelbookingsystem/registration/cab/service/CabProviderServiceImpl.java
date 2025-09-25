@@ -3,6 +3,8 @@ package com.choosenfly.hotelbookingsystem.registration.cab.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -21,7 +23,9 @@ import com.choosenfly.hotelbookingsystem.registration.cab.entities.Cab;
 import com.choosenfly.hotelbookingsystem.registration.cab.entities.CabLocation;
 import com.choosenfly.hotelbookingsystem.registration.cab.entities.CabProvider;
 import com.choosenfly.hotelbookingsystem.registration.cab.exceptions.EntityNotFoundException;
+import com.choosenfly.hotelbookingsystem.registration.cab.repository.CabLocationRepository;
 import com.choosenfly.hotelbookingsystem.registration.cab.repository.CabProviderRepository;
+import com.choosenfly.hotelbookingsystem.registration.cab.repository.CabRespository;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -35,11 +39,18 @@ public class CabProviderServiceImpl implements CabProviderService{
 	
 	private final MasterStateRepository masterStateRepository;
 	
+	private final CabRespository cabRespository;
+	
+	private final CabLocationRepository cabLocationRepository;
+	
 	public CabProviderServiceImpl(CabProviderRepository cabProviderRepository,
-			MasterCountryRepository masterCountryRepository,MasterStateRepository masterStateRepository){
+			MasterCountryRepository masterCountryRepository,MasterStateRepository masterStateRepository,CabRespository cabRespository,
+			CabLocationRepository cabLocationRepository){
 		this.cabProviderRepository = cabProviderRepository;
 		this.masterCountryRepository=masterCountryRepository;
 		this.masterStateRepository=masterStateRepository;
+		this.cabRespository=cabRespository;
+		this.cabLocationRepository=cabLocationRepository;
 	}
 	@Override
 	public CabProviderDTO registerCabProvider(@Valid CabProviderDTO request) {
@@ -49,7 +60,6 @@ public class CabProviderServiceImpl implements CabProviderService{
 		    provider.setContactPerson(request.getContactperson());
 		    provider.setEmailId(request.getEmailid());
 		    provider.setPhoneNumber(request.getPhonenumber());
-		    provider.setIsActive(request.isActive());
 
 		    // 2️⃣ Validate & map nested Cabs
 		    if (request.getCabList() != null) {
@@ -66,7 +76,6 @@ public class CabProviderServiceImpl implements CabProviderService{
 		        	cab.setPlace(stateEntity);
 		            cab.setName(cabDTO.getName());
 		            cab.setCabCode(cabDTO.getCabCode());
-		            cab.setIsActive(cabDTO.isActive());
 
 		            // Set the relationship to provider
 		            cab.setCabProvider(provider);
@@ -108,7 +117,6 @@ public class CabProviderServiceImpl implements CabProviderService{
 		    response.setContactperson(savedProvider.getContactPerson());
 		    response.setEmailid(savedProvider.getEmailId());
 		    response.setPhonenumber(savedProvider.getPhoneNumber());
-		    response.setActive(savedProvider.getIsActive());
 
 		    if (savedProvider.getCabs() != null) {
 		        List<CabDTO> cabDTOList = savedProvider.getCabs().stream().map(cab -> {
@@ -118,7 +126,6 @@ public class CabProviderServiceImpl implements CabProviderService{
 		            cabDTO.setCabCode(cab.getCabCode());
 		            cabDTO.setCountryid(cab.getCountry().getId());
 		            cabDTO.setPlaceid(cab.getPlace().getId());
-		            cabDTO.setActive(cab.getIsActive());
 
 		            if (cab.getCabLocations() != null) {
 		                List<CabLocationDTO> locDTOList = cab.getCabLocations().stream().map(loc -> {
@@ -151,6 +158,8 @@ public class CabProviderServiceImpl implements CabProviderService{
 	    // 2️⃣ Map entity to DTO using your existing mapper
 	    return mapToDTO(provider);
 	}
+
+
 	@Transactional
 	public CabProviderDTO editCabProviderRegistrationDetails(Long id, @Valid CabProviderDTO reqDTO) {
 
@@ -158,29 +167,26 @@ public class CabProviderServiceImpl implements CabProviderService{
 	    CabProvider provider = cabProviderRepository.findById(id)
 	            .orElseThrow(() -> new EntityNotFoundException("CabProvider not found with id: " + id));
 
-	    // Update main provider fields
+	    // 2️⃣ Update main provider fields
 	    provider.setProviderName(reqDTO.getProvidername());
 	    provider.setContactPerson(reqDTO.getContactperson());
 	    provider.setEmailId(reqDTO.getEmailid());
 	    provider.setPhoneNumber(reqDTO.getPhonenumber());
-	    provider.setIsActive(reqDTO.isActive());
 
-	    // Handle nested cabs
+	    // 3️⃣ Handle nested cabs
 	    if (reqDTO.getCabList() != null) {
-	        Map<Long, Cab> existingCabs = provider.getCabs().stream()
-	                .collect(Collectors.toMap(Cab::getCabId, c -> c));
-
 	        List<Cab> finalCabs = new ArrayList<>();
-	        for (CabDTO cabDTO : reqDTO.getCabList()) {
-	            Cab cab;
-	            if (cabDTO.getCabId() != null && existingCabs.containsKey(cabDTO.getCabId())) {
-	                cab = existingCabs.get(cabDTO.getCabId());
-	            } else {
-	                cab = new Cab();
-	                cab.setCabProvider(provider);
-	            }
 
-	            // Update cab fields
+	        for (CabDTO cabDTO : reqDTO.getCabList()) {
+
+	            // ✅ Fetch existing cab or create new
+	            Cab cab = (cabDTO.getCabId() != null)
+	                    ? cabRespository.findById(cabDTO.getCabId()).orElse(new Cab())
+	                    : new Cab();
+
+	            cab.setCabProvider(provider);
+
+	            // ✅ Update cab fields
 	            MasterCountry country = masterCountryRepository.findById(cabDTO.getCountryid())
 	                    .orElseThrow(() -> new EntityNotFoundException("Country not found with id: " + cabDTO.getCountryid()));
 	            MasterState state = masterStateRepository.findById(cabDTO.getPlaceid())
@@ -190,39 +196,39 @@ public class CabProviderServiceImpl implements CabProviderService{
 	            cab.setPlace(state);
 	            cab.setName(cabDTO.getName());
 	            cab.setCabCode(cabDTO.getCabCode());
-	            cab.setIsActive(cabDTO.isActive());
 
-	            // Handle locations
+	            // ✅ Handle nested locations
+	            List<CabLocation> finalLocations = new ArrayList<>();
 	            if (cabDTO.getCabLocationDTOList() != null) {
-	                Map<Long, CabLocation> existingLocations = cab.getCabLocations().stream()
-	                        .collect(Collectors.toMap(CabLocation::getCabLocationId, l -> l));
-
-	                List<CabLocation> finalLocations = new ArrayList<>();
 	                for (CabLocationDTO locDTO : cabDTO.getCabLocationDTOList()) {
-	                    CabLocation loc;
-	                    if (locDTO.getCablocationId() != null && existingLocations.containsKey(locDTO.getCablocationId())) {
-	                        loc = existingLocations.get(locDTO.getCablocationId());
-	                    } else {
-	                        loc = new CabLocation();
-	                        loc.setCab(cab);
-	                    }
+	                    CabLocation loc = (locDTO.getCablocationId() != null)
+	                            ? cabLocationRepository.findById(locDTO.getCablocationId()).orElse(new CabLocation())
+	                            : new CabLocation();
+
+	                    loc.setCab(cab);
 	                    loc.setPickup(locDTO.getPickup());
 	                    loc.setDropoff(locDTO.getDropoff());
 	                    finalLocations.add(loc);
 	                }
-	                cab.setCabLocations(finalLocations);
 	            }
+//	            cab.setCabLocations(finalLocations);
+	            cab.getCabLocations().clear();
+	            cab.getCabLocations().addAll(finalLocations);
 
 	            finalCabs.add(cab);
 	        }
 
-	        provider.setCabs(finalCabs);
+//	        provider.setCabs(finalCabs);
+	        provider.getCabs().clear();
+	        provider.getCabs().addAll(finalCabs);
 	    }
 
+	    // 4️⃣ Save provider
 	    CabProvider savedProvider = cabProviderRepository.save(provider);
 	    return mapToDTO(savedProvider);
 	}
 
+	
 	@Transactional
 	public ResponseEntity<String> deleteCabProviderRegistrationDetails(Long id) {
 	    
@@ -264,7 +270,6 @@ public class CabProviderServiceImpl implements CabProviderService{
 	        dto.setContactperson(provider.getContactPerson());
 	        dto.setEmailid(provider.getEmailId());
 	        dto.setPhonenumber(provider.getPhoneNumber());
-	        dto.setActive(provider.getIsActive());
 //	        dto.setDeleted(false); // optional, set as needed
 
 	        if (provider.getCabs() != null) {
@@ -275,7 +280,6 @@ public class CabProviderServiceImpl implements CabProviderService{
 	                cabDTO.setCabCode(cab.getCabCode());
 	                cabDTO.setCountryid(cab.getCountry().getId());
 	                cabDTO.setPlaceid(cab.getPlace().getId());
-	                cabDTO.setActive(cab.getIsActive());
 //	                cabDTO.setDeleted(false);
 
 	                if (cab.getCabLocations() != null) {
@@ -300,5 +304,5 @@ public class CabProviderServiceImpl implements CabProviderService{
 	        return dto;
 	    });
 	}
-
+ 
 }
