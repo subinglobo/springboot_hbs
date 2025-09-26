@@ -1,5 +1,8 @@
 package com.choosenfly.hotelbookingsystem.agent.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.choosenfly.hotelbookingsystem.common.base.entities.BaseEntity;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterCountry;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterPlace;
@@ -8,11 +11,13 @@ import com.choosenfly.hotelbookingsystem.masters.entities.MasterState;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
@@ -65,6 +70,37 @@ public class Agent extends BaseEntity {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "gst_id", referencedColumnName = "id")
     private AgentGSTDetails gstDetails;
+    
+    @OneToOne(mappedBy = "agent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private AgentCreditLimit creditLimit;
+    
+ // ✅ New: Handle AgentApiExclusion children
+    @OneToMany(mappedBy = "agent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AgentApiExclusion> apiExclusions = new ArrayList<>();
+    
+    @Column(name = "short_name")
+    private String shortName;
+    
+    @Column(name = "company_code")
+    private String companyCode;
+    
+    @Column(name = "agent_url")
+    private String agentUrl;
+    
+    @Column(name = "zip_code")
+    private String zipCode;
+    
+    @Column(name = "contact_person")
+    private String contactPerson;
+    
+    @Column(name = "markup")
+    private String markup;
+    
+    @Column(name = "currency_id")
+    private Integer currency;
+    
+    @Column(name = "status")
+    private String status;
 
 	public Long getId() {
 		return id;
@@ -171,13 +207,102 @@ public class Agent extends BaseEntity {
 		this.gstDetails = gstDetails;
 	}
 
+	public String getShortName() {
+		return shortName;
+	}
+
+	public void setShortName(String shortName) {
+		this.shortName = shortName;
+	}
+
+	public String getCompanyCode() {
+		return companyCode;
+	}
+
+	public void setCompanyCode(String companyCode) {
+		this.companyCode = companyCode;
+	}
+
+	public String getAgentUrl() {
+		return agentUrl;
+	}
+
+	public void setAgentUrl(String agentUrl) {
+		this.agentUrl = agentUrl;
+	}
+
+	public String getZipCode() {
+		return zipCode;
+	}
+
+	public void setZipCode(String zipCode) {
+		this.zipCode = zipCode;
+	}
+
+	public String getContactPerson() {
+		return contactPerson;
+	}
+
+	public void setContactPerson(String contactPerson) { 
+		this.contactPerson = contactPerson;
+	}
+
+	public String getMarkup() {
+		return markup;
+	}
+
+	public void setMarkup(String markup) {
+		this.markup = markup;
+	}
+
+	public Integer getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(Integer currency) {
+		this.currency = currency;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public AgentCreditLimit getCreditLimit() {
+		return creditLimit;
+	}
+
+	public void setCreditLimit(AgentCreditLimit creditLimit) {
+		this.creditLimit = creditLimit;
+	}
+
+	public List<AgentApiExclusion> getApiExclusions() {
+		return apiExclusions;
+	}
+
+	public void setApiExclusions(List<AgentApiExclusion> apiExclusions) {
+		this.apiExclusions = apiExclusions;
+	}
+
 	@Override
 	public String toString() {
 		return "Agent [id=" + id + ", businessType=" + businessType + ", agentCategoryId=" + agentCategoryId
 				+ ", companyName=" + companyName + ", firstName=" + firstName + ", lastName=" + lastName + ", country="
 				+ country + ", province=" + province + ", place=" + place + ", personalEmail=" + personalEmail
-				+ ", mobileNumber=" + mobileNumber + ", address=" + address + ", gstDetails=" + gstDetails + "]";
+				+ ", mobileNumber=" + mobileNumber + ", address=" + address + ", gstDetails=" + gstDetails
+				+ ", creditLimit=" + creditLimit + ", apiExclusions=" + apiExclusions + ", shortName=" + shortName
+				+ ", companyCode=" + companyCode + ", agentUrl=" + agentUrl + ", zipCode=" + zipCode
+				+ ", contactPerson=" + contactPerson + ", markup=" + markup + ", currency=" + currency + ", status="
+				+ status + "]";
 	}
+
+	
+	
+
+	
 
     
 

@@ -140,8 +140,8 @@ public class HotelRoom extends BaseEntity {
 
 	@Override
 	public String toString() {
-		return "HotelRoom [id=" + id + ", hotel=" + hotel + ", roomCategory=" + roomCategory + ", roomName=" + roomName
-				+ ", amenities=" + amenities + ", roomOccupancies=" + roomOccupancies + ", roomType=" + roomType
+		return "HotelRoom [id=" + id + ", hotelId=" + (hotel != null ? hotel.getHotelId() : null) + ", roomCategoryId=" + (roomCategory != null ? roomCategory.getRoomCategoryId() : null) + ", roomName=" + roomName
+				+ ", amenitiesCount=" + (amenities != null ? amenities.size() : 0) + ", roomOccupanciesCount=" + (roomOccupancies != null ? roomOccupancies.size() : 0) + ", roomTypeId=" + (roomType != null ? roomType.getRoomtypeId() : null)
 				+ ", isDeleted=" + isDeleted + "]";
 	}
 	

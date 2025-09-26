@@ -7,12 +7,14 @@ public class HotelSearchRequest {
 	private String checkIn;
     private String checkOut;
     private String nationalityId;
+    private String nationalityCode;
     private String noOfRooms;
     private int destinationCityId;
     private int destinationCountryId;
     private Long agentId;
     private List<RoomConfiguration> roomConfigurations;
     
+
 	public String getCheckIn() {
 		return checkIn;
 	}
@@ -61,11 +63,19 @@ public class HotelSearchRequest {
 	public void setRoomConfigurations(List<RoomConfiguration> roomConfigurations) {
 		this.roomConfigurations = roomConfigurations;
 	}
+
+	public String getNationalityCode() {
+		return nationalityCode;
+	}
+	public void setNationalityCode(String nationalityCode) {
+		this.nationalityCode = nationalityCode;
+	}
 	@Override
 	public String toString() {
 		return "HotelSearchRequest [checkIn=" + checkIn + ", checkOut=" + checkOut + ", nationalityId=" + nationalityId
-				+ ", noOfRooms=" + noOfRooms + ", destinationCityId=" + destinationCityId + ", destinationCountryId="
-				+ destinationCountryId + ", agentId=" + agentId + "]";
+				+ ", nationalityCode=" + nationalityCode + ", noOfRooms=" + noOfRooms + ", destinationCityId="
+				+ destinationCityId + ", destinationCountryId=" + destinationCountryId + ", agentId=" + agentId
+				+ ", roomConfigurations=" + roomConfigurations + "]";
 	}
     
     

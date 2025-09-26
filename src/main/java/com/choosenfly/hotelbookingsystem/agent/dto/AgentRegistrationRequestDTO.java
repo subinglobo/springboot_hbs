@@ -8,6 +8,8 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 public class AgentRegistrationRequestDTO {
+	
+	private Long id;
 
     @NotBlank(message = "Business type is required")
     private String businessType;
@@ -51,7 +53,23 @@ public class AgentRegistrationRequestDTO {
     private String address;
 
     private AgentGSTDetailsDTO agentGSTDetailsDTO;
-
+    
+    private String shortName;
+    
+    private String companyCode;
+    
+    private String agentUrl;
+    
+    private String zipCode;
+    
+    private String contactPerson;
+    
+    private String markup;
+    
+    private Integer currency;  //currencyId
+    
+    private String status;
+    
     // Getters and Setters
 
     public String getBusinessType() {
@@ -151,14 +169,97 @@ public class AgentRegistrationRequestDTO {
         this.agentGSTDetailsDTO = agentGSTDetailsDTO;
     }
 
-	@Override
-	public String toString() {
-		return "AgentRegistrationRequestDTO [businessType=" + businessType + ", agentCategoryId=" + agentCategoryId
-				+ ", companyName=" + companyName + ", firstName=" + firstName + ", lastName=" + lastName
-				+ ", countryId=" + countryId + ", provinceId=" + provinceId + ", placeId=" + placeId
-				+ ", personalEmail=" + personalEmail + ", mobileNumber=" + mobileNumber + ", address=" + address
-				+ ", agentGSTDetailsDTO=" + agentGSTDetailsDTO + "]";
+	public Long getId() {
+		return id;
 	}
 
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getShortName() {
+		return shortName;
+	}
+
+	public void setShortName(String shortName) {
+		this.shortName = shortName;
+	}
+
+	public String getCompanyCode() {
+		return companyCode;
+	}
+
+	public void setCompanyCode(String companyCode) {
+		this.companyCode = companyCode;
+	}
+
+	public String getAgentUrl() {
+		return agentUrl;
+	}
+
+	public void setAgentUrl(String agentUrl) {
+		this.agentUrl = agentUrl;
+	}
+
+	public String getZipCode() {
+		return zipCode;
+	}
+
+	public void setZipCode(String zipCode) {
+		this.zipCode = zipCode;
+	}
+
+	public String getContactPerson() {
+		return contactPerson;
+	}
+
+	public void setContactPerson(String contactPerson) {
+		this.contactPerson = contactPerson;
+	}
+
+	public String getMarkup() {
+		return markup;
+	}
+
+	public void setMarkup(String markup) {
+		this.markup = markup;
+	}
+
+	
+
+	public Integer getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(Integer currency) {
+		this.currency = currency;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	@Override
+	public String toString() {
+		return "AgentRegistrationRequestDTO [id=" + id + ", businessType=" + businessType + ", agentCategoryId="
+				+ agentCategoryId + ", companyName=" + companyName + ", firstName=" + firstName + ", lastName="
+				+ lastName + ", countryId=" + countryId + ", provinceId=" + provinceId + ", placeId=" + placeId
+				+ ", personalEmail=" + personalEmail + ", mobileNumber=" + mobileNumber + ", address=" + address
+				+ ", agentGSTDetailsDTO=" + agentGSTDetailsDTO + ", shortName=" + shortName + ", companyCode="
+				+ companyCode + ", agentUrl=" + agentUrl + ", zipCode=" + zipCode + ", contactPerson=" + contactPerson
+				+ ", markup=" + markup + ", currency=" + currency + ", status=" + status + "]";
+	}
+
+	
+
+	
+
+	
+
+	
     
 }

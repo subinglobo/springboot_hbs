@@ -56,12 +56,22 @@ public class HotelSearchController {
 
 	        // Apply sorting
 	        results = hotelSearchService.sortResults(results, sortBy, sortOrder);
+	        
+	        System.err.println("Results :: "+results);
 
+	        System.err.println("page :: "+page);
+	        
+	        System.err.println("size :: "+size);
+	        
 	        // Paginate
 	        int start = Math.min(page * size, results.size());
 	        int end = Math.min(start + size, results.size());
+	        
+	        System.err.println("Start and end :: "+start +"  ::  "+end);
 	        List<HotelSearchResult> paginatedResults = results.subList(start, end);
 
+	        System.err.println("paginated results :: "+paginatedResults);
+	        
 	        // Build response
 	        Map<String, String> statusMap = hotelSearchService.getSearchStatusMap(searchId, agentId);
 	        boolean isComplete = hotelSearchService.isSearchComplete(searchId, agentId);

@@ -3,6 +3,7 @@ package com.choosenfly.hotelbookingsystem.inventory.entities.hotelstopsale;
 import java.time.LocalDateTime;
 
 import com.choosenfly.hotelbookingsystem.common.base.entities.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,6 +25,7 @@ public class StopSaleValiditty extends BaseEntity{
 
 	@ManyToOne
 	@JoinColumn(name = "stopsale_id", nullable = false)
+	@JsonIgnore
 	private HotelStopSale stopSale;
 
 	@Column(name = "validity_from", nullable = false)
@@ -68,7 +70,7 @@ public class StopSaleValiditty extends BaseEntity{
 
 	@Override
 	public String toString() {
-		return "StopSaleValiditty [id=" + id + ", stopSale=" + stopSale + ", validityFrom=" + validityFrom
+		return "StopSaleValiditty [id=" + id + ", stopSaleId=" + (stopSale != null ? stopSale.getHotelStopSaleId() : null) + ", validityFrom=" + validityFrom
 				+ ", validityTo=" + validityTo + "]";
 	}
 

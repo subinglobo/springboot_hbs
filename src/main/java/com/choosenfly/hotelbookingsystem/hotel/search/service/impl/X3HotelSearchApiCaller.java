@@ -24,7 +24,11 @@ import org.springframework.stereotype.Component;
 
 import com.choosenfly.hotelbookingsystem.api.x3.dto.BaseRateX3;
 import com.choosenfly.hotelbookingsystem.api.x3.dto.HotelBaseRateX3;
-import com.choosenfly.hotelbookingsystem.api.x3.dto.HotelInfoX3;
+import com.choosenfly.hotelbookingsystem.api.x3.entities.X3Hotels;
+import com.choosenfly.hotelbookingsystem.masters.repository.IwtxCityMappingRepository;
+import com.choosenfly.hotelbookingsystem.masters.entities.ApiCityMapping;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.choosenfly.hotelbookingsystem.api.x3.dto.search.request.AdultX3Search;
 import com.choosenfly.hotelbookingsystem.api.x3.dto.search.request.ChildX3Search;
 import com.choosenfly.hotelbookingsystem.api.x3.dto.search.request.HotelX3SearchRequest;
@@ -34,7 +38,7 @@ import com.choosenfly.hotelbookingsystem.api.x3.dto.search.request.RoomX3Search;
 import com.choosenfly.hotelbookingsystem.api.x3.dto.search.request.SearchCriteriaX3Search;
 import com.choosenfly.hotelbookingsystem.api.x3.dto.search.response.HotelX3;
 import com.choosenfly.hotelbookingsystem.api.x3.dto.search.response.RoomX3Response;
-import com.choosenfly.hotelbookingsystem.api.x3.repository.X3HotelRepository;
+import com.choosenfly.hotelbookingsystem.api.x3.repository.X3HotelsRepository;
 import com.choosenfly.hotelbookingsystem.hotel.search.dto.HotelSearchRequest;
 import com.choosenfly.hotelbookingsystem.hotel.search.dto.HotelSearchResult;
 import com.choosenfly.hotelbookingsystem.hotel.search.dto.RoomConfiguration;
@@ -45,32 +49,90 @@ import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
 
-@Component
+@Component("x3HotelSearchApiCaller")
 public class X3HotelSearchApiCaller implements HotelSearchApiCaller {
 
     @Autowired
-    private X3HotelRepository x3HotelsRepository;
+    private X3HotelsRepository x3HotelsRepository;
+
+    @Autowired
+    private IwtxCityMappingRepository apiCityMappingRepository;
+
+    @Autowired
+    private com.choosenfly.hotelbookingsystem.configuration.X3ApiConfig x3ApiConfig;
 
     private static final int X3_BATCH_SIZE = 50;
     private static final int X3_THREAD_POOL_SIZE = 10;
-
-    // TODO: Replace with actual X3 API URL when credentials are provided
-    private static final String X3_API_URL = "https://api.x3connect.com/hotel/api/v1/search";
 
     @Override
     public List<HotelSearchResult> callApi(HotelSearchRequest request) {
         List<HotelSearchResult> x3Results = new ArrayList<>();
 
-        List<HotelInfoX3> x3HotelInfos = x3HotelsRepository.findHotelsByCityAndCountry(request.getDestinationCityId(), request.getDestinationCountryId());
+        // Step 1: Fetch API Hotel Codes from ApiCityMapping for X3 provider
+        ApiCityMapping cityMapping = apiCityMappingRepository.findByMasterCountryIdAndMasterCityIdAndApiProvider(
+            Long.valueOf(request.getDestinationCountryId()), 
+            Long.valueOf(request.getDestinationCityId()), 
+            "x3"
+        );
 
-        if (x3HotelInfos == null || x3HotelInfos.isEmpty()) {
+        if (cityMapping == null || cityMapping.getApiHotelCodeList() == null || cityMapping.getApiHotelCodeList().trim().isEmpty()) {
+            System.err.println("No hotel codes found in ApiCityMapping for X3 provider - city: " + request.getDestinationCityId() + ", country: " + request.getDestinationCountryId());
+            return x3Results; // Return empty list if no mapping found
+        }
+
+        // Step 2: Parse JSON apiHotelCodeList into list of hotel codes
+        List<String> x3HotelCodes;
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            x3HotelCodes = objectMapper.readValue(cityMapping.getApiHotelCodeList(), new TypeReference<List<String>>() {});
+        } catch (Exception e) {
+            System.err.println("Error parsing X3 apiHotelCodeList JSON: " + e.getMessage());
+            return x3Results; // Return empty list if JSON parsing fails
+        }
+        
+        System.err.println("x3HotelCodes:::" + x3HotelCodes);
+
+        if (x3HotelCodes == null || x3HotelCodes.isEmpty()) {
+            System.err.println("No X3 hotel codes found after parsing JSON");
+            return x3Results;
+        }
+
+        // Step 3: Fetch hotel details using batch query for better performance
+        List<X3Hotels> x3Hotels = new ArrayList<>();
+        
+        // Handle large datasets by processing in chunks to avoid database query limits
+        final int CHUNK_SIZE = 1000; // Most databases support up to 1000 items in IN clause
+        
+        for (int i = 0; i < x3HotelCodes.size(); i += CHUNK_SIZE) {
+            int endIndex = Math.min(i + CHUNK_SIZE, x3HotelCodes.size());
+            List<String> chunk = x3HotelCodes.subList(i, endIndex);
+            
+            try {
+                // Trim hotel codes and fetch in batch
+                List<String> trimmedCodes = chunk.stream()
+                    .map(String::trim)
+                    .filter(code -> !code.isEmpty())
+                    .collect(Collectors.toList());
+                
+                if (!trimmedCodes.isEmpty()) {
+                    // Find X3 hotels by hotel codes (assuming iwtx_code field contains the hotel codes)
+                    List<X3Hotels> chunkResults = x3HotelsRepository.findAll().stream()
+                        .filter(hotel -> trimmedCodes.contains(hotel.getIwtxCode()))
+                        .collect(Collectors.toList());
+                    x3Hotels.addAll(chunkResults);
+                }
+            } catch (Exception e) {
+                System.out.println("Error fetching X3 hotel details for chunk " + (i/CHUNK_SIZE + 1) + ": " + e.getMessage());
+                // Continue with next chunk
+            }
+        }
+
+        if (x3Hotels == null || x3Hotels.isEmpty()) {
+            System.out.println("No X3 hotels found in database for the provided hotel codes");
             return x3Results; // Return empty list if no hotels found
         }
 
-        // Step 2: Extract hotel codes and split into batches of 50
-        List<String> x3HotelCodes = x3HotelInfos.stream()
-            .map(HotelInfoX3::getHotelCode)
-            .collect(Collectors.toList());
+        // Step 4: Extract hotel codes and split into batches of 50
         List<List<String>> x3Batches = splitX3IntoBatches(x3HotelCodes, X3_BATCH_SIZE);
 
         // Step 3: Make parallel API calls for each batch
@@ -86,32 +148,44 @@ public class X3HotelSearchApiCaller implements HotelSearchApiCaller {
         for (Future<List<HotelBaseRateX3>> x3Future : x3Futures) {
             try {
                 List<HotelBaseRateX3> x3HotelRates = x3Future.get();
+                System.out.println("X3 API returned " + x3HotelRates.size() + " hotel rates");
                 for (HotelBaseRateX3 x3Rate : x3HotelRates) {
                     x3BaseRateMap.put(x3Rate.getHotelCode(), x3Rate.getBaseRate());
+                    System.out.println("X3 Rate: " + x3Rate.getHotelCode() + " = " + x3Rate.getBaseRate());
                 }
             } catch (Exception e) {
                 // Log error and continue processing other batches
                 System.err.println("Error processing X3 batch: " + e.getMessage());
+                e.printStackTrace();
             }
         }
 
         x3Executor.shutdown();
 
-        // Step 5: Map hotel details and base rates to HotelSearchResult
-        for (HotelInfoX3 x3HotelInfo : x3HotelInfos) {
-            Double x3BaseRate = x3BaseRateMap.get(x3HotelInfo.getHotelCode());
+        // Step 6: Map hotel details and base rates to HotelSearchResult
+        System.out.println("Total X3 hotels from database: " + x3Hotels.size());
+        System.out.println("Total X3 base rates from API: " + x3BaseRateMap.size());
+        
+        for (X3Hotels x3Hotel : x3Hotels) {
+            Double x3BaseRate = x3BaseRateMap.get(x3Hotel.getIwtxCode());
+            System.out.println("Processing hotel: " + x3Hotel.getIwtxCode() + ", baseRate: " + x3BaseRate);
+            
             if (x3BaseRate != null) {  // ✅ Only add to results if baseRate is available
                 HotelSearchResult x3Result = new HotelSearchResult();
-                x3Result.setHotelCode(x3HotelInfo.getHotelCode());
-                x3Result.setHotelName(x3HotelInfo.getHotelName());
-                x3Result.setHotelImage(x3HotelInfo.getHotelImage());
-                x3Result.setStarRating(x3HotelInfo.getStarRating());
-                x3Result.setHotelAddress(x3HotelInfo.getHotelAddress());
+                x3Result.setHotelCode(x3Hotel.getIwtxCode());
+                x3Result.setHotelName(x3Hotel.getHotelName());
+                x3Result.setHotelImage(x3Hotel.getHotelImage());
+                x3Result.setStarRating(x3Hotel.getStarCategory() != null ? Integer.parseInt(x3Hotel.getStarCategory()) : null);
+                x3Result.setHotelAddress(x3Hotel.getAddress());
                 x3Result.setApiType("X3");
                 x3Result.setBaseRate(x3BaseRate);
                 x3Results.add(x3Result);
+                System.out.println("Added X3 hotel to results: " + x3Hotel.getIwtxCode());
+            } else {
+                System.out.println("Skipping hotel " + x3Hotel.getIwtxCode() + " - no base rate found");
             }
         }
+        System.out.println("X3 Results count: " + x3Results.size());
         System.out.println("X3 Results: " + x3Results);
         return x3Results;
     }
@@ -157,17 +231,16 @@ public class X3HotelSearchApiCaller implements HotelSearchApiCaller {
         x3RequestXml.setOutputFormat("XML");
 
         ProfileX3Search x3Profile = new ProfileX3Search();
-        // TODO: Replace with actual X3 credentials when provided
-        x3Profile.setPassword("X3_PASSWORD_PLACEHOLDER");
-        x3Profile.setCode("X3_CODE_PLACEHOLDER");
-        x3Profile.setTokenNumber("X3_TOKEN_PLACEHOLDER");
+        x3Profile.setPassword(x3ApiConfig.getPassword());
+        x3Profile.setCode(x3ApiConfig.getCode());
+        x3Profile.setTokenNumber(x3ApiConfig.getToken());
         x3RequestXml.setProfile(x3Profile);
 
         SearchCriteriaX3Search x3Criteria = new SearchCriteriaX3Search();
         x3Criteria.setHotelCode(String.join(",", x3HotelCodes));
         x3Criteria.setStartDate(request.getCheckIn().replace("-", ""));
         x3Criteria.setEndDate(request.getCheckOut().replace("-", ""));
-        x3Criteria.setNationality(request.getNationalityId());
+        x3Criteria.setNationality(request.getNationalityCode());
         x3Criteria.setGroupByRooms("Y");
         x3Criteria.setCancellationPolicy("Y");
 
@@ -196,19 +269,25 @@ public class X3HotelSearchApiCaller implements HotelSearchApiCaller {
             if (config.getChildAges() != null) {
                 List<Integer> childAges = config.getChildAges();
                 if (childAges != null && !childAges.isEmpty()) {
-                    ChildX3Search[] x3Childs = childAges.stream()
-                        .map(age -> {
-                            ChildX3Search x3Child = new ChildX3Search();
-                            x3Child.setAge(age);
-                            return x3Child;
-                        })
-                        .toArray(ChildX3Search[]::new);
+                    // Filter out children with age 0 and only include valid child ages
+                    List<Integer> validChildAges = childAges.stream()
+                        .filter(age -> age > 0)
+                        .collect(Collectors.toList());
                     
-                    x3Room.setChild(x3Childs);
-                    
-                } else {
-                    x3Room.setChild(new ChildX3Search[0]); // Set empty array if no children
+                    if (!validChildAges.isEmpty()) {
+                        ChildX3Search[] x3Childs = validChildAges.stream()
+                            .map(age -> {
+                                ChildX3Search x3Child = new ChildX3Search();
+                                x3Child.setAge(age);
+                                return x3Child;
+                            })
+                            .toArray(ChildX3Search[]::new);
+                        
+                        x3Room.setChild(x3Childs);
+                    }
+                    // If no valid children (all age 0), don't set Child element at all
                 }
+                // If childAges is null or empty, don't set Child element at all
             }
             
             x3RoomConfig.setRoom(x3Room);
@@ -230,7 +309,7 @@ public class X3HotelSearchApiCaller implements HotelSearchApiCaller {
 
     private BaseRateX3 callX3ExternalApi(String x3XmlRequest) throws Exception {
         CloseableHttpClient x3Client = HttpClients.createDefault();
-        HttpPost x3HttpPost = new HttpPost(X3_API_URL);
+        HttpPost x3HttpPost = new HttpPost(x3ApiConfig.getUrl());
         x3HttpPost.addHeader("Content-Type", "application/xml");
         x3HttpPost.addHeader("Content-Encoding", "gzip");
 

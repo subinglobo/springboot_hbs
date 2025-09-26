@@ -3,6 +3,11 @@ package com.choosenfly.hotelbookingsystem.inventory.entities;
 import java.util.List;
 
 import com.choosenfly.hotelbookingsystem.common.base.entities.BaseEntity;
+import com.choosenfly.hotelbookingsystem.inventory.entities.compulsoryevents.CompulsorySupplyments;
+import com.choosenfly.hotelbookingsystem.inventory.entities.contractrate.ContractRate;
+import com.choosenfly.hotelbookingsystem.inventory.entities.discount.DiscountRate;
+import com.choosenfly.hotelbookingsystem.inventory.entities.specialrate.SpecialRate;
+import com.choosenfly.hotelbookingsystem.inventory.entities.staypay.StayPay;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterCountry;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterCurrency;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterHotelCategory;
@@ -135,8 +140,26 @@ public class Hotel extends BaseEntity{
 	@OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private List<BlockCheckInAndCheckOut> hotelBlockedDates;
 	
+    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
+    private List<ContractRate> contractRates ;
 	
+    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
+    private List<HotelRoomCategory> hotelRoomCategories ;
+    
+    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
+    private List<HotelRoomType> hotelRoomTypes ;
+    
+    @OneToMany(mappedBy = "hotel" ,cascade = CascadeType.ALL ,orphanRemoval = true,fetch = FetchType.LAZY)
+    private List<SpecialRate>specialRates;
+    
+	@OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	private List<DiscountRate> discountRates;
 	
+	@OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	private List<StayPay> stayPays;
+	
+	@OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	private List<CompulsorySupplyments> compulsorySupplyments;
 	
 	public List<BlockCheckInAndCheckOut> getHotelBlockedDates() {
 		return hotelBlockedDates;
@@ -386,19 +409,89 @@ public class Hotel extends BaseEntity{
 		this.hotelAmenities = hotelAmenities;
 	}
 
+	
+	public List<ContractRate> getContractRates() {
+		return contractRates;
+	}
+
+	public void setContractRates(List<ContractRate> contractRates) {
+		this.contractRates = contractRates;
+	}
+	
+	
+	public List<HotelRoomCategory> getHotelRoomCategories() {
+		return hotelRoomCategories;
+	}
+
+	public void setHotelRoomCategories(List<HotelRoomCategory> hotelRoomCategories) {
+		this.hotelRoomCategories = hotelRoomCategories;
+	}
+
+	public List<HotelRoomType> getHotelRoomTypes() {
+		return hotelRoomTypes;
+	}
+
+	public void setHotelRoomTypes(List<HotelRoomType> hotelRoomTypes) {
+		this.hotelRoomTypes = hotelRoomTypes;
+	}
+
+	
+	public List<SpecialRate> getSpecialRates() {
+		return specialRates;
+	}
+
+	public void setSpecialRates(List<SpecialRate> specialRates) {
+		this.specialRates = specialRates;
+	}
+
+	
+	public List<DiscountRate> getDiscountRates() {
+		return discountRates;
+	}
+
+	public void setDiscountRates(List<DiscountRate> discountRates) {
+		this.discountRates = discountRates;
+	}
+
+	
+	
+	public List<StayPay> getStayPays() {
+		return stayPays;
+	}
+
+	public void setStayPays(List<StayPay> stayPays) {
+		this.stayPays = stayPays;
+	}
+
+	
+	public List<CompulsorySupplyments> getCompulsorySupplyments() {
+		return compulsorySupplyments;
+	}
+
+	public void setCompulsorySupplyments(List<CompulsorySupplyments> compulsorySupplyments) {
+		this.compulsorySupplyments = compulsorySupplyments;
+	}
+
+	
 	@Override
 	public String toString() {
 		return "Hotel [hotelId=" + hotelId + ", hotelName=" + hotelName + ", hotelCurrency=" + hotelCurrency
-				+ ", hotelType=" + hotelType + ", image360=" + image360 + ", hotelDescription=" + hotelDescription
-				+ ", childComAgeMin=" + childComAgeMin + ", childComAgeMax=" + childComAgeMax
-				+ ", childChargeableAgeMin=" + childChargeableAgeMin + ", childChargeableAgeMax="
-				+ childChargeableAgeMax + ", address=" + address + ", zipcode=" + zipcode + ", latitude=" + latitude
-				+ ", longitude=" + longitude + ", isDeleted=" + isDeleted + "]";
+				+ ", hotelCategory=" + hotelCategory + ", hotelType=" + hotelType + ", markupType=" + markupType
+				+ ", image360=" + image360 + ", hotelDescription=" + hotelDescription + ", childComAgeMin="
+				+ childComAgeMin + ", childComAgeMax=" + childComAgeMax + ", childChargeableAgeMin="
+				+ childChargeableAgeMin + ", childChargeableAgeMax=" + childChargeableAgeMax + ", region=" + region
+				+ ", country=" + country + ", state=" + state + ", place=" + place + ", address=" + address
+				+ ", zipcode=" + zipcode + ", latitude=" + latitude + ", longitude=" + longitude + ", isDeleted="
+				+ isDeleted + ", contactDetailsCount=" + (contactDetails != null ? contactDetails.size() : 0) + ", bankDetailsCount=" + (bankDetails != null ? bankDetails.size() : 0) + ", weekDays="
+				+ (weekDays != null ? "HotelWeekDays" : null) + ", roomsCount=" + (rooms != null ? rooms.size() : 0) + ", termsAndConditionsCount=" + (termsAndConditions != null ? termsAndConditions.size() : 0) + ", hotelAmenitiesCount="
+				+ (hotelAmenities != null ? hotelAmenities.size() : 0) + ", hotelOccupanciesCount=" + (hotelOccupancies != null ? hotelOccupancies.size() : 0) + ", minimumLengthsCount=" + (minimumLengths != null ? minimumLengths.size() : 0)
+				+ ", hotelAvailabilitiesCount=" + (hotelAvailabilities != null ? hotelAvailabilities.size() : 0) + ", hotelBlockedDatesCount=" + (hotelBlockedDates != null ? hotelBlockedDates.size() : 0)
+				+ ", contractRatesCount=" + (contractRates != null ? contractRates.size() : 0) + ", hotelRoomCategoriesCount=" + (hotelRoomCategories != null ? hotelRoomCategories.size() : 0)
+				+ ", hotelRoomTypesCount=" + (hotelRoomTypes != null ? hotelRoomTypes.size() : 0) + ", specialRatesCount=" + (specialRates != null ? specialRates.size() : 0) + ", discountRatesCount="
+				+ (discountRates != null ? discountRates.size() : 0) + ", stayPaysCount=" + (stayPays != null ? stayPays.size() : 0) + ", compulsorySupplementsCount=" + (compulsorySupplyments != null ? compulsorySupplyments.size() : 0) + "]";
 	}
 
 
-	
-	
 	
 	
 

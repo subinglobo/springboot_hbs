@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 import com.choosenfly.hotelbookingsystem.inventory.dto.BlockCheckInAndCheckOutDTO;
 import com.choosenfly.hotelbookingsystem.inventory.dto.HotelAvailabilityDTO;
@@ -65,7 +66,15 @@ public class HotelController {
 	}
 
 	@PostMapping
-	public ResponseEntity<HotelDTO> saveHotel(@Valid @RequestBody HotelDTO hotelDTO) {
+	public ResponseEntity<HotelDTO> saveHotel(@Valid @ModelAttribute HotelDTO hotelDTO) {
+
+		HotelDTO savedHotel = hotelService.saveHotel(hotelDTO);
+		return new ResponseEntity<>(savedHotel, HttpStatus.CREATED);
+	}
+	
+	// Alternative endpoint for JSON-only hotel creation (without file upload)
+	@PostMapping("/json")
+	public ResponseEntity<HotelDTO> saveHotelJson(@Valid @RequestBody HotelDTO hotelDTO) {
 
 		HotelDTO savedHotel = hotelService.saveHotel(hotelDTO);
 		return new ResponseEntity<>(savedHotel, HttpStatus.CREATED);
@@ -351,4 +360,4 @@ public class HotelController {
 		
 	}
 	
-}
+} 

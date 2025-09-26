@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.choosenfly.hotelbookingsystem.configuration.AgentApiMappingProperties;
+import com.choosenfly.hotelbookingsystem.agent.service.AgentApiExclusionService;
 
 import jakarta.annotation.PostConstruct;
 
@@ -27,6 +28,9 @@ public class HotelApiCallerContext {
 
     @Autowired
     private AgentApiMappingProperties agentApiMappingProperties;
+
+    @Autowired
+    private AgentApiExclusionService agentApiExclusionService;
 
     @PostConstruct
     public void initializeCallers() {
@@ -75,9 +79,28 @@ public class HotelApiCallerContext {
 
     public List<HotelSearchApiCaller> getCallersForAgent(Long agentId) {
         List<HotelSearchApiCaller> callers = agentApiCallers.getOrDefault(agentId, allCallers);
-        logger.debug("Returning {} callers for agentId={}: {}", 
-                    callers.size(), agentId, 
-                    callers.stream().map(HotelSearchApiCaller::getApiKey).toList());
-        return callers;
+        
+        // Filter out excluded APIs for this agent
+        List<HotelSearchApiCaller> filteredCallers = callers.stream()
+                .filter(caller -> {
+                    try {
+                        // Check if this API is excluded for the agent
+                        boolean isExcluded = agentApiExclusionService.isApiExcludedForAgent(agentId, caller.getApiKey());
+                        if (isExcluded) {
+                            logger.info("API {} is excluded for agentId={}, filtering out", caller.getApiKey(), agentId);
+                        }
+                        return !isExcluded;
+                    } catch (Exception e) {
+                        logger.warn("Error checking API exclusion for agentId={}, apiCode={}: {}. Including API by default.", 
+                                   agentId, caller.getApiKey(), e.getMessage());
+                        return true; // Include API if exclusion check fails
+                    }
+                })
+                .collect(Collectors.toList());
+        
+        logger.debug("Returning {} callers for agentId={} (filtered from {} original callers): {}", 
+                    filteredCallers.size(), agentId, callers.size(),
+                    filteredCallers.stream().map(HotelSearchApiCaller::getApiKey).toList());
+        return filteredCallers;
     }
 }

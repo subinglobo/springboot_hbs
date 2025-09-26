@@ -41,4 +41,39 @@ public interface IwtxHotelRepository extends JpaRepository<IwtxHotel, Integer> {
      * If you want case-insensitive search by city name and country ID.
      */
     List<IwtxHotel> findByCityNameIgnoreCaseAndCountryId(String cityName, Integer countryId);
+
+    /**
+     * Find hotel by hotel code
+     * 
+     * @param hotelCode hotel code
+     * @return IwtxHotel entity
+     */
+    IwtxHotel findByHotelCode(String hotelCode);
+    
+    /**
+     * Find hotels by multiple hotel codes in a single query
+     * @param hotelCodes list of hotel codes
+     * @return List of IwtxHotel entities
+     */
+    @Query("SELECT h FROM IwtxHotel h WHERE h.hotelCode IN :hotelCodes")
+    List<IwtxHotel> findByHotelCodeIn(@Param("hotelCodes") List<String> hotelCodes);
+    
+    /**
+     * Find hotels by multiple hotel codes and return as HotelInfoIwtx DTOs in a single query
+     * @param hotelCodes list of hotel codes
+     * @return List of HotelInfoIwtx DTOs
+     */
+    @Query("""
+        SELECT new com.choosenfly.hotelbookingsystem.api.iwtx.dto.HotelInfoIwtx(
+            h.hotelCode,
+            h.hotelName,
+            h.imagesUrl,
+            CAST(COALESCE(h.starRating, '0') AS integer),
+            h.hotelAddress
+        )
+        FROM IwtxHotel h
+        WHERE h.hotelCode IN :hotelCodes
+        AND h.isDeleted = false
+    """)
+    List<HotelInfoIwtx> findHotelInfoByHotelCodes(@Param("hotelCodes") List<String> hotelCodes);
 }

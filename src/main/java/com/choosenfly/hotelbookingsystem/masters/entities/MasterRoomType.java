@@ -1,12 +1,18 @@
 package com.choosenfly.hotelbookingsystem.masters.entities;
 
-import com.choosenfly.hotelbookingsystem.common.base.entities.BaseEntity;
+import java.util.List;
 
+import com.choosenfly.hotelbookingsystem.common.base.entities.BaseEntity;
+import com.choosenfly.hotelbookingsystem.inventory.entities.HotelRoomType;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
@@ -31,6 +37,9 @@ public class MasterRoomType extends BaseEntity {
 
 	@Column(name = "meal_plan_id")
 	private Long mealPlanId;
+	
+    @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
+    private List<HotelRoomType> hotelRoomTypes  ;
 
 	// Getters and Setters
 	public Long getRoomtypeId() {
@@ -72,4 +81,13 @@ public class MasterRoomType extends BaseEntity {
 	public void setMealPlanId(Long mealPlanId) {
 		this.mealPlanId = mealPlanId;
 	}
+
+	public List<HotelRoomType> getHotelRoomTypes() {
+		return hotelRoomTypes;
+	}
+
+	public void setHotelRoomTypes(List<HotelRoomType> hotelRoomTypes) {
+		this.hotelRoomTypes = hotelRoomTypes;
+	}
+	
 }

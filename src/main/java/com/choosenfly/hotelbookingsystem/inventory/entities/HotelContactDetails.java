@@ -117,7 +117,7 @@ public class HotelContactDetails extends BaseEntity {
 
 	@Override
 	public String toString() {
-		return "HotelContactDetails [id=" + id + ", hotel=" + hotel + ", contactPerson=" + contactPerson
+		return "HotelContactDetails [id=" + id + ", hotelId=" + (hotel != null ? hotel.getHotelId() : null) + ", contactPerson=" + contactPerson
 				+ ", personalEmail=" + personalEmail + ", teleNumber=" + teleNumber + ", mobileNumber=" + mobileNumber
 				+ "]";
 	}

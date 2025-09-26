@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -17,12 +19,14 @@ import com.choosenfly.hotelbookingsystem.auth.exceptions.InvalidRoleException;
 import com.choosenfly.hotelbookingsystem.auth.exceptions.MissingCredentialsException;
 import com.choosenfly.hotelbookingsystem.auth.exceptions.MissingEmailException;
 import com.choosenfly.hotelbookingsystem.auth.exceptions.MissingRequestBodyException;
+import com.choosenfly.hotelbookingsystem.auth.exceptions.UserNotRegistrationException;
 import com.choosenfly.hotelbookingsystem.auth.exceptions.UserRegistrationException;
 import com.choosenfly.hotelbookingsystem.common.error.dto.ErrorResponse;
 import com.choosenfly.hotelbookingsystem.exceptions.HotelNotFoundException;
 import com.choosenfly.hotelbookingsystem.exceptions.InvalidUserTypeException;
 
 @RestControllerAdvice(basePackages = "com.choosenfly.hotelbookingsystem.auth")
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class AuthExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(AuthExceptionHandler.class);
@@ -111,4 +115,13 @@ public class AuthExceptionHandler {
         );
         return new ResponseEntity<>(response, status);
     }
+    
+    @ExceptionHandler(UserNotRegistrationException.class)
+	public ResponseEntity<ErrorResponse> handleUserRegistrationException(UserNotRegistrationException ex) {
+		// Extract the first error message
+		String errorMessage = ex.getMessage();
+		
+		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Bad Request", errorMessage);
+		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
 }

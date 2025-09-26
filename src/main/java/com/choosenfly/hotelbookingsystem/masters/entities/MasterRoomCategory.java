@@ -1,12 +1,19 @@
 package com.choosenfly.hotelbookingsystem.masters.entities;
 
-import com.choosenfly.hotelbookingsystem.common.base.entities.BaseEntity;
+import java.util.List;
 
+import com.choosenfly.hotelbookingsystem.common.base.entities.BaseEntity;
+import com.choosenfly.hotelbookingsystem.inventory.entities.HotelContactDetails;
+import com.choosenfly.hotelbookingsystem.inventory.entities.HotelRoomCategory;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -26,6 +33,9 @@ public class MasterRoomCategory extends BaseEntity {
 
     @Column(name = "is_deleted")
     private Boolean isDeleted;
+    
+	@OneToMany(mappedBy = "roomCategory", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	private List<HotelRoomCategory> hotelRoomCategories;
 
     // Getters and Setters
     public Long getRoomCategoryId() {
@@ -59,4 +69,16 @@ public class MasterRoomCategory extends BaseEntity {
     public void setIsDeleted(Boolean isDeleted) {
         this.isDeleted = isDeleted;
     }
+
+	public List<HotelRoomCategory> getHotelRoomCategories() {
+		return hotelRoomCategories;
+	}
+
+	public void setHotelRoomCategories(List<HotelRoomCategory> hotelRoomCategories) {
+		this.hotelRoomCategories = hotelRoomCategories;
+	}
+
+    
+    
+    
 }

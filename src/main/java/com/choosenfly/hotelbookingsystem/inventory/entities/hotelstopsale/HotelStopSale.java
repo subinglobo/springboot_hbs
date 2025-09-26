@@ -6,6 +6,7 @@ import com.choosenfly.hotelbookingsystem.common.base.entities.BaseEntity;
 import com.choosenfly.hotelbookingsystem.inventory.entities.Hotel;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterMarketType;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterRoomCategory;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -49,6 +50,7 @@ public class HotelStopSale extends BaseEntity{
     private Boolean isLive;
     
 	 @OneToMany(mappedBy = "stopSale", cascade = CascadeType.ALL, orphanRemoval = true)
+	 @JsonIgnore
 	private List<StopSaleValiditty> validityList;
 
 	public Long getHotelStopSaleId() {
@@ -138,9 +140,9 @@ public class HotelStopSale extends BaseEntity{
 	
 	@Override
 	public String toString() {
-		return "HotelStopSale [hotelStopSaleId=" + hotelStopSaleId + ", hotel=" + hotel + ", roomCategoryId="
-				+ roomCategoryId + ", marketTypeId=" + marketTypeId + ", freeSale=" + freeSale + ", block=" + block
-				+ ", roomAllocation=" + roomAllocation + ", isLive=" + isLive + ", validityList=" + validityList + "]";
+		return "HotelStopSale [hotelStopSaleId=" + hotelStopSaleId + ", hotelId=" + (hotel != null ? hotel.getHotelId() : null) + ", roomCategoryId="
+				+ (roomCategoryId != null ? roomCategoryId.getRoomCategoryId() : null) + ", marketTypeId=" + (marketTypeId != null ? marketTypeId.getMarketTypeId() : null) + ", freeSale=" + freeSale + ", block=" + block
+				+ ", roomAllocation=" + roomAllocation + ", isLive=" + isLive + ", validityCount=" + (validityList != null ? validityList.size() : 0) + "]";
 	}
 
 	

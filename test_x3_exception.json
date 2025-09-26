@@ -1,0 +1,15 @@
+{
+  "checkInDate": "2025-09-19",
+  "checkOutDate": "2025-09-20", 
+  "hotelCode": "9999-19646832",
+  "rooms": [
+    {
+      "adults": 1,
+      "children": 0,
+      "adultAges": [30]
+    }
+  ],
+  "nationality": "AF",
+  "agentId": "1",
+  "apiId": 15
+}

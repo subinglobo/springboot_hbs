@@ -33,6 +33,12 @@ public class SecurityConfig {
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+    
+    @Autowired
+    private CustomAccessDeniedHandler customAccessDeniedHandler;
+    
+    @Autowired
+    private ExceptionHandlingFilter exceptionHandlingFilter;
 
     // Properly hook in CustomUserDetailsService
     @Autowired
@@ -53,13 +59,16 @@ public class SecurityConfig {
             		"/api/destination/getplaces/*",
             		"/api/agentCategory",
             		"/auth/refresh-token",
+            		"/api/hotel-rooms/**",
             		"/swagger-ui/**",
                     "/swagger-ui.html",
                     "/v3/api-docs/**",
                     "/v2/api-docs/**",
                     "/webjars/**").permitAll()
             .anyRequest().authenticated())
+            .exceptionHandling(ex -> ex.accessDeniedHandler(customAccessDeniedHandler))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .addFilterBefore(exceptionHandlingFilter, UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
@@ -72,7 +81,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList("http://localhost:3307"));
+        config.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("*"));
         config.setAllowCredentials(true); // If sending cookies or auth headers
