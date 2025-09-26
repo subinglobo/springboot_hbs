@@ -5,7 +5,7 @@ FROM eclipse-temurin:17-jdk
 WORKDIR /app
 
 # Copy the built JAR file from target directory
-COPY target/*.jar /app/app.jar
+COPY docker/*.jar /app/app.jar
 
 # Create logs directory
 RUN mkdir -p /app/logs
