@@ -1,0 +1,161 @@
+{
+  "inhouse_hotel_room_search_samples": {
+    "endpoint": "POST /api/hotel-rooms/search",
+    "description": "In-house hotel room search with API ID = 1 for internal inventory",
+    
+    "sample_requests": {
+      "basic_inhouse_search": {
+        "description": "Basic in-house hotel room search using hotel code format IN{hotelId}",
+        "request": {
+          "checkInDate": "2025-10-12",
+          "checkOutDate": "2025-10-13",
+          "hotelCode": "IN108",
+          "nationality": "IN",
+          "agentId": "1",
+          "apiId": 1,
+          "rooms": [
+            {
+              "adults": 1,
+              "children": 0,
+              "adultAges": [30]
+            }
+          ]
+        }
+      },
+      
+      "family_inhouse_search": {
+        "description": "Family search with children using in-house system",
+        "request": {
+          "checkInDate": "2025-11-15",
+          "checkOutDate": "2025-11-17",
+          "hotelCode": "IN205",
+          "nationality": "US",
+          "agentId": "1",
+          "apiId": 1,
+          "rooms": [
+            {
+              "adults": 2,
+              "children": 2,
+              "adultAges": [35, 32],
+              "childAges": [8, 5]
+            }
+          ]
+        }
+      },
+      
+      "multi_room_inhouse": {
+        "description": "Multiple rooms with different occupancy - in-house",
+        "request": {
+          "checkInDate": "2025-12-20",
+          "checkOutDate": "2025-12-25",
+          "hotelCode": "IN150",
+          "nationality": "GB",
+          "agentId": "2",
+          "apiId": 1,
+          "rooms": [
+            {
+              "adults": 2,
+              "children": 0,
+              "adultAges": [45, 42]
+            },
+            {
+              "adults": 1,
+              "children": 1,
+              "adultAges": [38],
+              "childAges": [10]
+            }
+          ]
+        }
+      }
+    },
+    
+    "processing_steps": {
+      "step_1": "Extract hotel ID from hotel code (e.g., 108 from IN108)",
+      "step_2": "Fetch hotel details and room categories from database",
+      "step_3": "Load contract rates and apply special rates/promotions",
+      "step_4": "Add cancellation policies and occupancy restrictions",
+      "step_5": "Calculate final pricing with markups and availability",
+      "step_6": "Attach special events and compulsory supplements",
+      "step_7": "Apply business rules and resolve rate conflicts",
+      "step_8": "Generate final decorated response with all details"
+    },
+    
+    "expected_response_format": {
+      "hotels": [
+        {
+          "hotelId": "IN108",
+          "hotelName": "Sample Hotel Name",
+          "starRating": 3,
+          "propertyType": "Hotel",
+          "chain": "Independent",
+          "city": "City Name",
+          "hotelAddress": "Hotel Address",
+          "hotelPhoneNumber": "Contact Number",
+          "roomCategories": [
+            {
+              "roomCategory": "Standard/Superior/Deluxe",
+              "roomTypeCode": "Category ID",
+              "baseRoomType": "Room Type Name",
+              "availableRates": [
+                {
+                  "mealPlan": "Room Only/Breakfast/Half Board/Full Board",
+                  "mealPlanCode": "28/7/11/14",
+                  "currency": "AED",
+                  "rate": "Base Rate",
+                  "totalRate": "Final Rate",
+                  "recommendedRetailPrice": "RRP with markup",
+                  "roomStatus": "OK",
+                  "nonRefundable": "true/false",
+                  "refundStatus": "NON REFUNDABLE/FLEXIBLE",
+                  "cancellationPolicies": [
+                    {
+                      "fromDate": "Policy start date",
+                      "toDate": "Policy end date",
+                      "percentOrAmount": "P",
+                      "value": "Penalty percentage/amount",
+                      "policyText": "Human readable policy"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "checkInDate": "Search check-in date",
+          "checkOutDate": "Search check-out date",
+          "nationality": "Guest nationality",
+          "numberOfRooms": "Total rooms requested",
+          "numberOfGuests": "Total guests",
+          "guestBreakdown": "Human readable summary",
+          "destination": "Destination name"
+        }
+      ],
+      "message": "Search completed successfully",
+      "success": true
+    },
+    
+    "curl_example": "curl -X POST http://localhost:8081/api/hotel-rooms/search \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"checkInDate\": \"2025-10-12\",\n    \"checkOutDate\": \"2025-10-13\",\n    \"hotelCode\": \"IN108\",\n    \"nationality\": \"IN\",\n    \"agentId\": \"1\",\n    \"apiId\": 1,\n    \"rooms\": [\n      {\n        \"adults\": 1,\n        \"children\": 0,\n        \"adultAges\": [30]\n      }\n    ]\n  }'",
+    
+    "key_features": {
+      "hotel_code_format": "IN{hotelId} - e.g., IN108 where 108 is the database hotel ID",
+      "api_id": "Must be set to 1 to trigger in-house search processing",
+      "rate_calculation": "Includes contract rates, seasonal adjustments, early booking discounts, stay-pay promotions, and agent markups",
+      "meal_plans": "Supports Room Only, Breakfast, Half Board, and Full Board with different pricing",
+      "cancellation_policies": "Dynamic policies based on booking dates and hotel rules",
+      "availability": "Real-time availability checking from internal inventory",
+      "special_events": "Automatic detection of special events like New Year's Eve with compulsory supplements"
+    },
+    
+    "business_logic": {
+      "seasonal_pricing": "Peak season (Dec-Feb): +30%, High season (Mar-Apr, Oct-Nov): +10%, Low season (May-Sep): -10%",
+      "early_booking_discount": "7+ days advance booking: 10% discount",
+      "stay_pay_promotion": "3+ nights stay: 15% discount",
+      "agent_markup": "20% markup applied to all rates",
+      "room_category_multipliers": {
+        "suite": "2.0x base rate",
+        "deluxe": "1.5x base rate", 
+        "superior": "1.2x base rate",
+        "standard": "1.0x base rate"
+      }
+    }
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "hotelName": "Taj Hotel",
+  "hotelCurrencyId": 1,
+  "hotelCategoryId": 1,
+  "hotelTypeId": 1,
+  "markupTypeId": 1,
+  "image360": "https://example.com/taj-hotel-360-tour",
+  "hotelDescription": "A luxury hotel with premium Taj facilities.",
+  "childComAgeMin": 5,
+  "childComAgeMax": 10,
+  "childChargeableAgeMin": 11,
+  "childChargeableAgeMax": 17,
+  "regionId": 11,
+  "countryId": 235,
+  "stateId": 3,
+  "placeId": 3,
+  "address": "123 Luxury Street, City Center, Riya",
+  "zipcode": "123456",
+  "latitude": 37.7749,
+  "longitude": -122.4194,
+  "isDeleted": false,
+  
+  "contactDetails": [
+    {
+      "contactTypeId": 1,
+      "contactPerson": "Subin",
+      "personalEmail": "subinglobosoft@gmail.com",
+      "teleNumber": "7012179103",
+      "mobileNumber": "7981698609"
+    }
+  ],
+  
+  "bankDetails": [
+    {
+      "bankId": 1,
+      "accountNo": "1234567890",
+      "iban": "GB29NWBK60161331926819",
+      "swiftCode": "NWBKGB2L",
+      "bankAddress": "123 Bank Street, City",
+      "telephone": "+123456789",
+      "faxNumber": "+987654321",
+      "contactPerson": "Jane Smith"
+    }
+  ],
+  
+  "weekDays": {
+    "wdSunday": false,
+    "wdMonday": true,
+    "wdTuesday": true,
+    "wdWednesday": true,
+    "wdThursday": true,
+    "wdFriday": true,
+    "wdSaturday": false,
+    "wedSunday": true,
+    "wedMonday": false,
+    "wedTuesday": false,
+    "wedWednesday": false,
+    "wedThursday": false,
+    "wedFriday": false,
+    "wedSaturday": true
+  },
+  
+  "roomCategories": [
+    {
+      "roomCategoryId": 2,
+      "name": "Junior Suite",
+      "noOfRooms": "10"
+    },
+    {
+      "roomCategoryId": 8,
+      "name": "Classic Room Balcony",
+      "noOfRooms": "15"
+    }
+  ],
+  
+  "roomTypes": [
+    {
+      "hotelRoomCategoryId": 0,
+      "roomTypeId": 1
+    },
+    {
+      "hotelRoomCategoryId": 1,
+      "roomTypeId": 2
+    }
+  ],
+  
+  "termsAndConditions": [
+    {
+      "description": "Check-in time is 2:00 PM."
+    },
+    {
+      "description": "No pets allowed in the hotel."
+    }
+  ],
+  
+  "amenityIds": [1, 2, 3, 4]
+}

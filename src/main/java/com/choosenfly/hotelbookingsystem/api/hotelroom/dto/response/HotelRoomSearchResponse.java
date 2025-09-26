@@ -46,6 +46,7 @@ public class HotelRoomSearchResponse {
         this.message = message;
     }
 
+
     public boolean isSuccess() {
         return success;
     }

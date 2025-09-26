@@ -2,6 +2,7 @@ package com.choosenfly.hotelbookingsystem;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.retry.annotation.EnableRetry;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;

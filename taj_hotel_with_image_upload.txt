@@ -1,0 +1,155 @@
+// POST /api/hotels - Form Data Parameters with Image Upload
+// Content-Type: multipart/form-data
+
+// Basic Hotel Information
+hotelName: Taj Hotel
+hotelCurrencyId: 1
+hotelCategoryId: 1
+hotelTypeId: 1
+markupTypeId: 1
+image360File: [SELECT YOUR IMAGE FILE HERE]
+hotelDescription: A luxury hotel with premium Taj facilities.
+childComAgeMin: 5
+childComAgeMax: 10
+childChargeableAgeMin: 11
+childChargeableAgeMax: 17
+regionId: 11
+countryId: 235
+stateId: 3
+placeId: 3
+address: 123 Luxury Street, City Center, Riya
+zipcode: 123456
+latitude: 37.7749
+longitude: -122.4194
+isDeleted: false
+
+// Contact Details
+contactDetails[0].contactTypeId: 1
+contactDetails[0].contactPerson: Subin
+contactDetails[0].personalEmail: subinglobosoft@gmail.com
+contactDetails[0].teleNumber: 7012179103
+contactDetails[0].mobileNumber: 7981698609
+
+// Bank Details
+bankDetails[0].bankId: 1
+bankDetails[0].accountNo: 1234567890
+bankDetails[0].iban: GB29NWBK60161331926819
+bankDetails[0].swiftCode: NWBKGB2L
+bankDetails[0].bankAddress: 123 Bank Street, City
+bankDetails[0].telephone: +123456789
+bankDetails[0].faxNumber: +987654321
+bankDetails[0].contactPerson: Jane Smith
+
+// Week Days
+weekDays.wdSunday: false
+weekDays.wdMonday: true
+weekDays.wdTuesday: true
+weekDays.wdWednesday: true
+weekDays.wdThursday: true
+weekDays.wdFriday: true
+weekDays.wdSaturday: false
+weekDays.wedSunday: true
+weekDays.wedMonday: false
+weekDays.wedTuesday: false
+weekDays.wedWednesday: false
+weekDays.wedThursday: false
+weekDays.wedFriday: false
+weekDays.wedSaturday: true
+
+// Room Categories
+roomCategories[0].roomCategoryId: 2
+roomCategories[0].name: Junior Suite
+roomCategories[0].noOfRooms: 10
+
+roomCategories[1].roomCategoryId: 8
+roomCategories[1].name: Classic Room Balcony
+roomCategories[1].noOfRooms: 15
+
+// Room Types (Index-based: 0=Junior Suite, 1=Classic Room Balcony)
+roomTypes[0].hotelRoomCategoryId: 0
+roomTypes[0].roomTypeId: 1
+
+roomTypes[1].hotelRoomCategoryId: 1
+roomTypes[1].roomTypeId: 2
+
+// Terms and Conditions
+termsAndConditions[0].description: Check-in time is 2:00 PM.
+termsAndConditions[1].description: No pets allowed in the hotel.
+
+// Amenity IDs
+amenityIds: 1,2,3,4
+
+// ========================================
+// POSTMAN SETUP INSTRUCTIONS:
+// ========================================
+// 1. Method: POST
+// 2. URL: http://localhost:8080/api/hotels
+// 3. Body Tab → form-data
+// 4. Add all above fields as KEY-VALUE pairs
+// 5. For image360File: Change type to "File" and select your image
+// 6. Send the request
+
+// ========================================
+// CURL COMMAND WITH FILE UPLOAD:
+// ========================================
+curl -X POST http://localhost:8080/api/hotels \
+  -F "hotelName=Taj Hotel" \
+  -F "hotelCurrencyId=1" \
+  -F "hotelCategoryId=1" \
+  -F "hotelTypeId=1" \
+  -F "markupTypeId=1" \
+  -F "image360File=@/path/to/your/image.jpg" \
+  -F "hotelDescription=A luxury hotel with premium Taj facilities." \
+  -F "childComAgeMin=5" \
+  -F "childComAgeMax=10" \
+  -F "childChargeableAgeMin=11" \
+  -F "childChargeableAgeMax=17" \
+  -F "regionId=11" \
+  -F "countryId=235" \
+  -F "stateId=3" \
+  -F "placeId=3" \
+  -F "address=123 Luxury Street, City Center, Riya" \
+  -F "zipcode=123456" \
+  -F "latitude=37.7749" \
+  -F "longitude=-122.4194" \
+  -F "isDeleted=false" \
+  -F "contactDetails[0].contactTypeId=1" \
+  -F "contactDetails[0].contactPerson=Subin" \
+  -F "contactDetails[0].personalEmail=subinglobosoft@gmail.com" \
+  -F "contactDetails[0].teleNumber=7012179103" \
+  -F "contactDetails[0].mobileNumber=7981698609" \
+  -F "bankDetails[0].bankId=1" \
+  -F "bankDetails[0].accountNo=1234567890" \
+  -F "bankDetails[0].iban=GB29NWBK60161331926819" \
+  -F "bankDetails[0].swiftCode=NWBKGB2L" \
+  -F "bankDetails[0].bankAddress=123 Bank Street, City" \
+  -F "bankDetails[0].telephone=+123456789" \
+  -F "bankDetails[0].faxNumber=+987654321" \
+  -F "bankDetails[0].contactPerson=Jane Smith" \
+  -F "weekDays.wdSunday=false" \
+  -F "weekDays.wdMonday=true" \
+  -F "weekDays.wdTuesday=true" \
+  -F "weekDays.wdWednesday=true" \
+  -F "weekDays.wdThursday=true" \
+  -F "weekDays.wdFriday=true" \
+  -F "weekDays.wdSaturday=false" \
+  -F "weekDays.wedSunday=true" \
+  -F "weekDays.wedMonday=false" \
+  -F "weekDays.wedTuesday=false" \
+  -F "weekDays.wedWednesday=false" \
+  -F "weekDays.wedThursday=false" \
+  -F "weekDays.wedFriday=false" \
+  -F "weekDays.wedSaturday=true" \
+  -F "roomCategories[0].roomCategoryId=2" \
+  -F "roomCategories[0].name=Junior Suite" \
+  -F "roomCategories[0].noOfRooms=10" \
+  -F "roomCategories[1].roomCategoryId=8" \
+  -F "roomCategories[1].name=Classic Room Balcony" \
+  -F "roomCategories[1].noOfRooms=15" \
+  -F "roomTypes[0].hotelRoomCategoryId=0" \
+  -F "roomTypes[0].roomTypeId=1" \
+  -F "roomTypes[1].hotelRoomCategoryId=1" \
+  -F "roomTypes[1].roomTypeId=2" \
+  -F "termsAndConditions[0].description=Check-in time is 2:00 PM." \
+  -F "termsAndConditions[1].description=No pets allowed in the hotel." \
+  -F "amenityIds=1,2,3,4"

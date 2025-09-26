@@ -1,0 +1,209 @@
+{
+  "hotel_save_samples": {
+    "description": "Sample request parameters for POST /api/hotels and POST /api/hotels/json endpoints",
+    
+    "json_endpoint_sample": {
+      "url": "POST /api/hotels/json",
+      "content_type": "application/json",
+      "request_body": {
+        "hotelName": "Grand Palace Resort & Spa",
+        "hotelCurrencyId": 1,
+        "hotelCategoryId": 2,
+        "hotelTypeId": 1,
+        "markupTypeId": 1,
+        "image360": "https://example.com/360-tour",
+        "hotelDescription": "Luxury resort with world-class amenities and stunning ocean views",
+        "childComAgeMin": 0,
+        "childComAgeMax": 12,
+        "childChargeableAgeMin": 6,
+        "childChargeableAgeMax": 17,
+        "regionId": 1,
+        "countryId": 1,
+        "stateId": 1,
+        "placeId": 1,
+        "address": "123 Ocean Drive, Paradise Beach",
+        "zipcode": "12345",
+        "latitude": 25.7617,
+        "longitude": -80.1918,
+        "isDeleted": false,
+        
+        "contactDetails": [
+          {
+            "contactTypeId": 1,
+            "contactValue": "+1-555-0123",
+            "isPrimary": true
+          },
+          {
+            "contactTypeId": 2,
+            "contactValue": "info@grandpalace.com",
+            "isPrimary": false
+          }
+        ],
+        
+        "bankDetails": [
+          {
+            "bankId": 1,
+            "accountNumber": "1234567890",
+            "accountHolderName": "Grand Palace Resort Ltd",
+            "swiftCode": "GPRLUS33",
+            "routingNumber": "021000021",
+            "branchName": "Main Branch",
+            "branchAddress": "456 Banking St, Financial District",
+            "phoneNumber": "+1-555-0456",
+            "faxNumber": "+1-555-0457",
+            "contactPerson": "John Smith"
+          }
+        ],
+        
+        "weekDays": {
+          "wdSunday": true,
+          "wdMonday": true,
+          "wdTuesday": true,
+          "wdWednesday": true,
+          "wdThursday": true,
+          "wdFriday": true,
+          "wdSaturday": true,
+          "wedSunday": false,
+          "wedMonday": false,
+          "wedTuesday": false,
+          "wedWednesday": false,
+          "wedThursday": false,
+          "wedFriday": false,
+          "wedSaturday": false
+        },
+        
+        "roomCategories": [
+          {
+            "roomCategoryId": 1,
+            "name": "Junior Suite",
+            "noOfRooms": "10"
+          },
+          {
+            "roomCategoryId": 2,
+            "name": "Classic Room Balcony",
+            "noOfRooms": "25"
+          },
+          {
+            "roomCategoryId": 3,
+            "name": "Presidential Suite",
+            "noOfRooms": "5"
+          }
+        ],
+        
+        "roomTypes": [
+          {
+            "hotelRoomCategoryId": 0,
+            "roomTypeId": 1
+          },
+          {
+            "hotelRoomCategoryId": 0,
+            "roomTypeId": 2
+          },
+          {
+            "hotelRoomCategoryId": 1,
+            "roomTypeId": 1
+          },
+          {
+            "hotelRoomCategoryId": 1,
+            "roomTypeId": 3
+          },
+          {
+            "hotelRoomCategoryId": 2,
+            "roomTypeId": 4
+          }
+        ],
+        
+        "termsAndConditions": [
+          {
+            "description": "Check-in time is 3:00 PM and check-out time is 11:00 AM"
+          },
+          {
+            "description": "Cancellation must be made 48 hours prior to arrival"
+          },
+          {
+            "description": "Pets are allowed with additional charges"
+          }
+        ],
+        
+        "amenityIds": [1, 2, 3, 5, 8, 12, 15]
+      }
+    },
+    
+    "form_data_endpoint_sample": {
+      "url": "POST /api/hotels",
+      "content_type": "multipart/form-data",
+      "description": "Use form-data format for file uploads. All JSON fields above can be sent as form fields",
+      "additional_fields": {
+        "hotelImages": "file upload field for hotel images",
+        "documents": "file upload field for hotel documents"
+      }
+    },
+    
+    "room_category_room_type_explanation": {
+      "description": "How room categories and room types work together",
+      "roomCategories": {
+        "explanation": "Array of room categories available in the hotel",
+        "index_based_reference": "Room types reference categories by their index (0-based) in the roomCategories array"
+      },
+      "roomTypes": {
+        "explanation": "Array of room types that belong to specific room categories",
+        "hotelRoomCategoryId_field": "References the index of the room category (0 = first category, 1 = second category, etc.)"
+      },
+      "example_mapping": {
+        "roomCategories[0]": "Junior Suite (index 0)",
+        "roomCategories[1]": "Classic Room Balcony (index 1)", 
+        "roomCategories[2]": "Presidential Suite (index 2)",
+        "roomTypes_mapping": {
+          "roomTypes[0].hotelRoomCategoryId = 0": "Room Only for Junior Suite",
+          "roomTypes[1].hotelRoomCategoryId = 0": "Room with Breakfast for Junior Suite",
+          "roomTypes[2].hotelRoomCategoryId = 1": "Room Only for Classic Room Balcony",
+          "roomTypes[3].hotelRoomCategoryId = 1": "All Inclusive for Classic Room Balcony",
+          "roomTypes[4].hotelRoomCategoryId = 2": "Premium Package for Presidential Suite"
+        }
+      }
+    },
+    
+    "minimal_sample": {
+      "description": "Minimal required fields for hotel creation",
+      "request_body": {
+        "hotelName": "Simple Hotel",
+        "hotelCurrencyId": 1,
+        "hotelCategoryId": 1,
+        "countryId": 1,
+        "address": "123 Main St",
+        "roomCategories": [
+          {
+            "roomCategoryId": 1,
+            "name": "Standard Room",
+            "noOfRooms": "20"
+          }
+        ],
+        "roomTypes": [
+          {
+            "hotelRoomCategoryId": 0,
+            "roomTypeId": 1
+          }
+        ]
+      }
+    },
+    
+    "curl_examples": {
+      "json_endpoint": {
+        "command": "curl -X POST http://localhost:8080/api/hotels/json \\\n  -H \"Content-Type: application/json\" \\\n  -d @hotel_request.json"
+      },
+      "form_data_endpoint": {
+        "command": "curl -X POST http://localhost:8080/api/hotels \\\n  -F \"hotelName=Grand Palace Resort\" \\\n  -F \"hotelCurrencyId=1\" \\\n  -F \"hotelCategoryId=2\" \\\n  -F \"countryId=1\" \\\n  -F \"address=123 Ocean Drive\" \\\n  -F \"roomCategories[0].roomCategoryId=1\" \\\n  -F \"roomCategories[0].name=Junior Suite\" \\\n  -F \"roomCategories[0].noOfRooms=10\" \\\n  -F \"roomTypes[0].hotelRoomCategoryId=0\" \\\n  -F \"roomTypes[0].roomTypeId=1\""
+      }
+    },
+    
+    "postman_collection_ready": {
+      "description": "Ready-to-import Postman collection format",
+      "method": "POST",
+      "url": "{{base_url}}/api/hotels/json",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": "Use the json_endpoint_sample.request_body above"
+    }
+  }
+}

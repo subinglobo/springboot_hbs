@@ -3,6 +3,7 @@ package com.choosenfly.hotelbookingsystem.api.hotelroom.controller;
 import com.choosenfly.hotelbookingsystem.api.hotelroom.dto.request.HotelRoomSearchRequest;
 import com.choosenfly.hotelbookingsystem.api.hotelroom.dto.response.HotelRoomSearchResponse;
 import com.choosenfly.hotelbookingsystem.api.hotelroom.service.common.HotelRoomSearchServiceInterface;
+import com.choosenfly.hotelbookingsystem.api.hotelroom.service.inhouse.InhouseHotelRoomSearchService;
 import com.choosenfly.hotelbookingsystem.api.hotelroom.service.iwtx.IwtxHotelRoomSearchService;
 import com.choosenfly.hotelbookingsystem.api.hotelroom.service.x3.X3HotelRoomSearchService;
 import org.slf4j.Logger;
@@ -24,12 +25,15 @@ public class UnifiedHotelRoomSearchController {
 
     private final IwtxHotelRoomSearchService iwtxHotelRoomSearchService;
     private final X3HotelRoomSearchService x3HotelRoomSearchService;
+    private final InhouseHotelRoomSearchService inhouseHotelRoomSearchService;
 
     @Autowired
     public UnifiedHotelRoomSearchController(IwtxHotelRoomSearchService iwtxHotelRoomSearchService, 
-                                          X3HotelRoomSearchService x3HotelRoomSearchService) {
+                                          X3HotelRoomSearchService x3HotelRoomSearchService,
+                                          InhouseHotelRoomSearchService inhouseHotelRoomSearchService) {
         this.iwtxHotelRoomSearchService = iwtxHotelRoomSearchService;
         this.x3HotelRoomSearchService = x3HotelRoomSearchService;
+        this.inhouseHotelRoomSearchService = inhouseHotelRoomSearchService;
     }
 
     /**
@@ -66,7 +70,7 @@ public class UnifiedHotelRoomSearchController {
     /**
      * Get the appropriate service implementation based on API ID
      * 
-     * @param apiId The API provider ID (12 = IWTX, 15 = X3)
+     * @param apiId The API provider ID (1 = In-house, 12 = IWTX, 15 = X3)
      * @return The corresponding service implementation
      * @throws IllegalArgumentException if API ID is not supported
      */
@@ -76,6 +80,9 @@ public class UnifiedHotelRoomSearchController {
         }
         
         switch (apiId) {
+            case 1:
+                logger.info("Routing request to In-house service");
+                return inhouseHotelRoomSearchService;
             case 12:
                 logger.info("Routing request to IWTX service");
                 return iwtxHotelRoomSearchService;
@@ -84,7 +91,7 @@ public class UnifiedHotelRoomSearchController {
                 return x3HotelRoomSearchService;
             default:
                 throw new IllegalArgumentException("Unsupported API ID: " + apiId + 
-                    ". Supported values are 12 (IWTX) and 15 (X3)");
+                    ". Supported values are 1 (In-house), 12 (IWTX) and 15 (X3)");
         }
     }
 }
