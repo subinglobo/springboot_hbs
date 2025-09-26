@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  # PostgreSQL 17 Database
+  db:
+    image: postgres:17-alpine
+    container_name: choosenfly-postgres-db
+    environment:
+      POSTGRES_DB: hotelbookingsystem
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres-init:/docker-entrypoint-initdb.d
+    networks:
+      - choosenfly-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d hotelbookingsystem"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # Spring Boot Backend Application
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: choosenfly-backend
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      POSTGRES_DB: hotelbookingsystem
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - choosenfly-network
+    restart: unless-stopped
+    volumes:
+      - app_logs:/app/logs
+      - ./uploads:/app/uploads
+
+volumes:
+  postgres_data:
+    driver: local
+  app_logs:
+    driver: local
+
+networks:
+  choosenfly-network:
+    driver: bridge
