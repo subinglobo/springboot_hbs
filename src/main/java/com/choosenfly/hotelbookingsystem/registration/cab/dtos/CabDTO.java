@@ -2,6 +2,9 @@ package com.choosenfly.hotelbookingsystem.registration.cab.dtos;
 
 import java.util.List;
 
+import org.eclipse.angus.mail.handlers.multipart_mixed;
+import org.springframework.web.multipart.MultipartFile;
+
 public class CabDTO {
 
     private Long cabId;
@@ -12,6 +15,8 @@ public class CabDTO {
     private Long countryid;
     private Long placeid;
     private String providername;
+    private MultipartFile cabImage;
+
     private List<CabLocationDTO> cabLocationDTOList;
   
 	public Long getCabId() {
@@ -68,11 +73,23 @@ public class CabDTO {
 	public void setCabLocationDTOList(List<CabLocationDTO> cabLocationDTOList) {
 		this.cabLocationDTOList = cabLocationDTOList;
 	}
+	
+	
+	public MultipartFile getCabImage() {
+		return cabImage;
+	}
+	public void setCabImage(MultipartFile cabImage) {
+		this.cabImage = cabImage;
+	}
+	
+	
+	
+	
 	@Override
 	public String toString() {
 		return "CabDTO [cabId=" + cabId + ", name=" + name + ", cabprovider=" + cabprovider + ", cabCode=" + cabCode
 				+ ", cabpic=" + cabpic + ", countryid=" + countryid + ", placeid=" + placeid + ", providername="
-				+ providername + ", cabLocationDTOList=" + cabLocationDTOList + "]";
+				+ providername + ", cabImage=" + cabImage + ", cabLocationDTOList=" + cabLocationDTOList + "]";
 	}
 	
 	

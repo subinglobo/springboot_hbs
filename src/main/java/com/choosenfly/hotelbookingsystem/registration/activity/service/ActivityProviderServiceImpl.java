@@ -5,11 +5,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.choosenfly.hotelbookingsystem.registration.activity.dtos.ActivityProviderDTO;
 import com.choosenfly.hotelbookingsystem.registration.activity.entities.ActivityProvider;
 import com.choosenfly.hotelbookingsystem.registration.activity.repository.ActivityProviderRepository;
-import com.choosenfly.hotelbookingsystem.registration.exceptions.EntityNotFoundException;
+import com.choosenfly.hotelbookingsystem.registration.exceptions.BadRequestException;
+import com.choosenfly.hotelbookingsystem.registration.exceptions.ResourceNotFoundException;
 
 import jakarta.validation.Valid;
 
@@ -42,8 +44,10 @@ public class ActivityProviderServiceImpl implements ActivityProviderService{
 	}
 
 	@Override
+	@Transactional()
 	public ActivityProviderDTO getActivityProviderById(Long id) {
-	    ActivityProvider activityProvider = activityProviderRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("ActivityProvider not found with id: " + id));
+	    ActivityProvider activityProvider = activityProviderRepository.findById(id)
+	            .orElseThrow(() -> new BadRequestException("ActivityProvider not found with id: " + id));
 
 	    ActivityProviderDTO dto = new ActivityProviderDTO();
 	    dto.setProviderId(activityProvider.getProviderId());
@@ -62,7 +66,7 @@ public class ActivityProviderServiceImpl implements ActivityProviderService{
 	public ActivityProviderDTO editActivityProvider(Long id, @Valid ActivityProviderDTO reqDTO) {
 	    // 1️⃣ Fetch existing provider
 	    ActivityProvider activityProvider = activityProviderRepository.findById(id)
-	            .orElseThrow(() -> new EntityNotFoundException("ActivityProvider not found with id: " + id));
+	            .orElseThrow(() -> new BadRequestException("ActivityProvider not found with id: " + id));
 
 	    // 2️⃣ Update fields
 	    activityProvider.setProviderName(reqDTO.getProviderName());
@@ -94,13 +98,13 @@ public class ActivityProviderServiceImpl implements ActivityProviderService{
 	public ResponseEntity<String> deleteActivityProvider(Long id) {
 	    // 1️⃣ Fetch the existing provider
 	    ActivityProvider activityProvider = activityProviderRepository.findById(id)
-	            .orElseThrow(() -> new EntityNotFoundException("ActivityProvider not found with id: " + id));
+	            .orElseThrow(() -> new BadRequestException("ActivityProvider not found with id: " + id));
 
 	    // 2️⃣ Delete the provider
 	    activityProviderRepository.delete(activityProvider);
 
 	    // 3️⃣ Return success response
-	    return ResponseEntity.ok("ActivityProvider deleted successfully!");
+	    return ResponseEntity.ok("ActivityProvider deleted successfully!  with id"+id);
 	}
 
 	@Override

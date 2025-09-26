@@ -51,6 +51,7 @@ public class Cab extends BaseEntity{
 
     @Column(name = "isActive")
     private Boolean isActive;
+    
 
 
     // Many cabs belong to one provider
@@ -206,6 +207,8 @@ public class Cab extends BaseEntity{
 		this.cabRates = cabRates;
 	}
 
+	
+	
 
 	
 

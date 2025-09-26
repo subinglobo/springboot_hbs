@@ -1,6 +1,9 @@
 package com.choosenfly.hotelbookingsystem.registration.cab.service;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -11,12 +14,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.choosenfly.hotelbookingsystem.configuration.FileStorageProperties;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterCountry;
 import com.choosenfly.hotelbookingsystem.masters.entities.MasterState;
 import com.choosenfly.hotelbookingsystem.masters.repository.MasterCountryRepository;
 import com.choosenfly.hotelbookingsystem.masters.repository.MasterStateRepository;
 import com.choosenfly.hotelbookingsystem.registration.cab.dtos.CabDTO;
+import com.choosenfly.hotelbookingsystem.registration.cab.dtos.CabListDTO;
 import com.choosenfly.hotelbookingsystem.registration.cab.dtos.CabLocationDTO;
 import com.choosenfly.hotelbookingsystem.registration.cab.dtos.CabProviderDTO;
 import com.choosenfly.hotelbookingsystem.registration.cab.entities.Cab;
@@ -26,6 +32,7 @@ import com.choosenfly.hotelbookingsystem.registration.cab.exceptions.EntityNotFo
 import com.choosenfly.hotelbookingsystem.registration.cab.repository.CabLocationRepository;
 import com.choosenfly.hotelbookingsystem.registration.cab.repository.CabProviderRepository;
 import com.choosenfly.hotelbookingsystem.registration.cab.repository.CabRespository;
+import com.choosenfly.hotelbookingsystem.registration.exceptions.FileStorageException;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -43,17 +50,22 @@ public class CabProviderServiceImpl implements CabProviderService{
 	
 	private final CabLocationRepository cabLocationRepository;
 	
+	 private final String uploadDir;
+	
 	public CabProviderServiceImpl(CabProviderRepository cabProviderRepository,
 			MasterCountryRepository masterCountryRepository,MasterStateRepository masterStateRepository,CabRespository cabRespository,
-			CabLocationRepository cabLocationRepository){
+			CabLocationRepository cabLocationRepository,FileStorageProperties fileStorageProperties){
 		this.cabProviderRepository = cabProviderRepository;
 		this.masterCountryRepository=masterCountryRepository;
 		this.masterStateRepository=masterStateRepository;
 		this.cabRespository=cabRespository;
 		this.cabLocationRepository=cabLocationRepository;
+		this.uploadDir = fileStorageProperties.getDirectory();
 	}
 	@Override
 	public CabProviderDTO registerCabProvider(@Valid CabProviderDTO request) {
+		
+		System.out.println("request ::::"+request);
 		// TODO Auto-generated method stub
 		  CabProvider provider = new CabProvider();
 		    provider.setProviderName(request.getProvidername());
@@ -76,7 +88,9 @@ public class CabProviderServiceImpl implements CabProviderService{
 		        	cab.setPlace(stateEntity);
 		            cab.setName(cabDTO.getName());
 		            cab.setCabCode(cabDTO.getCabCode());
-
+		            
+		            handleActivityImageUpload(cabDTO.getCabImage(), cab);
+		            
 		            // Set the relationship to provider
 		            cab.setCabProvider(provider);
 
@@ -109,6 +123,25 @@ public class CabProviderServiceImpl implements CabProviderService{
 
 	}
 
+	private void handleActivityImageUpload(MultipartFile cabImage, Cab cab) {
+		// TODO Auto-generated method stub
+	    if (cabImage == null || cabImage.isEmpty()) return;
+
+	    try {
+	        String filename = System.currentTimeMillis() + "_" + cabImage.getOriginalFilename();
+	        File dest = new File(uploadDir, filename);
+
+	        if (!dest.getParentFile().exists()) {
+	            dest.getParentFile().mkdirs();
+	        }
+
+	        cabImage.transferTo(dest);
+	        cab.setCabPic(dest.getAbsolutePath());
+
+	    } catch (IOException e) {
+	        throw new FileStorageException("Failed to store activity image", e);
+	    }
+	}
 	private CabProviderDTO mapToDTO(CabProvider savedProvider) {
 		// TODO Auto-generated method stub
 		 CabProviderDTO response = new CabProviderDTO();
@@ -126,7 +159,7 @@ public class CabProviderServiceImpl implements CabProviderService{
 		            cabDTO.setCabCode(cab.getCabCode());
 		            cabDTO.setCountryid(cab.getCountry().getId());
 		            cabDTO.setPlaceid(cab.getPlace().getId());
-
+		            cabDTO.setCabpic(cab.getCabPic());
 		            if (cab.getCabLocations() != null) {
 		                List<CabLocationDTO> locDTOList = cab.getCabLocations().stream().map(loc -> {
 		                    CabLocationDTO locDTO = new CabLocationDTO();
@@ -196,6 +229,32 @@ public class CabProviderServiceImpl implements CabProviderService{
 	            cab.setPlace(state);
 	            cab.setName(cabDTO.getName());
 	            cab.setCabCode(cabDTO.getCabCode());
+	            
+	            MultipartFile newImage = cabDTO.getCabImage();
+	            if (newImage != null && !newImage.isEmpty()) {
+	                // delete old image if exists
+	                if (cab.getCabPic() != null) {
+	                    File oldFile = new File(cab.getCabPic());
+	                    if (oldFile.exists()) oldFile.delete();
+	                }
+
+	                try {
+	                    String filename = System.currentTimeMillis() + "_" + newImage.getOriginalFilename();
+	                    File dest = new File(uploadDir, filename);
+	                    if (!dest.getParentFile().exists()) dest.getParentFile().mkdirs();
+	                    newImage.transferTo(dest);
+	                    cab.setCabPic(dest.getAbsolutePath());
+	                } catch (IOException e) {
+	                    throw new FileStorageException("Failed to store cab image", e);
+	                }
+	            }
+	            else {
+	            	  if (cab.getCabPic() != null) {
+	            	        File oldFile = new File(cab.getCabPic());
+	            	        if (oldFile.exists()) oldFile.delete();
+	            	        cab.setCabPic(null);
+	            	    }
+	            }
 
 	            // ✅ Handle nested locations
 	            List<CabLocation> finalLocations = new ArrayList<>();
@@ -236,6 +295,20 @@ public class CabProviderServiceImpl implements CabProviderService{
 	    CabProvider provider = cabProviderRepository.findById(id)
 	            .orElseThrow(() -> new com.choosenfly.hotelbookingsystem.registration.cab.exceptions.EntityNotFoundException(
 	                    "CabProvider not found with id: " + id));
+	    
+
+	    // 2️⃣ Delete associated images from disk
+	    if (provider.getCabs() != null) {
+	        for (Cab cab : provider.getCabs()) {
+	            String imagePath = cab.getCabPic();
+	            if (imagePath != null) {
+	                File file = new File(imagePath);
+	                if (file.exists()) {
+	                    file.delete();
+	                }
+	            }
+	        }
+	    }
 
 	    // 2️⃣ Option 1: Hard delete (remove from DB)
 	    cabProviderRepository.delete(provider);
@@ -280,6 +353,7 @@ public class CabProviderServiceImpl implements CabProviderService{
 	                cabDTO.setCabCode(cab.getCabCode());
 	                cabDTO.setCountryid(cab.getCountry().getId());
 	                cabDTO.setPlaceid(cab.getPlace().getId());
+	                cabDTO.setCabpic(cab.getCabPic());
 //	                cabDTO.setDeleted(false);
 
 	                if (cab.getCabLocations() != null) {
@@ -303,6 +377,27 @@ public class CabProviderServiceImpl implements CabProviderService{
 
 	        return dto;
 	    });
+	}
+	public List<CabListDTO> getCabList(Long providerId) {
+
+	    // 1️⃣ Fetch provider
+	    CabProvider provider = cabProviderRepository.findById(providerId)
+	            .orElseThrow(() -> new com.choosenfly.hotelbookingsystem.registration.cab.exceptions.EntityNotFoundException(
+	                    "CabProvider not found with id: " + providerId));
+
+	    // 2️⃣ Map Cabs to CabListDTO
+	    if (provider.getCabs() == null || provider.getCabs().isEmpty()) {
+	        return Collections.emptyList();
+	    }
+
+	    List<CabListDTO> cabList = provider.getCabs().stream().map(cab -> {
+	        CabListDTO dto = new CabListDTO();
+	        dto.setCabId(cab.getCabId());
+	        dto.setCabName(cab.getName());
+	        return dto;
+	    }).toList();
+
+	    return cabList;
 	}
  
 }

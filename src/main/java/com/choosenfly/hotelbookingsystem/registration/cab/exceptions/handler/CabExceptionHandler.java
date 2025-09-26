@@ -11,7 +11,9 @@ import com.choosenfly.hotelbookingsystem.common.error.dto.ErrorResponse;
 import com.choosenfly.hotelbookingsystem.registration.cab.exceptions.EntityNotFoundException;
 import com.choosenfly.hotelbookingsystem.registration.cab.exceptions.InvalidCabLocationException;
 
-@RestControllerAdvice
+@RestControllerAdvice(basePackages = {
+	    "com.choosenfly.hotelbookingsystem.registration.cab"
+	})
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CabExceptionHandler {
 

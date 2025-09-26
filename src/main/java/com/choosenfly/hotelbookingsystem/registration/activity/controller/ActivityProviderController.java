@@ -37,8 +37,7 @@ public class ActivityProviderController {
 	        
 		   ActivityProviderDTO returnDTO = activityProviderService.registerActivityProvider(requestDTO);
 
-		   return null;
-//	       return new ResponseEntity<>(cabRate.getCabratesId(), HttpStatus.CREATED);
+	       return new ResponseEntity<>(returnDTO.getProviderId(), HttpStatus.CREATED);
 	    }
 	    
 	    

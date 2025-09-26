@@ -1,4 +1,4 @@
-package com.choosenfly.hotelbookingsystem.registration.cab.controller;
+package com.choosenfly.hotelbookingsystem.registration.activity.controller;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,49 +20,49 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.choosenfly.hotelbookingsystem.registration.cab.dtos.CabListDTO;
-import com.choosenfly.hotelbookingsystem.registration.cab.dtos.CabProviderDTO;
-import com.choosenfly.hotelbookingsystem.registration.cab.service.CabProviderService;
+import com.choosenfly.hotelbookingsystem.registration.activity.dtos.ActivityInclusionAndTermsDTO;
+import com.choosenfly.hotelbookingsystem.registration.activity.dtos.ActivityRateDTO;
+import com.choosenfly.hotelbookingsystem.registration.activity.service.ActivityRateService;
+
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/cabProvider")
-public class CabProviderController {
+@RequestMapping("/api/activityRate")
+public class ActivityRateController {
 
 	@Autowired
-	private CabProviderService cabProviderService;
-	
+	private  ActivityRateService activityRateService;
 
-    @PostMapping("/register")
-    public ResponseEntity<Long> registerCabProvider(@ModelAttribute @Valid CabProviderDTO request) {
-    	
-    	System.out.println("JSON request:"+request);
+   @PostMapping("/save")
+    public ResponseEntity<Long> saveActivityRate(@ModelAttribute @Valid ActivityRateDTO requestDTO) {
+	   
+	   System.out.println("requestDTO:::"+requestDTO);
         
-    	CabProviderDTO cabProvider = cabProviderService.registerCabProvider(request);
-    	
-        return new ResponseEntity<>(cabProvider.getCabprovider(), HttpStatus.CREATED);
+	   ActivityRateDTO returnDTO = activityRateService.saveActivityRate(requestDTO);
+
+       return new ResponseEntity<>(returnDTO.getActivityRateId(), HttpStatus.CREATED);
     }
     
     
     @GetMapping("/{id}")
-	private CabProviderDTO getCabProviderRegistrationDetailsById(@PathVariable("id") Long id) {
+	private ActivityRateDTO getActivityRateById(@PathVariable("id") Long id) {
 		
-		return cabProviderService.getCabProviderRegistrationDetailsById(id);
+		return activityRateService.getActivityRateById(id);
 	}
 	
 	@PutMapping("/{id}")
-	private CabProviderDTO editCabProviderRegistrationDetails(@PathVariable("id") Long id , @ModelAttribute @Valid CabProviderDTO reqDTO) {
-		return cabProviderService.editCabProviderRegistrationDetails(id , reqDTO);
+	private ActivityRateDTO editActivityRate(@PathVariable("id") Long id ,@ModelAttribute @Valid ActivityRateDTO reqDTO) {
+		return activityRateService.editActivityRate(id , reqDTO);
 	}
 	
 	
 	@DeleteMapping("/{id}")
-	private ResponseEntity<String>  deleteCabProviderRegistrationDetails(@PathVariable("id") Long id) {
-		return cabProviderService.deleteCabProviderRegistrationDetails(id);
+	private ResponseEntity<String>  deleteActivityRate(@PathVariable("id") Long id) {
+		return activityRateService.deleteActivityRate(id);
 	}
 	
 	@GetMapping
-	public ResponseEntity<List<CabProviderDTO>> getAllCabProviders(@RequestParam(defaultValue = "0") int page,
+	public ResponseEntity<List<ActivityRateDTO>> getActivityRates(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "20") int limit, // Default to 20 hotels per page
 			@RequestParam(required = false) String search) {
 		
@@ -73,11 +73,11 @@ public class CabProviderController {
 		Pageable pageable = PageRequest.of(page, limit);
 
 		// search criteria
-		Page<CabProviderDTO> Page = cabProviderService.getAllCabProviders(pageable, search);
+		Page<ActivityRateDTO> Page = activityRateService.getActivityRates(pageable, search);
 
 		// Wraps hotelsPage in an Optional to safely handle null cases (though rare from
 		// a repository)
-		List<CabProviderDTO> CabProvidersList = Optional.ofNullable(Page)
+		List<ActivityRateDTO> CabRatesList = Optional.ofNullable(Page)
 
 				// Extracts the List<HotelDTO> from the Page object if statePage is not null
 				// (gets the content of the current page)
@@ -89,14 +89,16 @@ public class CabProviderController {
 
 		// Returns the list of HotelDTOs wrapped in a ResponseEntity with HTTP status
 		// 200 (OK)
-		return new ResponseEntity<>(CabProvidersList, HttpStatus.OK);
+		return new ResponseEntity<>(CabRatesList, HttpStatus.OK);
 	}
 	
-    @GetMapping("/cabs/{id}")
-	private List<CabListDTO> getCabList(@PathVariable("id") Long id) {
-		
-		return cabProviderService.getCabList(id);
-	}
 	
-     
+	   @PostMapping("/inclutionAndTerms/save")
+	    public ResponseEntity<String> saveInclutionAndTerms(@RequestBody @Valid List<ActivityInclusionAndTermsDTO> requestDTO) {
+	        
+		   String response = activityRateService.saveInclutionAndTerms(requestDTO);
+
+	       return new ResponseEntity<>(response, HttpStatus.CREATED);
+	    }
+	
 }
